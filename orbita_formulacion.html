@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Órbita de formulación</title>
+<style>
+:root{--bg:#f3f1ec;--tx:#23262b;--mu:#5f656d;--cd:#fff;--bd:#d6d3cb;--p:#2f78c4;--s:#d9622b;--o:#2f9467;--f:#7a4fc0;--au:#c99a12;--a:#c0398f;--rd:#d32f2f;--g:#2f78c4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#14161b;--tx:#eceae4;--mu:#a3a8b1;--cd:#22252b;--bd:#3a3e46;--p:#6aaaf0;--s:#f4915f;--o:#5fcb9a;--f:#b693f0;--au:#e8bd48;--a:#e070bc;--rd:#ff7b72}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#14161b;--tx:#eceae4;--mu:#a3a8b1;--cd:#22252b;--bd:#3a3e46;--p:#6aaaf0;--s:#f4915f;--o:#5fcb9a;--f:#b693f0;--au:#e8bd48;--a:#e070bc;--rd:#ff7b72}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--tx);font:16px/1.45 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;justify-content:center;background:radial-gradient(circle at 50% 38%,color-mix(in srgb,var(--g) 30%,var(--bg)),var(--bg) 70%) var(--bg);background-attachment:fixed}
+main{width:100%;max-width:600px;padding:14px 14px 32px}
+h1{font-size:1.45rem;margin:0;letter-spacing:-.01em}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.top button{font:inherit;font-size:.8rem;border:1px solid var(--bd);background:var(--cd);color:var(--tx);border-radius:99px;padding:4px 10px;cursor:pointer}
+#hud{background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:8px 12px;margin:8px 0}
+#hud .r{display:flex;justify-content:space-between;font-size:.88rem;gap:8px}
+#bar{height:9px;border-radius:9px;background:var(--bd);margin-top:6px;overflow:hidden}
+#bar i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--p),var(--f),var(--a),var(--s));transition:width .8s ease}
+.bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.bar button{font:inherit;font-size:.85rem;padding:5px 12px;border-radius:99px;border:1px solid var(--bd);background:var(--cd);color:var(--tx);cursor:pointer}
+.bar select{font:inherit;font-size:.9rem;padding:6px 12px;border-radius:99px;border:1px solid var(--bd);background:var(--cd);color:var(--tx);cursor:pointer;flex:1;min-width:0}
+#orb{position:relative;width:min(100%,540px);aspect-ratio:1/1;margin:8px auto 0}
+.ring{position:absolute;left:50%;top:50%;border-radius:50%;border:1.5px dashed color-mix(in srgb,var(--f) 45%,transparent);transform:translate(-50%,-50%);animation:spin 40s linear infinite;pointer-events:none}
+.ring::after{content:"";position:absolute;left:50%;top:-5px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--f);box-shadow:0 0 10px 2px var(--f)}
+.r1{width:62%;height:62%}.r2{width:84%;height:84%;animation-duration:60s;animation-direction:reverse}.r3{width:100%;height:100%;animation-duration:85s}
+.r2::after{background:var(--s);box-shadow:0 0 10px 2px var(--s)}.r3::after{background:var(--o);box-shadow:0 0 10px 2px var(--o)}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.node{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;border:2.5px solid var(--c);background:color-mix(in srgb,var(--c) 14%,var(--cd));transition:opacity 1s ease,transform 1s ease,box-shadow .5s;transform:translate(-50%,-50%)}
+.node small{font-size:.7rem;color:var(--mu);line-height:1.15;margin-bottom:3px}
+.node input{width:92%;font:inherit;font-size:.82rem;text-align:center;border:0;border-bottom:1.5px solid var(--c);background:transparent;color:var(--tx);padding:3px 0;outline:none;min-width:0}
+.node input:focus-visible{border-bottom-width:3px}
+.node .v{font-weight:600;font-size:.85rem;line-height:1.25;overflow-wrap:anywhere}
+.t{margin-top:4px;min-height:10px}
+.t span{display:inline-block;width:8px;height:8px;border-radius:50%;margin:0 2px;background:var(--au);box-shadow:0 0 6px 1px var(--au);transition:all .3s}
+.t span.off{background:var(--bd);box-shadow:none}
+.sat{width:37%;height:37%}
+.p{--c:var(--p);left:50%;top:19%}.s{--c:var(--s);left:23.5%;top:66%}.o{--c:var(--o);left:76.5%;top:66%}.a{--c:var(--a)}
+#orb.four .sat{width:35%;height:35%}#orb.four .p{left:21%;top:21%}#orb.four .s{left:79%;top:21%}#orb.four .a{left:21%;top:79%}#orb.four .o{left:79%;top:79%}#orb.four .v{font-size:.72rem}
+#f{--c:var(--f);left:50%;top:50%;width:31%;height:31%;box-shadow:0 0 28px 4px color-mix(in srgb,var(--c) 40%,transparent);background:radial-gradient(circle,color-mix(in srgb,var(--c) 28%,var(--cd)),var(--cd))}
+#f .v{font-size:1.35rem}#f input{font-size:1.05rem}#orb.four #f .v{font-size:1.35rem}
+sub{font-size:.65em}
+.ok{box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 25%,transparent)}
+.auto{border-style:dashed;border-color:var(--au);background:color-mix(in srgb,var(--au) 14%,var(--cd))}
+.bad{animation:sh .35s}
+.rev{border-style:solid;border-color:var(--rd);background:color-mix(in srgb,var(--rd) 12%,var(--cd))}.rev .v{color:var(--rd)}
+@keyframes sh{25%{transform:translate(calc(-50% - 6px),-50%)}75%{transform:translate(calc(-50% + 6px),-50%)}}
+#orb.done .sat{opacity:0;transform:translate(-50%,-50%) scale(.5);pointer-events:none}
+#orb.done #f{animation:pop .9s ease}
+#orb.done .ring{animation-duration:6s}
+@keyframes pop{40%{transform:translate(-50%,-50%) scale(1.25)}}
+.pt{position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;pointer-events:none}
+#msg{min-height:5.6em;text-align:center;margin:6px 0 4px}
+.row{display:flex;gap:8px;justify-content:center}
+.row button{font:inherit;padding:9px 20px;border-radius:10px;border:1.5px solid var(--tx);background:var(--cd);color:var(--tx);cursor:pointer}
+.row button.pri{background:var(--tx);color:var(--bg)}
+#pt{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;margin:16px 0 4px}
+#pt div{aspect-ratio:1;border-radius:4px;border:1px solid var(--bd);font-size:.58rem;display:flex;align-items:center;justify-content:center;color:var(--mu);transition:all .6s}
+#pt div.on{background:var(--c);border-color:var(--c);color:#fff;font-weight:700;box-shadow:0 0 8px var(--c)}
+#ptl{text-align:center;color:var(--mu);font-size:.8rem}
+@media (prefers-reduced-motion:reduce){.node,.ring,#bar i,#pt div{transition:none}.ring,.bad,#orb.done #f{animation:none}}
+</style>
+</head><body><main>
+<div class="top"><h1>Órbita de formulación</h1><span><button id="snd">Sonido: sí</button> <button id="rst">Reiniciar</button></span></div>
+<div id="hud"></div>
+<div class="bar"><select id="cats" aria-label="Familia de compuestos"></select><select id="modes" aria-label="Modo de juego"></select></div>
+<div id="msg" aria-live="polite"></div><div class="row" style="justify-content:flex-start"><button class="pri" id="nx">Ponme otro</button></div><div id="orb"></div>
+
+<div id="pt"></div><div id="ptl"></div>
+</main><script>
+const D=[
+{f:"Fe2O3",c:"b",el:"Fe",o:"+3",p:["trióxido de dihierro"],s:["óxido de hierro(III)"]},
+{f:"FeO",c:"b",el:"Fe",o:"+2",p:["monóxido de hierro","óxido de hierro"],s:["óxido de hierro(II)"]},
+{f:"Cu2O",c:"b",el:"Cu",o:"+1",p:["óxido de dicobre","monóxido de dicobre"],s:["óxido de cobre(I)"]},
+{f:"CuO",c:"b",el:"Cu",o:"+2",p:["monóxido de cobre","óxido de cobre"],s:["óxido de cobre(II)"]},
+{f:"Al2O3",c:"b",el:"Al",o:"+3",p:["trióxido de dialuminio"],s:["óxido de aluminio"],n:"El aluminio solo tiene un estado de oxidación (+3): no lleva número romano."},
+{f:"N2O5",c:"b",el:"N",o:"+5",p:["pentaóxido de dinitrógeno"],s:["óxido de nitrógeno(V)"]},
+{f:"SO3",c:"b",el:"S",o:"+6",p:["trióxido de azufre"],s:["óxido de azufre(VI)"]},
+{f:"CO2",c:"b",el:"C",o:"+4",p:["dióxido de carbono"],s:["óxido de carbono(IV)"]},
+{f:"NaCl",c:"b",el:"Na",o:"+1",p:["cloruro de sodio","monocloruro de sodio"],s:["cloruro de sodio"],n:"El sodio solo tiene +1: sin número romano."},
+{f:"FeCl3",c:"b",el:"Fe",o:"+3",p:["tricloruro de hierro"],s:["cloruro de hierro(III)"]},
+{f:"PbS2",c:"b",el:"Pb",o:"+4",p:["disulfuro de plomo"],s:["sulfuro de plomo(IV)"]},
+{f:"CaH2",c:"b",el:"Ca",o:"+2",p:["dihidruro de calcio"],s:["hidruro de calcio"],n:"El calcio solo tiene +2: sin número romano."},
+{f:"HCl",c:"b",el:"H",o:"+1",p:["cloruro de hidrógeno","monocloruro de hidrógeno"],s:["cloruro de hidrógeno"],n:"«Ácido clorhídrico» no es un nombre admitido para el HCl."},
+{f:"NaOH",c:"h",el:"Na",o:"+1",p:["hidróxido de sodio","monohidróxido de sodio"],s:["hidróxido de sodio"],n:"El sodio solo tiene +1: sin número romano."},
+{f:"Ca(OH)2",c:"h",el:"Ca",o:"+2",p:["dihidróxido de calcio"],s:["hidróxido de calcio"],n:"El calcio solo tiene +2: sin número romano."},
+{f:"Fe(OH)3",c:"h",el:"Fe",o:"+3",p:["trihidróxido de hierro"],s:["hidróxido de hierro(III)"]},
+{f:"Cu(OH)2",c:"h",el:"Cu",o:"+2",p:["dihidróxido de cobre"],s:["hidróxido de cobre(II)"]},
+{f:"Al(OH)3",c:"h",el:"Al",o:"+3",p:["trihidróxido de aluminio"],s:["hidróxido de aluminio"],n:"El aluminio solo tiene +3: sin número romano."},
+{f:"H2O2",c:"x",el:"O",o:"-1",p:["dióxido de dihidrógeno"],s:["peróxido de hidrógeno"],n:"En los peróxidos el oxígeno es O₂²⁻: su número de oxidación es −1."},
+{f:"Li2O2",c:"x",el:"O",o:"-1",p:["dióxido de dilitio"],s:["peróxido de litio"],n:"El grupo O₂²⁻ no se simplifica: Li₂O₂, nunca LiO."},
+{f:"Na2O2",c:"x",el:"O",o:"-1",p:["dióxido de disodio"],s:["peróxido de sodio"],n:"El grupo O₂²⁻ no se simplifica: Na₂O₂, nunca NaO."},
+{f:"BaO2",c:"x",el:"O",o:"-1",p:["dióxido de bario"],s:["peróxido de bario"],n:"Aquí el O₂²⁻ coincide con la carga del Ba²⁺, y por eso no hay subíndices."},
+{f:"H2SO4",c:"oa",el:"S",o:"+6",p:["ácido sulfúrico"],s:["dihidrogeno(tetraoxidosulfato)"],a:["dihidroxidodioxidoazufre"]},
+{f:"H2SO3",c:"oa",el:"S",o:"+4",p:["ácido sulfuroso"],s:["dihidrogeno(trioxidosulfato)"],a:["dihidroxidooxidoazufre"]},
+{f:"HNO3",c:"oa",el:"N",o:"+5",p:["ácido nítrico"],s:["hidrogeno(trioxidonitrato)"],a:["hidroxidodioxidonitrógeno"]},
+{f:"HNO2",c:"oa",el:"N",o:"+3",p:["ácido nitroso"],s:["hidrogeno(dioxidonitrato)"],a:["hidroxidooxidonitrógeno"]},
+{f:"H2CO3",c:"oa",el:"C",o:"+4",p:["ácido carbónico"],s:["dihidrogeno(trioxidocarbonato)"],a:["dihidroxidooxidocarbono"]},
+{f:"H3PO4",c:"oa",el:"P",o:"+5",p:["ácido fosfórico"],s:["trihidrogeno(tetraoxidofosfato)"],a:["trihidroxidooxidofósforo"],n:"«Ácido ortofosfórico» no se admite: es simplemente ácido fosfórico."},
+{f:"HClO",c:"oa",el:"Cl",o:"+1",p:["ácido hipocloroso"],s:["hidrogeno(oxidoclorato)"],a:["hidroxidocloro"],n:"Serie del cloro: +1 hipo-oso, +3 -oso, +5 -ico, +7 per-ico."},
+{f:"HClO2",c:"oa",el:"Cl",o:"+3",p:["ácido cloroso"],s:["hidrogeno(dioxidoclorato)"],a:["hidroxidooxidocloro"]},
+{f:"HClO3",c:"oa",el:"Cl",o:"+5",p:["ácido clórico"],s:["hidrogeno(trioxidoclorato)"],a:["hidroxidodioxidocloro"]},
+{f:"HClO4",c:"oa",el:"Cl",o:"+7",p:["ácido perclórico"],s:["hidrogeno(tetraoxidoclorato)"],a:["hidroxidotrioxidocloro"]},
+{f:"H2CrO4",c:"oa",el:"Cr",o:"+6",p:["ácido crómico"],s:["dihidrogeno(tetraoxidocromato)"],a:["dihidroxidodioxidocromo"]},
+{f:"HMnO4",c:"oa",el:"Mn",o:"+7",p:["ácido permangánico"],s:["hidrogeno(tetraoxidomanganato)"],a:["hidroxidotrioxidomanganeso"]},
+{f:"Na2SO4",c:"os",el:"Na",o:"+1",p:["sulfato de sodio"],s:["ácido sulfúrico"],n:"El sodio solo tiene +1: sin número romano."},
+{f:"Na2SO3",c:"os",el:"Na",o:"+1",p:["sulfito de sodio"],s:["ácido sulfuroso"]},
+{f:"FeSO4",c:"os",el:"Fe",o:"+2",p:["sulfato de hierro(II)"],s:["ácido sulfúrico"]},
+{f:"Fe2(SO4)3",c:"os",el:"Fe",o:"+3",p:["sulfato de hierro(III)"],s:["ácido sulfúrico"],n:"El romano va en el catión: sulfato de hierro(III), no «sulfato(VI)»."},
+{f:"Al2(SO4)3",c:"os",el:"Al",o:"+3",p:["sulfato de aluminio"],s:["ácido sulfúrico"],n:"El aluminio solo tiene +3: sin número romano."},
+{f:"CaCO3",c:"os",el:"Ca",o:"+2",p:["carbonato de calcio"],s:["ácido carbónico"]},
+{f:"KNO3",c:"os",el:"K",o:"+1",p:["nitrato de potasio"],s:["ácido nítrico"]},
+{f:"Cu(NO3)2",c:"os",el:"Cu",o:"+2",p:["nitrato de cobre(II)"],s:["ácido nítrico"]},
+{f:"AgNO3",c:"os",el:"Ag",o:"+1",p:["nitrato de plata"],s:["ácido nítrico"]},
+{f:"Ca3(PO4)2",c:"os",el:"Ca",o:"+2",p:["fosfato de calcio"],s:["ácido fosfórico"],n:"Se cruzan las cargas: Ca²⁺ y PO₄³⁻ dan Ca₃(PO₄)₂."},
+{f:"NaClO",c:"os",el:"Na",o:"+1",p:["hipoclorito de sodio"],s:["ácido hipocloroso"]},
+{f:"Mg(ClO3)2",c:"os",el:"Mg",o:"+2",p:["clorato de magnesio"],s:["ácido clórico"]},
+{f:"KMnO4",c:"os",el:"K",o:"+1",p:["permanganato de potasio"],s:["ácido permangánico"]}
+,{f:"Cl2O7",c:"b",el:"Cl",o:"+7",p:["heptaóxido de dicloro"],s:["óxido de cloro(VII)"]}
+,{f:"Cl2O",c:"b",el:"Cl",o:"+1",p:["monóxido de dicloro","óxido de dicloro"],s:["óxido de cloro(I)"]}
+,{f:"P2O3",c:"b",el:"P",o:"+3",p:["trióxido de difósforo"],s:["óxido de fósforo(III)"]}
+,{f:"P2O5",c:"b",el:"P",o:"+5",p:["pentaóxido de difósforo"],s:["óxido de fósforo(V)"]}
+,{f:"SO2",c:"b",el:"S",o:"+4",p:["dióxido de azufre"],s:["óxido de azufre(IV)"]}
+,{f:"NO",c:"b",el:"N",o:"+2",p:["monóxido de nitrógeno","óxido de nitrógeno"],s:["óxido de nitrógeno(II)"]}
+,{f:"NO2",c:"b",el:"N",o:"+4",p:["dióxido de nitrógeno"],s:["óxido de nitrógeno(IV)"]}
+,{f:"MgO",c:"b",el:"Mg",o:"+2",p:["monóxido de magnesio","óxido de magnesio"],s:["óxido de magnesio"],n:"El magnesio solo tiene +2: sin número romano."}
+,{f:"K2O",c:"b",el:"K",o:"+1",p:["óxido de dipotasio","monóxido de dipotasio"],s:["óxido de potasio"],n:"El potasio solo tiene +1: sin número romano."}
+,{f:"ZnO",c:"b",el:"Zn",o:"+2",p:["monóxido de cinc","óxido de cinc","monóxido de zinc","óxido de zinc"],s:["óxido de cinc","óxido de zinc"],n:"El cinc solo tiene +2: sin número romano."}
+,{f:"Ag2O",c:"b",el:"Ag",o:"+1",p:["óxido de diplata","monóxido de diplata"],s:["óxido de plata"],n:"La plata solo tiene +1: sin número romano."}
+,{f:"SnO2",c:"b",el:"Sn",o:"+4",p:["dióxido de estaño"],s:["óxido de estaño(IV)"]}
+,{f:"PbO",c:"b",el:"Pb",o:"+2",p:["monóxido de plomo","óxido de plomo"],s:["óxido de plomo(II)"]}
+,{f:"MnO2",c:"b",el:"Mn",o:"+4",p:["dióxido de manganeso"],s:["óxido de manganeso(IV)"]}
+,{f:"Cr2O3",c:"b",el:"Cr",o:"+3",p:["trióxido de dicromo"],s:["óxido de cromo(III)"]}
+,{f:"FeS",c:"b",el:"Fe",o:"+2",p:["monosulfuro de hierro","sulfuro de hierro"],s:["sulfuro de hierro(II)"]}
+,{f:"Fe2S3",c:"b",el:"Fe",o:"+3",p:["trisulfuro de dihierro"],s:["sulfuro de hierro(III)"]}
+,{f:"CuCl2",c:"b",el:"Cu",o:"+2",p:["dicloruro de cobre"],s:["cloruro de cobre(II)"]}
+,{f:"AgCl",c:"b",el:"Ag",o:"+1",p:["cloruro de plata","monocloruro de plata"],s:["cloruro de plata"],n:"La plata solo tiene +1: sin número romano."}
+,{f:"MgCl2",c:"b",el:"Mg",o:"+2",p:["dicloruro de magnesio"],s:["cloruro de magnesio"],n:"El magnesio solo tiene +2: sin número romano."}
+,{f:"KBr",c:"b",el:"K",o:"+1",p:["bromuro de potasio","monobromuro de potasio"],s:["bromuro de potasio"]}
+,{f:"LiH",c:"b",el:"Li",o:"+1",p:["hidruro de litio","monohidruro de litio"],s:["hidruro de litio"]}
+,{f:"AlH3",c:"b",el:"Al",o:"+3",p:["trihidruro de aluminio"],s:["hidruro de aluminio"]}
+,{f:"KOH",c:"h",el:"K",o:"+1",p:["hidróxido de potasio","monohidróxido de potasio"],s:["hidróxido de potasio"]}
+,{f:"LiOH",c:"h",el:"Li",o:"+1",p:["hidróxido de litio","monohidróxido de litio"],s:["hidróxido de litio"]}
+,{f:"Mg(OH)2",c:"h",el:"Mg",o:"+2",p:["dihidróxido de magnesio"],s:["hidróxido de magnesio"]}
+,{f:"Ba(OH)2",c:"h",el:"Ba",o:"+2",p:["dihidróxido de bario"],s:["hidróxido de bario"]}
+,{f:"Zn(OH)2",c:"h",el:"Zn",o:"+2",p:["dihidróxido de cinc","dihidróxido de zinc"],s:["hidróxido de cinc","hidróxido de zinc"]}
+,{f:"AgOH",c:"h",el:"Ag",o:"+1",p:["hidróxido de plata","monohidróxido de plata"],s:["hidróxido de plata"]}
+,{f:"Fe(OH)2",c:"h",el:"Fe",o:"+2",p:["dihidróxido de hierro"],s:["hidróxido de hierro(II)"]}
+,{f:"CuOH",c:"h",el:"Cu",o:"+1",p:["monohidróxido de cobre","hidróxido de cobre"],s:["hidróxido de cobre(I)"]}
+,{f:"Pb(OH)2",c:"h",el:"Pb",o:"+2",p:["dihidróxido de plomo"],s:["hidróxido de plomo(II)"]}
+,{f:"Pb(OH)4",c:"h",el:"Pb",o:"+4",p:["tetrahidróxido de plomo"],s:["hidróxido de plomo(IV)"]}
+,{f:"Sn(OH)2",c:"h",el:"Sn",o:"+2",p:["dihidróxido de estaño"],s:["hidróxido de estaño(II)"]}
+,{f:"Cr(OH)3",c:"h",el:"Cr",o:"+3",p:["trihidróxido de cromo"],s:["hidróxido de cromo(III)"]}
+,{f:"K2O2",c:"x",el:"O",o:"-1",p:["dióxido de dipotasio"],s:["peróxido de potasio"],n:"El grupo O₂²⁻ no se simplifica: K₂O₂, nunca KO."}
+,{f:"MgO2",c:"x",el:"O",o:"-1",p:["dióxido de magnesio"],s:["peróxido de magnesio"],n:"Mg²⁺ y O₂²⁻ tienen la misma carga: sin subíndices."}
+,{f:"CaO2",c:"x",el:"O",o:"-1",p:["dióxido de calcio"],s:["peróxido de calcio"]}
+,{f:"ZnO2",c:"x",el:"O",o:"-1",p:["dióxido de cinc","dióxido de zinc"],s:["peróxido de cinc","peróxido de zinc"]}
+,{f:"Ag2O2",c:"x",el:"O",o:"-1",p:["dióxido de diplata"],s:["peróxido de plata"],n:"El grupo O₂²⁻ no se simplifica: Ag₂O₂, nunca AgO."}
+,{f:"Cu2O2",c:"x",el:"O",o:"-1",p:["dióxido de dicobre"],s:["peróxido de cobre(I)"],n:"Dos Cu⁺ con un O₂²⁻. No es CuO."}
+,{f:"CuO2",c:"x",el:"O",o:"-1",p:["dióxido de cobre"],s:["peróxido de cobre(II)"]}
+,{f:"HBrO",c:"oa",el:"Br",o:"+1",p:["ácido hipobromoso"],s:["hidrogeno(oxidobromato)"],a:["hidroxidobromo"]}
+,{f:"HBrO3",c:"oa",el:"Br",o:"+5",p:["ácido brómico"],s:["hidrogeno(trioxidobromato)"],a:["hidroxidodioxidobromo"]}
+,{f:"HBrO4",c:"oa",el:"Br",o:"+7",p:["ácido perbrómico"],s:["hidrogeno(tetraoxidobromato)"],a:["hidroxidotrioxidobromo"]}
+,{f:"HIO3",c:"oa",el:"I",o:"+5",p:["ácido yódico"],s:["hidrogeno(trioxidoyodato)"],a:["hidroxidodioxidoyodo"]}
+,{f:"HIO",c:"oa",el:"I",o:"+1",p:["ácido hipoyodoso"],s:["hidrogeno(oxidoyodato)"],a:["hidroxidoyodo"]}
+,{f:"H2SeO4",c:"oa",el:"Se",o:"+6",p:["ácido selénico"],s:["dihidrogeno(tetraoxidoselenato)"],a:["dihidroxidodioxidoselenio"]}
+,{f:"H2SeO3",c:"oa",el:"Se",o:"+4",p:["ácido selenioso"],s:["dihidrogeno(trioxidoselenato)"],a:["dihidroxidooxidoselenio"]}
+,{f:"H2MnO4",c:"oa",el:"Mn",o:"+6",p:["ácido mangánico"],s:["dihidrogeno(tetraoxidomanganato)"],a:["dihidroxidodioxidomanganeso"],n:"Mn(VI) es H₂MnO₄ (mangánico); Mn(VII) es HMnO₄ (permangánico)."}
+,{f:"H3BO3",c:"oa",el:"B",o:"+3",p:["ácido bórico"],s:["trihidrogeno(trioxidoborato)"],a:["trihidroxidoboro"]}
+,{f:"MgSO4",c:"os",el:"Mg",o:"+2",p:["sulfato de magnesio"],s:["ácido sulfúrico"]}
+,{f:"BaSO4",c:"os",el:"Ba",o:"+2",p:["sulfato de bario"],s:["ácido sulfúrico"]}
+,{f:"CuSO4",c:"os",el:"Cu",o:"+2",p:["sulfato de cobre(II)"],s:["ácido sulfúrico"]}
+,{f:"K2SO3",c:"os",el:"K",o:"+1",p:["sulfito de potasio"],s:["ácido sulfuroso"]}
+,{f:"Na2CO3",c:"os",el:"Na",o:"+1",p:["carbonato de sodio"],s:["ácido carbónico"]}
+,{f:"K2CO3",c:"os",el:"K",o:"+1",p:["carbonato de potasio"],s:["ácido carbónico"]}
+,{f:"FeCO3",c:"os",el:"Fe",o:"+2",p:["carbonato de hierro(II)"],s:["ácido carbónico"]}
+,{f:"Fe2(CO3)3",c:"os",el:"Fe",o:"+3",p:["carbonato de hierro(III)"],s:["ácido carbónico"]}
+,{f:"Ca(NO3)2",c:"os",el:"Ca",o:"+2",p:["nitrato de calcio"],s:["ácido nítrico"]}
+,{f:"NaNO2",c:"os",el:"Na",o:"+1",p:["nitrito de sodio"],s:["ácido nitroso"]}
+,{f:"Pb(NO3)2",c:"os",el:"Pb",o:"+2",p:["nitrato de plomo(II)"],s:["ácido nítrico"]}
+,{f:"KClO3",c:"os",el:"K",o:"+1",p:["clorato de potasio"],s:["ácido clórico"]}
+,{f:"KClO2",c:"os",el:"K",o:"+1",p:["clorito de potasio"],s:["ácido cloroso"]}
+,{f:"NaClO4",c:"os",el:"Na",o:"+1",p:["perclorato de sodio"],s:["ácido perclórico"]}
+,{f:"Ca(ClO)2",c:"os",el:"Ca",o:"+2",p:["hipoclorito de calcio"],s:["ácido hipocloroso"]}
+,{f:"K2CrO4",c:"os",el:"K",o:"+1",p:["cromato de potasio"],s:["ácido crómico"]}
+,{f:"K2Cr2O7",c:"os",el:"K",o:"+1",p:["dicromato de potasio"],s:["ácido dicrómico"],n:"Caso «di»: dos Cr por unidad, Cr₂O₇²⁻. El ácido es el dicrómico."}
+,{f:"Mg3(PO4)2",c:"os",el:"Mg",o:"+2",p:["fosfato de magnesio"],s:["ácido fosfórico"]}
+,{f:"AlPO4",c:"os",el:"Al",o:"+3",p:["fosfato de aluminio"],s:["ácido fosfórico"],n:"Al³⁺ y PO₄³⁻ se compensan: sin subíndices."}
+,{f:"H2O",c:"r",el:"O",o:"-2",p:["agua"],s:["oxidano"],n:"Agua y amoníaco conservan su nombre tradicional en la IUPAC 2005."}
+,{f:"NH3",c:"r",el:"N",o:"-3",p:["amoniaco"],s:["azano"],n:"Amoníaco y agua conservan su nombre tradicional en la IUPAC 2005."}
+,{f:"H2O2",c:"r",el:"O",o:"-1",p:["peróxido de hidrógeno"],s:["agua oxigenada"],n:"«Agua oxigenada» está permitido en las recomendaciones del 2005. El O es −1."}
+,{f:"H2S",c:"r",el:"S",o:"-2",p:["sulfuro de hidrógeno","sulfuro de dihidrógeno"],s:["ácido sulfhídrico"],n:"«Ácido sulfhídrico» designa la disolución acuosa del H₂S."}
+,{f:"O3",c:"r",el:"O",o:"0",p:["trioxígeno"],s:["ozono"],n:"Sustancia simple: número de oxidación 0. «Ozono» es nombre admitido."}
+,{f:"O2",c:"r",el:"O",o:"0",p:["dioxígeno"],s:["oxígeno"],n:"Sustancia simple: número de oxidación 0. «Oxígeno» es nombre admitido."}
+,{f:"CrO3",c:"r",el:"Cr",o:"+6",p:["trióxido de cromo"],s:["óxido de cromo(VI)"],n:"Un metal con número de oxidación alto (Cr +6) da un óxido ácido."}
+,{f:"Mn2O7",c:"r",el:"Mn",o:"+7",p:["heptaóxido de dimanganeso"],s:["óxido de manganeso(VII)"],n:"Mn +7: otro metal que forma un óxido ácido."}
+,{f:"H4P2O7",c:"r",el:"P",o:"+5",p:["ácido difosfórico"],s:["tetrahidrogeno(heptaoxidodifosfato)"],n:"Caso «di»: 2 H₃PO₄ − H₂O = H₄P₂O₇."}
+,{f:"H2Cr2O7",c:"r",el:"Cr",o:"+6",p:["ácido dicrómico"],s:["dihidrogeno(heptaoxidodicromato)"],n:"Caso «di»: 2 H₂CrO₄ − H₂O = H₂Cr₂O₇."}
+,{f:"H3PO3",c:"r",el:"P",o:"+3",p:["ácido fosforoso"],s:["trihidrogeno(trioxidofosfato)"],n:"Sin «orto»: no se dice ácido ortofosforoso."}
+,{f:"HIO4",c:"r",el:"I",o:"+7",p:["ácido peryódico"],s:["hidrogeno(tetraoxidoyodato)"],n:"Con el yodo: peryódico, no «perycódico»."}
+,{f:"NaHCO3",c:"r",el:"Na",o:"+1",p:["hidrogenocarbonato de sodio"],s:["hidrogeno(trioxidocarbonato) de sodio"],n:"Sal ácida. «Bicarbonato» ya no es el nombre recomendado."}
+,{f:"NaHSO4",c:"r",el:"Na",o:"+1",p:["hidrogenosulfato de sodio"],s:["hidrogeno(tetraoxidosulfato) de sodio"],n:"Sal ácida: conserva un H del ácido sulfúrico."}
+,{f:"Ca(HCO3)2",c:"r",el:"Ca",o:"+2",p:["hidrogenocarbonato de calcio"],s:["hidrogeno(trioxidocarbonato) de calcio"],n:"Dos aniones HCO₃⁻ para compensar Ca²⁺."}
+,{f:"NH4Cl",c:"r",el:"N",o:"-3",p:["cloruro de amonio"],s:["cloruro de azanio"],n:"El catión NH₄⁺ se llama amonio o azanio."}
+,{f:"NH4NO3",c:"r",el:"N",o:"-3",p:["nitrato de amonio"],s:["nitrato de azanio"],n:"El catión NH₄⁺ se llama amonio o azanio."}
+];
+
+const CATS=[["t","Todos"],["b","Binarios"],["h","Hidróxidos"],["x","Peróxidos"],["oa","Oxoácidos"],["os","Oxisales"],["r","Casos raretes"]];
+const MODES=[["n","Nombrar"],["f","Formular"]];
+const FG={b:"#2f78c4",h:"#1aa39a",x:"#c0398f",oa:"#e07b22",os:"#3aa05a",r:"#8a5cd0"};
+const EP={H:[1,1,"#4aa3df"],Li:[1,2,"#c0392b"],Na:[1,3,"#e6a817"],K:[1,4,"#8e5bd0"],Mg:[2,3,"#2e9e6b"],Ca:[2,4,"#d9622b"],Ba:[2,6,"#3f9b3f"],Cr:[6,4,"#2ba0b8"],Mn:[7,4,"#b0398f"],Fe:[8,4,"#c4571a"],Cu:[11,4,"#b8732e"],Ag:[11,5,"#7f8c9a"],Al:[13,3,"#6b7fa8"],C:[14,2,"#4b4f57"],Pb:[14,6,"#5c6580"],N:[15,2,"#2f6fd0"],P:[15,3,"#d4432f"],O:[16,2,"#d32f2f"],S:[16,3,"#c9a000"],Cl:[17,3,"#4fae2c"],Zn:[12,4,"#5a7fb0"],Sn:[14,5,"#8a8f99"],Br:[17,4,"#9a3b2e"],I:[17,5,"#7a3fa8"],Se:[16,4,"#d4742c"],B:[13,2,"#c98a5a"]};
+const LV=[[0,"Aprendiz"],[150,"Químico"],[450,"Alquimista"],[1000,"Nobel"]];
+const $=id=>document.getElementById(id);
+const N=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[\s()\-]/g,"");
+const NF=s=>s.replace(/[₀-₉]/g,c=>c.charCodeAt(0)-8320).replace(/\s/g,"");
+const NO=s=>s.replace(/\s/g,"").replace(/[−–]/g,"-").replace(/^\+/,"");
+const fx=f=>f.replace(/(\d+)/g,"<sub>$1</sub>");
+const sg=o=>o.replace("-","−");
+let cat="t",mode="n",d=null,st={},hits=0,aids=0,fin=false;
+let S={xp:0,streak:0,best:0,lit:[]};
+try{const r=JSON.parse(localStorage.getItem("orq"));if(r&&typeof r.xp==="number")S=Object.assign(S,r)}catch(e){}
+const save=()=>{try{localStorage.setItem("orq",JSON.stringify(S))}catch(e){}};
+const ST={p:"Prefijos",s:"Números romanos (Stock)"};
+const LBS={b:ST,h:ST,x:ST,oa:{p:"Tradicional",s:"Hidrógeno",a:"Adición"},os:{p:"Nombre tradicional",s:"Ácido de origen"},r:{p:"Nombre principal",s:"Otro nombre aceptado"}};
+const label=k=>k==="f"?"Fórmula":k==="o"?"Nº de oxidación de "+d.el:LBS[d.c][k];
+const first=k=>k==="f"?fx(d.f):k==="o"?sg(d.o):d[k][0];
+const test={f:v=>NF(v)===NF(d.f),o:v=>NO(v)===NO(d.o),p:v=>d.p.some(a=>N(a)===N(v)),s:v=>d.s.some(a=>N(a)===N(v)),a:v=>d.a.some(x=>N(x)===N(v))};
+const els=f=>[...new Set(f.match(/[A-Z][a-z]?/g))];
+const lvl=x=>{let i=0;LV.forEach((l,j)=>{if(x>=l[0])i=j});return i};
+let ac=null,mute=false;
+function beep(seq){if(mute)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();seq.forEach(([f,t,w])=>{const o=ac.createOscillator(),g=ac.createGain();o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(.08,ac.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+t+w);o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+t);o.stop(ac.currentTime+t+w)})}catch(e){}}
+function chips(id,list,get,set){
+  const el=$(id);
+  el.innerHTML=list.map(([k,t])=>`<option value="${k}"${get()===k?" selected":""}>${t}</option>`).join("");
+  el.onchange=()=>{set(el.value);next()};
+}
+const tdots=n=>[0,1,2].map(i=>`<span class="${i<3-n?"":"off"}"></span>`).join("");
+function draw(k){
+  const e=$(k),s=st[k];
+  e.className="node "+(k==="f"?"":"sat "+k)+(s.ok?" ok":"")+(s.auto?" auto":"")+(s.rev?" rev":"");
+  if(k==="f")e.style.setProperty("--c",(EP[d.el]||[0,0,"#7a4fc0"])[2]);
+  if(s.ok){e.innerHTML=`<small>${label(k)}</small><div class="v">${first(k)}</div>`;return}
+  e.innerHTML=`<small>${label(k)}</small><input id="i${k}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="${label(k)}"><div class="t" aria-hidden="true">${tdots(s.t)}</div>`;
+  $("i"+k).addEventListener("keydown",ev=>{if(ev.key==="Enter")check()});
+  $("i"+k).addEventListener("input",()=>{if(test[k]($("i"+k).value))check(k)});
+}
+function build(){
+  const o=$("orb");fin=false;
+  document.documentElement.style.setProperty("--g",FG[d.c]);
+  const ks=d.a?["f","p","s","a","o"]:["f","p","s","o"];
+  o.className=d.a?"four":"";
+  o.innerHTML='<div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>'+ks.map(k=>`<div class="node${k==="f"?"":" sat "+k}" id="${k}"></div>`).join("");
+  st={};
+  ks.forEach(k=>{const given=mode==="n"?k==="f":k!=="f";st[k]={t:0,ok:given,auto:false};draw(k)});
+  $("msg").textContent=mode==="n"?"Nombra este compuesto de las tres formas. Los aciertos se marcan solos; pulsa Intro si quieres comprobar un intento.":"Escribe la fórmula a partir de los nombres. El acierto se marca solo; pulsa Intro para comprobar un intento.";
+  const i=document.querySelector("#orb input");if(i)i.focus();
+}
+const pool0=c=>D.filter(x=>c==="t"||x.c===c).length;
+function next(){
+  const pool=D.filter(x=>(cat==="t"||x.c===cat)&&(x!==d||pool0(cat)<2));
+  d=pool[Math.floor(Math.random()*pool.length)];build();
+}
+const HINTS=["¡Casi! Revisa los prefijos y el número de oxidación.","Sin rendirse: mira el signo y el subíndice.","Cada fallo es una pista. Respira y prueba otra vez.","¡Tú puedes! Fíjate en la terminación del nombre."];
+function check(only){
+  if(fin)return;
+  let any=false;
+  Object.keys(st).forEach(k=>{
+    if(only&&k!==only)return;
+    const s=st[k];if(s.ok)return;
+    const inp=$("i"+k);if(!inp||!inp.value.trim())return;
+    any=true;
+    if(test[k](inp.value)){s.ok=true;hits++;draw(k);beep([[660,0,.12],[880,.09,.16]])}
+    else{
+      s.t++;const e=$(k);beep([[200,0,.25]]);
+      if(s.t>=3){s.ok=true;s.auto=true;s.rev=true;aids++;draw(k);$("msg").textContent="Te echo una mano: este círculo se rellena solo. Fíjate bien en la respuesta.";setTimeout(()=>{if(st[k]!==s)return;s.rev=false;draw(k);settle()},1400)}
+      else{e.classList.remove("bad");void e.offsetWidth;e.classList.add("bad");e.querySelector(".t").innerHTML=tdots(s.t);$("msg").textContent=HINTS[Math.floor(Math.random()*HINTS.length)]+(d.n&&s.t===2?" Pista: "+d.n:"");inp.select()}
+    }
+  });
+  settle();hud();
+}
+function settle(){if(!fin&&Object.values(st).every(s=>s.ok&&!s.rev))finish()}
+function burst(){
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  const o=$("orb"),cols=[...els(d.f).map(e=>(EP[e]||[0,0,"#7a4fc0"])[2]),"#c99a12","#c0398f","#2f78c4"];
+  for(let i=0;i<36;i++){const p=document.createElement("div");p.className="pt";p.style.background=cols[i%cols.length];o.appendChild(p);
+    const a=Math.random()*6.28,r=90+Math.random()*190;
+    p.animate([{transform:"translate(-50%,-50%) scale(1)",opacity:1},{transform:`translate(${Math.cos(a)*r}px,${Math.sin(a)*r}px) scale(.2)`,opacity:0}],{duration:900+Math.random()*600,easing:"cubic-bezier(.1,.7,.3,1)"}).onfinish=()=>p.remove()}
+}
+function finish(){
+  fin=true;$("orb").classList.add("done");
+  const auto=Object.values(st).some(s=>s.auto),before=lvl(S.xp);
+  let extra="";
+  if(!auto){
+    S.streak++;S.best=Math.max(S.best,S.streak);
+    const gain=Math.round(20*(1+Math.min(S.streak-1,4)*.5));S.xp+=gain;
+    const nw=els(d.f).filter(e=>EP[e]&&!S.lit.includes(e));S.lit.push(...nw);
+    extra=`<br><b style="color:var(--o)">+${gain} XP</b>`+(S.streak>1?` · racha de ${S.streak}`:"")+(nw.length?` · ¡Nuevo en tu tabla: ${nw.join(", ")}!`:"");
+    burst();beep([[523,0,.14],[659,.1,.14],[784,.2,.14],[1047,.3,.3]]);
+  }else{S.streak=0;S.xp+=5;extra=`<br><span style="color:var(--au)">Racha a cero, pero +5 XP por intentarlo. Repite este compuesto más tarde.</span>`}
+  if(lvl(S.xp)>before)extra+=`<br><b style="color:var(--a)">¡Subes a ${LV[lvl(S.xp)][1]}!</b>`;
+  save();
+  $("msg").innerHTML=`<b>${fx(d.f)}</b>: ${d.p[0]} · ${d.s[0]}${d.a?" · "+d.a[0]:""} · ${d.el} ${sg(d.o)}`+(d.n?`<br><span style="color:var(--mu)">${d.n}</span>`:"")+extra;
+  hud();
+}
+function hud(){
+  const i=lvl(S.xp),a=LV[i][0],b=LV[i+1]?LV[i+1][0]:a+1,pc=LV[i+1]?(S.xp-a)/(b-a)*100:100;
+  $("hud").innerHTML=`<div class="r"><span><b>${LV[i][1]}</b> · ${S.xp} XP</span><span>Racha ${S.streak} (mejor ${S.best}) · Ayudas ${aids}</span></div><div id="bar"><i style="width:${pc}%"></i></div>`;
+  const t=$("pt");t.innerHTML="";
+  Object.entries(EP).forEach(([e,[g,p,c]])=>{const x=document.createElement("div");x.textContent=e;x.style.gridColumn=g;x.style.gridRow=p;x.style.setProperty("--c",c);if(S.lit.includes(e))x.className="on";t.appendChild(x)});
+  $("ptl").textContent=`Tu tabla periódica: ${S.lit.length} de ${Object.keys(EP).length} elementos`;
+}
+$("nx").onclick=()=>next();
+$("snd").onclick=()=>{mute=!mute;$("snd").textContent=mute?"Sonido: no":"Sonido: sí"};
+$("rst").onclick=()=>{if(confirm("¿Borrar tu progreso?")){S={xp:0,streak:0,best:0,lit:[]};save();hud()}};
+chips("cats",CATS,()=>cat,v=>cat=v);chips("modes",MODES,()=>mode,v=>mode=v);
+hud();next();
+</script></body></html>
