@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Factores de conversión: escalera y cadena</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1d2433;--mut:#5d667a;--ac:#2f6fed;--ok:#1f9d57;--bad:#d64545;--ln:#d9deea;--ball:#f08a24;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1c212c;--tx:#e8ebf3;--mut:#9aa3b8;--ac:#6e9bff;--ok:#4cc585;--bad:#ff7a7a;--ln:#323a4d;--ball:#ffa94d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1c212c;--tx:#e8ebf3;--mut:#9aa3b8;--ac:#6e9bff;--ok:#4cc585;--bad:#ff7a7a;--ln:#323a4d;--ball:#ffa94d;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:880px;margin:0 auto;padding:14px}
+h1{font-size:1.3rem;margin:4px 0 10px}
+h2{font-size:1rem;margin:0 0 6px;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.card .row+.row{margin-top:8px}
+button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:8px 12px;cursor:pointer}
+button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+button:disabled{opacity:.45;cursor:default}
+.row label{display:flex;align-items:center;gap:6px}
+select{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:7px 8px}
+.q{font-size:1.25rem}
+.read{font-size:1.8rem;font-weight:700;color:var(--ball);min-height:2.3rem}
+.lbl{font-size:.8rem;color:var(--mut);margin-top:6px}
+.stairs{display:flex;align-items:flex-end;gap:3px;overflow-x:auto}
+.st{flex:1;min-width:44px;display:flex;flex-direction:column;justify-content:flex-end}
+.slot{height:32px;display:flex;align-items:flex-end;justify-content:center}
+.ball{width:22px;height:22px;border-radius:50%;background:var(--ball);animation:hop .5s}
+@keyframes hop{0%{transform:translateY(-22px)}60%{transform:translateY(0)}80%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+.blk{background:color-mix(in srgb,var(--c) 16%,var(--card));border:1px solid var(--ln);border-radius:8px 8px 0 0;display:flex;flex-direction:column;align-items:center;padding-top:5px}
+.blk.dest{background:var(--ok);color:#fff}
+.blk small{opacity:.75;font-size:.72rem}
+.tbl{display:grid;grid-template-columns:repeat(11,1fr);text-align:center;margin-top:8px}
+.tbl div{padding:4px 0;border:1px solid var(--ln);margin:0 -1px -1px 0;min-height:1.6em}
+.tbl .h{font-size:.78rem;color:var(--mut)}
+.tbl .h.cur{background:var(--ac);color:#fff}
+.tbl .d{font-size:1.25rem;font-weight:600}
+.tbl .cm{border-right:3px solid var(--ball);position:relative}
+.tbl .cm.d::after{content:",";position:absolute;right:-7px;bottom:-6px;color:var(--ball);font-size:1.6rem}
+.tbl .x{opacity:.35}
+.chain{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:10px;min-height:96px;padding:6px;overflow-x:auto}
+.fr{display:inline-flex;flex-direction:column;align-items:center;font-size:1.15rem;line-height:1.5}
+.fr>span:first-child{border-bottom:2px solid var(--tx);padding:0 6px 3px}
+.fr>span:last-child{padding:3px 6px 0}
+.fr1{font-size:1.15rem}
+.par{font-size:2rem;font-weight:200;line-height:1}
+.bank sup{font-size:.9rem;align-self:flex-start}
+#capy{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));width:120px;pointer-events:none;opacity:0;transform:translateY(30px);transition:opacity .25s,transform .25s;z-index:20;text-align:center}
+#capy.show{opacity:1;transform:none}
+#capy svg{width:120px;height:auto;overflow:visible;display:block}
+.bub{display:inline-block;background:var(--card);color:var(--tx);border:2px solid var(--ln);border-radius:12px;padding:2px 10px;font-weight:700;font-size:.85rem;margin-bottom:2px}
+#capy.ok svg{animation:jmp .55s ease-in-out 3}
+@keyframes jmp{0%,100%{transform:translateY(0) scaleY(1)}20%{transform:translateY(0) scaleY(.9)}50%{transform:translateY(-34px) scaleY(1.05)}80%{transform:translateY(0) scaleY(.92)}}
+#capy.no #head{animation:nod .3s ease-in-out 4;transform-box:fill-box;transform-origin:20% 90%}
+@keyframes nod{0%,100%{transform:rotate(0)}25%{transform:rotate(-14deg) translateX(-3px)}75%{transform:rotate(14deg) translateX(3px)}}
+.x,.dot{color:var(--mut)}
+.x{font-size:1.2rem}
+.u{display:inline-block;padding:0 9px;border-radius:999px;font-weight:700;border:2px solid var(--c);background:color-mix(in srgb,var(--c) 20%,var(--card))}
+.u.ghost{opacity:.4;text-decoration:line-through;text-decoration-thickness:2px;border-style:dashed;background:transparent}
+.u.bad{border-color:var(--bad)!important;background:color-mix(in srgb,var(--bad) 28%,var(--card))!important}
+.burst{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:3px solid var(--c);pointer-events:none;animation:burst .6s ease-out .85s both}
+@keyframes burst{0%{transform:scale(.2);opacity:0}20%{opacity:1}100%{transform:scale(4);opacity:0}}
+.bank{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.bank button{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 4px}
+.msg{min-height:1.5em;margin:8px 0;color:var(--mut)}
+.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok);font-weight:600}
+small{color:var(--mut)}
+body.big{font-size:22px}body.big .read{font-size:3rem}body.big .q{font-size:2rem}body.big .fr,body.big .fr1{font-size:1.8rem}
+</style>
+</head>
+<body>
+<main>
+<h1>🪜⛓️ Factores de conversión</h1>
+<div class="card"><div class="row" id="types"></div><div class="row" id="sub"></div></div>
+<div class="card">
+  <div class="q" id="q"></div>
+  <div class="read" id="read"></div>
+  <div id="stairs"></div>
+  <div id="tbl"></div>
+</div>
+<div class="card">
+  <h2>Multiplica por fracciones que valen 1 y te dejan las unidades que buscas. Las unidades iguales de arriba y abajo se anulan.</h2>
+  <div class="chain" id="chain"></div>
+  <div class="msg" id="msg"></div>
+  <div class="row" id="ask"></div>
+</div>
+<div class="card">
+  <h2>Banco de factores (toca uno para añadirlo)</h2>
+  <div class="bank" id="bank"></div>
+</div>
+<div class="row">
+  <button id="undo">↩ Deshacer</button><button id="clear">🗑 Borrar</button><button id="next">🎲 Otro ejercicio</button>
+  <button id="why">¿Por qué funciona?</button><button id="sci">Notación científica</button><button id="proj">📽 Proyector</button>
+</div>
+</main>
+<div id="capy" aria-hidden="true"></div>
+<script>
+const CATS={
+ longitud:{n:"Longitud",u:["km","hm","dam","m","dm","cm","mm"],dec:1,l:[["km","m",1000],["hm","m",100],["dam","m",10],["m","dm",10],["m","cm",100],["m","mm",1000]]},
+ masa:{n:"Masa",u:["kg","hg","dag","g","dg","cg","mg"],dec:1,l:[["kg","g",1000],["hg","g",100],["dag","g",10],["g","dg",10],["g","cg",100],["g","mg",1000]]},
+ tiempo:{n:"Tiempo",u:["día","h","min","s"],dec:0,l:[["día","h",24],["h","min",60],["min","s",60]]}
+};
+const SETS={longitud:["km","m","dm","cm","mm"],masa:["kg","g","mg"],tiempo:["día","h","min","s"]};
+const BASE={km:1000,hm:100,dam:10,m:1,dm:.1,cm:.01,mm:.001,kg:1000,hg:100,dag:10,g:1,dg:.1,cg:.01,mg:.001,"día":86400,h:3600,min:60,s:1};
+const ALL=[].concat(...Object.values(CATS).map(c=>c.u)),HUE={};
+ALL.forEach((u,i)=>HUE[u]=(i*61)%360);
+const VALS=[2,3.5,12,45,0.5,7.2,250,125,1.5,8,0.25,72,36,90,5,20];
+const SUP={"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻"};
+let type="simple",mode="mezcla",eU="r",eD="r",ex,chain=[],phase,busy=false,sci=false,why=false,bankList=[];
+const $=id=>document.getElementById(id),rnd=n=>Math.floor(Math.random()*n),pick=a=>a[rnd(a.length)];
+function fmt(x,s){
+  x=Number(x.toPrecision(12));
+  if(s&&x!==0){const [m,e]=x.toExponential().split("e");return m.replace(".",",")+" · 10"+String(+e).split("").map(c=>SUP[c]).join("");}
+  return x.toLocaleString("es-ES",{maximumFractionDigits:10});
+}
+const sp=n=>String(n).split("").map(c=>SUP[c]).join(""),ue=(u,e)=>u+(e===1?"":sp(e));
+function ustr(tp,bt){const f=a=>a.map(x=>ue(x.u,x.w)).join("·");if(!bt.length)return f(tp);if(!tp.length)return bt.map(x=>ue(x.u,-x.w)).join("·");return f(tp)+"/"+(bt.length>1?"("+f(bt)+")":f(bt));}
+function tok(id,u,cls,w){return `<span ${id?`id="${id}"`:""} class="u ${cls||""}" style="--c:hsl(${HUE[u]} 65% 48%)">${ue(u,w||1)}</span>`;}
+const dots=a=>a.join('<span class="dot">·</span>');
+function frac(t,b){return `<span class="fr"><span>${t}</span><span>${b}</span></span>`;}
+const pf=(h,p)=>p>1?`<span class="par">(</span>${h}<span class="par">)</span><sup>${p}</sup>`:h;
+const bf=(a,N,b,D,w)=>{const s=w>1?sp(w):"";return frac(a+s+" "+tok("",N,"",w),b+s+" "+tok("",D,"",w));};
+function msg(t,c){$("msg").textContent=t;$("msg").className="msg "+(c||"");}
+const pl=(c,a,b)=>a===b?0:c==="tiempo"?Math.abs(SETS.tiempo.indexOf(a)-SETS.tiempo.indexOf(b)):(a===(c==="longitud"?"m":"g")||b===(c==="longitud"?"m":"g"))?1:2;
+function gen(){
+  for(;;){
+    const val=pick(VALS);
+    if(type==="simple"){
+      const c=pick(mode==="mezcla"?Object.keys(CATS):[mode]),U=CATS[c].u,f=pick(U),t=pick(U);
+      if(f===t)continue;
+      return {val,cats:[c],U:{[c]:U},from:{[c]:f},to:{[c]:t},eA:1,eB:1};
+    }
+    let pair,eA=1,eB=1;
+    if(type==="comp")pair=pick([["longitud","tiempo"],["masa","tiempo"]]);
+    else{
+      const E=[-2,-1,1,2,3];
+      pair=pick([["longitud","tiempo"],["masa","tiempo"],["masa","longitud"]]);
+      eA=eU==="r"?pick(E):+eU;eB=eD==="r"?pick(E):+eD;
+    }
+    const [cA,cB]=pair,from={},to={};
+    from[cA]=pick(SETS[cA]);to[cA]=pick(SETS[cA]);from[cB]=pick(SETS[cB]);to[cB]=pick(SETS[cB]);
+    if(from[cA]===to[cA]||from[cB]===to[cB])continue;
+    const st=c=>Math.abs(CATS[c].u.indexOf(from[c])-CATS[c].u.indexOf(to[c]));if(st(cA)+st(cB)>8)continue;
+    return {val,cats:[cA,cB],U:{[cA]:CATS[cA].u,[cB]:CATS[cB].u},from,to,eA,eB};
+  }
+}
+function toks(sel){
+  const tops=[],bots=[],[cA,cB]=ex.cats;
+  const put=(c,e,top)=>{const side=(e>0)===top?tops:bots;side.push({c,u:sel[c],w:Math.abs(e)});};
+  put(cA,ex.eA,true);if(cB)put(cB,ex.eB,false);
+  return {tops,bots};
+}
+function qt(sel){const [cA,cB]=ex.cats;return cB?ue(sel[cA],ex.eA)+"/"+ue(sel[cB],ex.eB):sel[cA];}
+function A(){
+  const tops=[],bots=[];
+  ex.tops.forEach((x,k)=>tops.push({t:0,k,u:x.u,c:x.c,w:x.w}));ex.bots.forEach((x,k)=>bots.push({t:0,k,u:x.u,c:x.c,w:x.w}));
+  chain.forEach((f,i)=>{tops.push({t:i+1,k:0,u:f.N,c:f.c,w:f.w});bots.push({t:i+1,k:0,u:f.D,c:f.c,w:f.w});});
+  tops.forEach(s=>{const b=bots.find(x=>!x.p&&x.u===s.u&&x.w===s.w&&x.t!==s.t);if(b){b.p=s;s.p=b;}});
+  return {tops,bots};
+}
+const stb=t=>t===0||(chain[t-1].s&&!chain[t-1].bad);
+const can=s=>s.p&&stb(Math.max(s.t,s.p.t));
+const live=s=>stb(s.t)&&!can(s);
+function valNow(){let v=ex.val;chain.forEach(f=>{if(f.s&&!f.bad)v=v*Math.pow(f.a/f.b,f.w);});return v;}
+function ballUnit(c){const {tops,bots}=A(),l=[...tops,...bots].filter(s=>s.c===c&&live(s));return l.length?l[l.length-1].u:ex.from[c];}
+function isDone(){
+  const {tops,bots}=A(),so=a=>a.map(x=>x.u+x.w).sort().join(",");
+  return chain.length&&so(tops.filter(s=>!s.p))===so(ex.tt)&&so(bots.filter(s=>!s.p))===so(ex.tb);
+}
+function newEx(){
+  ex=gen();const a=toks(ex.from),b=toks(ex.to);
+  ex.tops=a.tops;ex.bots=a.bots;ex.tt=b.tops;ex.tb=b.bots;
+  const [cA,cB]=ex.cats;
+  ex.P={[cA]:Math.abs(ex.eA)};if(cB)ex.P[cB]=Math.abs(ex.eB);
+  ex.ratio=Math.pow(BASE[ex.from[cA]]/BASE[ex.to[cA]],ex.eA)*(cB?Math.pow(BASE[ex.from[cB]]/BASE[ex.to[cB]],-ex.eB):1);
+  ex.bank=mkBank();clearTimeout(walking);walking=null;shown={};ex.cats.forEach(c=>shown[c]=ex.U[c].indexOf(ex.from[c]));chain=[];busy=false;phase="predict";render();
+  msg(`Primero piensa: ¿el número resultante será mayor o menor?`);
+  $("ask").innerHTML='<button data-a="1">Mayor</button><button data-a="0">Menor</button>';
+}
+$("ask").onclick=e=>{
+  const b=e.target.closest("button");if(!b||phase!=="predict")return;
+  if((b.dataset.a==="1")!==(ex.ratio>1)){msg("No. Una unidad más pequeña que multiplica da un número mayor; si está dividiendo, menor. Piénsalo de nuevo.","bad");capy("no","Mmm, no");return;}
+  phase="build";$("ask").innerHTML="";capy("ok","¡Eso es!");
+  msg("¡Eso es! Construye la cadena: elige fracciones cuyas unidades se anulen con las que ya tienes.","ok");render();
+};
+let shown={},walking=null;
+function walk(){
+  if(walking)return;
+  const step=()=>{
+    let moved=false;
+    ex.cats.forEach(c=>{const t=ex.U[c].indexOf(ballUnit(c));if(shown[c]!==t){shown[c]+=t>shown[c]?1:-1;moved=true;}});
+    if(moved){drawS();walking=setTimeout(step,380);}else walking=null;
+  };
+  step();
+}
+const CAPY=m=>`<svg viewBox="0 0 130 100"><ellipse cx="62" cy="94" rx="40" ry="4" fill="#000" opacity=".12"/><rect x="28" y="78" width="11" height="15" rx="5" fill="#9c6a3c"/><rect x="46" y="80" width="11" height="13" rx="5" fill="#9c6a3c"/><rect x="72" y="80" width="11" height="13" rx="5" fill="#9c6a3c"/><rect x="90" y="78" width="11" height="15" rx="5" fill="#9c6a3c"/><ellipse cx="62" cy="66" rx="42" ry="24" fill="#b9824f" stroke="#7a4e27" stroke-width="2"/><g id="head"><ellipse cx="96" cy="46" rx="22" ry="19" fill="#c28c57" stroke="#7a4e27" stroke-width="2"/><circle cx="84" cy="30" r="6" fill="#a06f40" stroke="#7a4e27" stroke-width="2"/><ellipse cx="112" cy="53" rx="13" ry="11" fill="#d3a06b" stroke="#7a4e27" stroke-width="2"/><ellipse cx="119" cy="48" rx="3.5" ry="2.8" fill="#3d2410"/>${m==="ok"?'<path d="M90 45q5-7 10 0" fill="none" stroke="#2b1a0d" stroke-width="3" stroke-linecap="round"/><circle cx="104" cy="56" r="4" fill="#ff8fa3" opacity=".6"/><path d="M106 60q6 7 12 0" fill="none" stroke="#3d2410" stroke-width="2.5" stroke-linecap="round"/>':'<circle cx="96" cy="44" r="3.2" fill="#2b1a0d"/><path d="M89 36l12 4" stroke="#3d2410" stroke-width="2.5" stroke-linecap="round"/><path d="M106 64q6-6 12 0" fill="none" stroke="#3d2410" stroke-width="2.5" stroke-linecap="round"/>'}</g></svg>`;
+let capyT;
+function capy(mood,text){
+  const el=$("capy");clearTimeout(capyT);
+  el.className="";void el.offsetWidth;
+  el.innerHTML=`<div class="bub">${text}</div>`+CAPY(mood);
+  el.className="show "+mood;
+  capyT=setTimeout(()=>{el.className="";},mood==="ok"?2100:1700);
+}
+function mkBank(){
+  const good=[],cand=[],need={},sh=a=>a.sort(()=>Math.random()-.5);
+  ex.cats.forEach(c=>{
+    const U=ex.U[c],i=U.indexOf(ex.from[c]),t=U.indexOf(ex.to[c]),s=t>i?1:-1,top=ex.tops.some(x=>x.c===c);
+    for(let k=i;k!==t;k+=s)need[c+":"+(top?U[k+s]+">"+U[k]:U[k]+">"+U[k+s])]=1;
+    for(let k=0;k<U.length-1;k++){
+      const A=U[k],B=U[k+1],m=+(BASE[A]/BASE[B]).toPrecision(10);
+      [{a:m,N:B,b:1,D:A},{a:1,N:A,b:m,D:B}].forEach(f=>{f.c=c;f.w=ex.P[c];(need[c+":"+f.N+">"+f.D]?good:cand).push(f);});
+    }
+  });
+  const inv=cand.filter(f=>need[f.c+":"+f.D+">"+f.N]),rest=cand.filter(f=>!inv.includes(f));
+  const wrong=sh(inv).slice(0,2);
+  wrong.push(...sh(rest).slice(0,4-wrong.length));
+  const key=f=>{const U=ex.U[f.c];return ex.cats.indexOf(f.c)*1000+Math.min(U.indexOf(f.N),U.indexOf(f.D))*2+(U.indexOf(f.N)<U.indexOf(f.D)?0:1);};
+  return [...good,...wrong].sort((x,y)=>key(x)-key(y));
+}
+function links(c){return [];
+  const U=ex.U[c],seen={},out=[];
+  const add=(A,B,m)=>{const k=A+"|"+B;if(!seen[k]){seen[k]=1;out.push([A,B,m]);}};
+  CATS[c].l.forEach(([A,B,m])=>{if(U.includes(A)&&U.includes(B))add(A,B,m);});
+  for(let i=0;i<U.length-1;i++)add(U[i],U[i+1],+(BASE[U[i]]/BASE[U[i+1]]).toPrecision(10));
+  return out.sort((x,y)=>U.indexOf(x[0])-U.indexOf(y[0])||U.indexOf(x[1])-U.indexOf(y[1]));
+}
+function stairs(c){
+  const U=ex.U[c],n=U.length,w=ex.P[c],bi=shown[c],ti=U.indexOf(ex.to[c]);
+  return `<div class="lbl">${CATS[c].n}</div><div class="stairs">`+U.map((s,k)=>`<div class="st"><div class="slot">${k===bi?'<div class="ball"></div>':""}</div><div class="blk ${phase==="done"&&k===ti&&bi===ti?"dest":""}" style="--c:hsl(${HUE[s]} 65% 48%);height:${40+(n-1-k)*20}px"><b>${ue(s,w)}</b><small>${k<n-1?"×"+fmt(BASE[s]/BASE[U[k+1]])+(w>1?sp(w):""):""}${k===ti?" 🏁":""}</small></div></div>`).join("")+"</div>";
+}
+function render(){
+  const {tops,bots}=A(),lt=tops.filter(live),lb=bots.filter(live);
+  $("q").innerHTML=`Pasa <b>${fmt(ex.val)} ${qt(ex.from)}</b> a <b>${qt(ex.to)}</b>`;
+  $("read").textContent=fmt(valNow(),sci)+" "+ustr(lt,lb);
+  window.drawS=()=>{$("stairs").innerHTML=ex.cats.map(stairs).join("");
+  const c0=ex.cats[0];
+  if(ex.cats.length===1&&CATS[c0].dec){
+    const U=ex.U[c0],n=U.length,bi=shown[c0],fi=U.indexOf(ex.from[c0]),[I,F=""]=String(ex.val).split("."),cells={};
+    [...I].forEach((d,k)=>cells[fi-(I.length-1)+k]=d);
+    [...F].forEach((d,k)=>cells[fi+1+k]=d);
+    const ks=Object.keys(cells).map(Number).concat(bi),lo=Math.min(...ks),hi=Math.max(...ks);
+    let h="",b="";
+    for(let c=-2;c<=8;c++){
+      const hu=c>=0&&c<n,dg=c>=lo&&c<=hi?(cells[c]??"0"):"";
+      h+=`<div class="h ${c===bi?"cur":""} ${hu?"":"x"}">${hu?U[c]:""}</div>`;
+      b+=`<div class="d ${c===bi?"cm":""} ${hu?"":"x"}">${dg}</div>`;
+    }
+    $("tbl").innerHTML=`<div class="tbl">${h}${b}</div>`;
+  }else $("tbl").innerHTML="";};drawS();walk();
+  const tk=(s,p)=>tok(p+s.t+"_"+s.k,s.u,can(s)?"ghost":"",s.w);
+  const T0=tops.filter(s=>s.t===0).map(s=>tk(s,"T")),B0=bots.filter(s=>s.t===0).map(s=>tk(s,"B"));
+  let h=B0.length?frac(fmt(ex.val)+" "+dots(T0),dots(B0)):`<span class="fr1">${fmt(ex.val)} ${dots(T0)}</span>`;
+  chain.forEach((f,i)=>{
+    h+=`<span class="x">×</span>`+frac(`${fmt(f.a)}${f.w>1?sp(f.w):""} ${tk(tops.find(s=>s.t===i+1),"T")}`,`${fmt(f.b)}${f.w>1?sp(f.w):""} ${tk(bots.find(s=>s.t===i+1),"B")}`);
+  });
+  const rt=dots(lt.map(s=>tok("",s.u,"",s.w))),rb=dots(lb.map(s=>tok("",s.u,"",s.w))),sf=chain.filter(f=>f.s&&!f.bad);
+  const nums=[fmt(ex.val),...sf.filter(f=>f.a!==1).map(f=>fmt(f.a)+(f.w>1?sp(f.w):""))].join(" · "),dens=sf.filter(f=>f.b!==1).map(f=>fmt(f.b)+(f.w>1?sp(f.w):"")).join(" · ");
+  if(sf.length){const top=(nums+" "+rt).trim(),bot=(dens+" "+rb).trim();h+=`<span class="x">=</span>`+(bot?frac(top,bot):`<span class="fr1">${top}</span>`);}
+  if(phase==="done")h+=`<span class="x">=</span><b style="font-size:1.3rem;color:var(--ok)">${fmt(valNow(),sci)} ${qt(ex.to)}</b>`;
+  $("chain").innerHTML=h;
+  bankList=ex.bank;let b2="";
+  const w=why?"<small>=1</small>":"";
+  ex.cats.forEach(c=>{
+    links(c).forEach(([A_,B_,m])=>{
+      bankList.push({a:m,N:B_,b:1,D:A_,c,w:ex.P[c]});b2+=`<button data-i="${bankList.length-1}">${bf(m,B_,1,A_,ex.P[c])}${w}</button>`;
+      bankList.push({a:1,N:A_,b:m,D:B_,c,w:ex.P[c]});b2+=`<button data-i="${bankList.length-1}">${bf(1,A_,m,B_,ex.P[c])}${w}</button>`;
+    });
+  });
+  $("bank").innerHTML=bankList.map((f,i)=>`<button data-i="${i}">${bf(f.a,f.N,f.b,f.D,f.w)}${w}</button>`).join("");
+  [...$("bank").children].forEach(x=>x.disabled=phase!=="build"||busy);
+}
+function play(pairs){
+  const ch=$("chain"),cr=ch.getBoundingClientRect(),all=[];
+  pairs.forEach(([a,b])=>{
+    const ea=$("T"+a.t+"_"+a.k),eb=$("B"+b.t+"_"+b.k),ra=ea.getBoundingClientRect(),rb=eb.getBoundingClientRect();
+    const mx=(ra.left+ra.width/2+rb.left+rb.width/2)/2,my=(ra.top+ra.height/2+rb.top+rb.height/2)/2,c=ea.style.getPropertyValue("--c");
+    const mk=(el,r)=>{
+      const t=`translate(${mx-r.left-r.width/2}px,${my-r.top-r.height/2}px)`;
+      return el.animate([
+        {transform:"none",opacity:1,boxShadow:"0 0 0 0 transparent"},
+        {transform:"none",opacity:1,boxShadow:`0 0 14px 4px ${c}`,offset:.3},
+        {transform:t+" scale(1.2)",opacity:1,offset:.7},
+        {transform:t+" scale(0)",opacity:0}
+      ],{duration:1300,easing:"ease-in-out",fill:"forwards"}).finished;
+    };
+    const bur=document.createElement("span");
+    bur.className="burst";bur.style.cssText=`--c:${c};left:${mx-cr.left+ch.scrollLeft}px;top:${my-cr.top+ch.scrollTop}px`;
+    ch.appendChild(bur);all.push(mk(ea,ra),mk(eb,rb));
+  });
+  return Promise.all(all);
+}
+$("bank").onclick=e=>{
+  const btn=e.target.closest("button");if(!btn||busy||phase!=="build"||chain.length>=14)return;
+  const f={...bankList[+btn.dataset.i]};
+  const pre=A(),pt=pre.tops.filter(s=>s.c===f.c&&live(s)),pb=pre.bots.filter(s=>s.c===f.c&&live(s));
+  busy=true;f.s=0;chain.push(f);
+  const n=chain.length,{tops}=A(),pairs=tops.filter(s=>s.p&&(s.t===n||s.p.t===n)).map(s=>[s,s.p]);
+  if(pairs.length){
+    render();
+    play(pairs).then(()=>{
+      f.s=1;busy=false;
+      const names=pairs.map(p=>ue(p[0].u,p[0].w)).join(", ");
+      if(isDone()){phase="done";render();capy("ok","¡Lo has conseguido!");msg(`✅ ${fmt(ex.val)} ${qt(ex.from)} = ${fmt(valNow(),sci)} ${qt(ex.to)}`,"ok");}
+      else{render();capy("ok","¡Bien!");msg(`¡Se anula ${names}! (cada unidad entre sí vale 1). Sigue hasta llegar a ${qt(ex.to)}.`,"ok");}
+    });
+  }else{
+    f.s=1;f.bad=1;render();
+    const inv=pt.some(s=>s.u===f.N)||pb.some(s=>s.u===f.D);
+    const ids=["T"+n+"_0","B"+n+"_0"];
+    (inv?[...pt.filter(s=>s.u===f.N),...pb.filter(s=>s.u===f.D)]:[...pt,...pb]).forEach(s=>ids.push((pre.tops.includes(s)?"T":"B")+s.t+"_"+s.k));
+    ids.forEach(id=>{const el=$(id);if(!el)return;el.classList.add("bad");el.animate([{transform:"translateX(0)"},{transform:"translateX(-7px)"},{transform:"translateX(7px)"},{transform:"translateX(-4px)"},{transform:"none"}],{duration:600});});
+    msg(inv?"Al revés: esa unidad queda en el mismo lado y no se anula, se acumula. Prueba con la otra fracción.":"Esa fracción no tiene ninguna unidad que pueda anular las que tienes.","bad");
+    capy("no","Mmm, no");setTimeout(()=>{chain.pop();busy=false;render();},1500);
+  }
+};
+$("undo").onclick=()=>{if(busy||!chain.length)return;chain.pop();if(phase==="done")phase="build";render();msg("Paso deshecho.");};
+$("clear").onclick=()=>{if(busy)return;chain=[];if(phase==="done")phase="build";render();msg("Cadena borrada.");};
+$("next").onclick=()=>{if(!busy)newEx();};
+$("why").onclick=e=>{why=!why;e.target.classList.toggle("on",why);render();};
+$("sci").onclick=e=>{sci=!sci;e.target.classList.toggle("on",sci);render();};
+$("proj").onclick=e=>{e.target.classList.toggle("on",document.body.classList.toggle("big"));};
+function tabs(){
+  const B=(attr,k,n,on)=>`<button data-${attr}="${k}" class="${on?"on":""}">${n}</button>`;
+  $("types").innerHTML=[["simple","Sencilla"],["comp","Compuesta"],["exp","Con exponente"]].map(([k,n])=>B("t",k,n,k===type)).join("");
+  let s="";
+  if(type==="simple")s=[["mezcla","🎲 Mezcla"],...Object.entries(CATS).map(([k,v])=>[k,v.n])].map(([k,n])=>B("m",k,n,k===mode)).join("");
+  if(type==="exp"){const O=v=>[["r","Al azar"],["-2","−2"],["-1","−1"],["1","1"],["2","2"],["3","3"]].map(([k,n])=>`<option value="${k}" ${k===v?"selected":""}>${n}</option>`).join("");s=`<label>Exponente arriba <select id="eU">${O(eU)}</select></label><label>Exponente abajo <select id="eD">${O(eD)}</select></label>`;}
+  $("sub").innerHTML=s;$("sub").style.display=s?"flex":"none";
+}
+$("types").onclick=e=>{const b=e.target.closest("button");if(!b||busy)return;type=b.dataset.t;tabs();newEx();};
+$("sub").onclick=e=>{const b=e.target.closest("button");if(!b||busy)return;if(b.dataset.m)mode=b.dataset.m;tabs();newEx();};
+$("sub").onchange=e=>{if(busy){tabs();return;}if(e.target.id==="eU")eU=e.target.value;if(e.target.id==="eD")eD=e.target.value;newEx();};
+tabs();newEx();
+</script>
+</body>
+</html>

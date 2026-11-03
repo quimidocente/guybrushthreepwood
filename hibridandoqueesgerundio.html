@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Orbitales híbridos en 3D</title>
+<style>
+:root{--bg:#eef2f7;--fg:#14213d;--card:#ffffff;--line:#cfd8e6;--acc:#1d4ed8;--mut:#51607a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0b1220;--fg:#e6ecf8;--card:#141d30;--line:#26334d;--acc:#7aa2ff;--mut:#9aa9c6}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0b1220;--fg:#e6ecf8;--card:#141d30;--line:#26334d;--acc:#7aa2ff;--mut:#9aa9c6}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;line-height:1.45}
+#app{display:flex;flex-direction:column;height:100%;max-width:1100px;margin:0 auto;padding:12px 14px;gap:10px;box-sizing:border-box}
+h1{font-size:1.25rem;margin:0}
+.sub{color:var(--mut);font-size:.9rem;margin:2px 0 0}
+#wrap{display:flex;gap:10px;flex:1;min-height:260px}
+#stage{position:relative;flex:1;min-height:260px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:background .25s}
+#stage.dark{background:#000}
+#stage.dark #hint{color:#9aa9c6}
+#stage:not(.dark) #hint{color:#51607a}
+#side{width:190px;flex:none;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:12px;align-content:start}
+#side h2{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:0}
+#side .sw{display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer}
+#side hr{border:0;border-top:1px solid var(--line);margin:0}
+#side .col{display:flex;flex-direction:column;gap:6px}
+#side input[type=range]{min-width:0;width:100%}
+select{font:inherit;font-size:.9rem;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+.tr{display:flex;gap:8px;align-items:center;flex:1;min-width:230px}
+.tr input[type=range]{min-width:80px}
+@media (max-width:640px){#wrap{flex-direction:column}#side{width:auto;flex-direction:row;flex-wrap:wrap;gap:10px 18px}#side hr{display:none}#side .col{flex:1;min-width:150px}}
+@media (max-width:640px){html,body{height:auto;min-height:100%}#app{height:auto;min-height:100vh;padding:10px}#wrap{flex:none}#stage{flex:none;height:56vh;height:56dvh;min-height:300px}#hint{font-size:.72rem}.tr{min-width:100%}}
+@media (pointer:coarse){button.m{padding:10px 20px}input[type=range]{height:30px}#side .sw input{width:22px;height:22px}}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#hint{position:absolute;left:12px;bottom:8px;font-size:.78rem;color:var(--mut)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button.m{font:inherit;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+button.m[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+button.m:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+label{font-size:.9rem;display:flex;gap:6px;align-items:center}
+input[type=range]{flex:1;min-width:140px;accent-color:var(--acc)}
+#info{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-size:.93rem}
+#info b{color:var(--acc)}
+.leg{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--mut)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div>
+    <h1>Orbitales híbridos en 3D</h1>
+    <p class="sub">Un orbital s y varios p se mezclan para dar orbitales nuevos y equivalentes.</p>
+  </div>
+  <div class="row" role="group" aria-label="Tipo de hibridación">
+    <button class="m" data-m="sp" aria-pressed="true">sp</button>
+    <button class="m" data-m="sp2" aria-pressed="false">sp²</button>
+    <button class="m" data-m="sp3" aria-pressed="false">sp³</button>
+  </div>
+  <div id="wrap">
+    <div id="stage" class="dark"><div id="hint">Arrastra para girar · rueda para acercar</div></div>
+    <aside id="side" aria-label="Opciones de visualización">
+      <h2>Visualización</h2>
+      <label class="sw">Colorear por fase <input id="phase" type="checkbox"></label>
+      <label class="sw">Fondo negro <input id="bg" type="checkbox" checked></label>
+      <hr>
+      <div class="col"><label for="elo">Alargamiento</label>
+        <input id="elo" type="range" min="10" max="50" value="50" aria-label="Alargamiento de los lóbulos"></div>
+    </aside>
+  </div>
+  <div class="row">
+    <label>Mezcla</label>
+    <input id="mix" type="range" min="0" max="100" value="0" aria-label="Grado de mezcla de orbitales">
+    <label><input id="play" type="checkbox" checked> Animar</label>
+    <label><input id="spin" type="checkbox" checked> Girar</label>
+    <div class="tr">
+      <label for="grp">Traslucidez</label>
+      <select id="grp" aria-label="Orbitales a regular">
+        <option value="all">Todos</option><option value="s">Orbital s</option>
+        <option value="p">p que se hibridan</option><option value="pr">p sin hibridar</option>
+        <option value="h">Híbridos</option></select>
+      <input id="opa" type="range" min="5" max="100" value="100" aria-label="Opacidad (menos = más translúcido)">
+    </div>
+  </div>
+  <div class="row">
+    <label for="zoom">Zoom</label>
+    <span aria-hidden="true">−</span>
+    <input id="zoom" type="range" min="40" max="300" value="100" aria-label="Alejar o acercar">
+    <span aria-hidden="true">+</span>
+  </div>
+  <div class="leg">
+    <span><i class="dot" style="background:#3b82f6"></i>Fase positiva</span>
+    <span class="ph" style="display:none"><i class="dot" style="background:#f97316"></i>Fase negativa</span>
+    <span><i class="dot" style="background:#10b981"></i>p sin hibridar (fase +)</span>
+    <span class="ph" style="display:none"><i class="dot" style="background:#a855f7"></i>p sin hibridar (fase −)</span>
+  </div>
+  <div id="info"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+var box=document.getElementById('stage');
+var scene=new THREE.Scene();
+var cam=new THREE.PerspectiveCamera(40,1,0.1,100);cam.position.set(0,0,6.2);
+var ren=new THREE.WebGLRenderer({antialias:true,alpha:true});
+ren.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+box.appendChild(ren.domElement);
+scene.add(new THREE.AmbientLight(0xffffff,0.75));
+var dl=new THREE.DirectionalLight(0xffffff,0.8);dl.position.set(3,4,5);scene.add(dl);
+var root=new THREE.Group();scene.add(root);
+root.rotation.x=0.35;root.rotation.y=0.5;
+
+var C={pos:0x3b82f6,neg:0xf97316,rp:0x10b981,rn:0xa855f7};
+var SC=0.8,cache={};
+var EL=5,PH=false,OP={s:1,p:1,pr:1,h:1};function orbGeo(key,fn,cp,cn,L){
+  if(cache[key])return cache[key];
+  var g=new THREE.SphereGeometry(1,56,40),p=g.attributes.position,n=p.count;
+  var col=new Float32Array(n*3),v=new THREE.Vector3(),a=new THREE.Color(cp),b=new THREE.Color(cn);
+  for(var i=0;i<n;i++){
+    v.fromBufferAttribute(p,i).normalize();
+    var f=fn(v.z),r=L*((f<0&&key.charAt(0)==='h')?0.5:1)*Math.pow(Math.abs(f)/Math.abs(fn(1)),(f<0&&key.charAt(0)==='h')?1+(EL-1)*0.15:EL),c=(f>=0||!PH)?a:b;
+    p.setXYZ(i,v.x*r,v.y*r,v.z*r);
+    col[3*i]=c.r;col[3*i+1]=c.g;col[3*i+2]=c.b;
+  }
+  g.setAttribute('color',new THREE.BufferAttribute(col,3));
+  g.computeVertexNormals();
+  cache[key]=g;return g;
+}
+function hybFn(n){var a=Math.sqrt(1/(1+n)),b=Math.sqrt(3*n/(1+n));return function(c){return a+b*c;};}
+function pFn(c){return Math.sqrt(3)*c;}
+function sFn(){return Math.SQRT2;}
+function mat(sd){return new THREE.MeshPhongMaterial({vertexColors:true,transparent:true,opacity:1,shininess:70,side:sd});}
+function lobe(geo,dir,g){
+  var m=new THREE.Mesh(geo,mat(THREE.FrontSide));m.userData.g=g;m.renderOrder=1;
+  var bk=new THREE.Mesh(geo,mat(THREE.BackSide));bk.renderOrder=0;m.add(bk);m.userData.bk=bk;
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),dir.clone().normalize());
+  m.scale.setScalar(SC);return m;
+}
+var X=new THREE.Vector3(1,0,0),Y=new THREE.Vector3(0,1,0),Z=new THREE.Vector3(0,0,1);
+var AX={x:X,y:Y,z:Z};
+var MODES={
+  sp:{n:1,hyb:[X,X.clone().negate()],used:['x'],rest:['y','z'],
+    t:'Hibridación sp',ang:'180° (lineal)',ej:'etino (acetileno), C₂H₂, y BeCl₂',
+    en:'2 enlaces σ y 2 enlaces π',mez:'1 orbital s + 1 orbital p → 2 orbitales sp. Quedan 2 orbitales p sin hibridar, perpendiculares entre sí y al eje de los sp.'},
+  sp2:{n:2,hyb:[0,1,2].map(function(k){var a=Math.PI/2+k*2*Math.PI/3;return new THREE.Vector3(Math.cos(a),Math.sin(a),0);}),used:['x','y'],rest:['z'],
+    t:'Hibridación sp²',ang:'120° (trigonal plana)',ej:'eteno (etileno), C₂H₄, y BF₃',
+    en:'3 enlaces σ y 1 enlace π',mez:'1 orbital s + 2 orbitales p → 3 orbitales sp². Queda 1 orbital p sin hibridar, perpendicular al plano; forma el enlace π.'},
+  sp3:{n:3,hyb:[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(function(a){return new THREE.Vector3(a[0],a[1],a[2]);}),used:['x','y','z'],rest:[],
+    t:'Hibridación sp³',ang:'109,5° (tetraédrica)',ej:'metano, CH₄, y etano, C₂H₆',
+    en:'4 enlaces σ y ningún π',mez:'1 orbital s + 3 orbitales p → 4 orbitales sp³ equivalentes, dirigidos a los vértices de un tetraedro.'}
+};
+var cur=null,pure=[],hyb=[],rest=[];
+var curName='sp';function build(name){curName=name;
+  while(root.children.length){root.remove(root.children[0]);}
+  pure=[];hyb=[];rest=[];cur=MODES[name];
+  var nuc=new THREE.Mesh(new THREE.SphereGeometry(0.07,16,12),new THREE.MeshBasicMaterial({color:0x94a3b8}));
+  root.add(nuc);
+  var s=lobe(orbGeo('s',sFn,C.pos,C.neg,1),Z,'s');s.scale.setScalar(SC*0.6);root.add(s);pure.push({m:s,k:0.6,g:'s'});
+  cur.used.forEach(function(ax){
+    var p=lobe(orbGeo('p',pFn,C.pos,C.neg,1.5),AX[ax],'p');root.add(p);pure.push({m:p,k:1,g:'p'});
+  });
+  cur.rest.forEach(function(ax){
+    var p=lobe(orbGeo('pr',pFn,C.rp,C.rn,1.5),AX[ax],'pr');root.add(p);rest.push(p);
+  });
+  cur.hyb.forEach(function(d){
+    var h=lobe(orbGeo('h'+cur.n,hybFn(cur.n),C.pos,C.neg,2),d,'h');root.add(h);hyb.push(h);
+  });
+  var i=document.getElementById('info');
+  i.innerHTML='<b>'+cur.t+'</b><br>'+cur.mez+'<br>Ángulo entre orbitales: <b>'+cur.ang+'</b>. Ejemplos: '+cur.ej+'. Enlaces del carbono: '+cur.en+'.';
+  grp.querySelector('[value=pr]').disabled=!rest.length;
+  if(!rest.length&&grp.value==='pr'){grp.value='all';}
+  var bs=document.querySelectorAll('button.m');
+  for(var j=0;j<bs.length;j++)bs[j].setAttribute('aria-pressed',bs[j].dataset.m===name?'true':'false');
+}
+function setO(m,o){var d=o>0.99,b=m.userData.bk;m.material.opacity=o;m.material.depthWrite=d;b.material.opacity=o;b.material.depthWrite=d;m.renderOrder=d?1:3;b.renderOrder=d?0:2;}
+function apply(v){
+  var s=v*v*(3-2*v);
+  pure.forEach(function(o){
+    o.m.visible=s<0.98;setO(o.m,OP[o.g]*(1-s));o.m.scale.setScalar(SC*o.k*(1-0.35*s));
+  });
+  rest.forEach(function(r){setO(r,OP.pr);});
+  hyb.forEach(function(h){
+    h.visible=s>0.02;setO(h,OP.h*Math.min(1,0.15+s));h.scale.setScalar(SC*(0.15+0.85*s));
+  });
+}
+var mix=document.getElementById('mix'),play=document.getElementById('play'),spin=document.getElementById('spin');
+var elo=document.getElementById('elo'),grp=document.getElementById('grp'),opa=document.getElementById('opa');
+var phase=document.getElementById('phase'),bgc=document.getElementById('bg');
+function rebuild(){for(var k in cache)cache[k].dispose();cache={};build(curName);}
+phase.addEventListener('change',function(){PH=phase.checked;
+  document.querySelectorAll('.ph').forEach(function(e){e.style.display=PH?'':'none';});rebuild();});
+bgc.addEventListener('change',function(){box.classList.toggle('dark',bgc.checked);});
+grp.addEventListener('change',function(){if(grp.value!=='all')opa.value=Math.round(OP[grp.value]*100);});
+opa.addEventListener('input',function(){var v=opa.value/100;
+  if(grp.value==='all'){for(var k in OP)OP[k]=v;}else OP[grp.value]=v;});
+elo.addEventListener('input',function(){EL=elo.value/10;rebuild();});
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+document.querySelectorAll('button.m').forEach(function(b){b.addEventListener('click',function(){build(b.dataset.m);});});
+// girar con el ratón o el dedo
+var drag=false,lx=0,ly=0,vx=0,vy=0,lt=0,zoom=1,pts={},pinch0=0,zoomEl=document.getElementById('zoom');
+var touchUI=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
+if(touchUI)document.getElementById('hint').textContent='Arrastra para girar · pellizca para acercar';
+function camUpdate(){
+  var a=cam.aspect||1,fit=Math.max(1,0.8/a);
+  cam.position.z=6.2*fit/zoom;
+}
+function setZoom(z){zoom=Math.min(3,Math.max(0.4,z));zoomEl.value=Math.round(zoom*100);camUpdate();}
+zoomEl.addEventListener('input',function(){zoom=zoomEl.value/100;camUpdate();});
+function dist(){var k=Object.keys(pts);if(k.length<2)return 0;var a=pts[k[0]],b=pts[k[1]];return Math.hypot(a.x-b.x,a.y-b.y);}
+var cv=ren.domElement;
+cv.addEventListener('pointerdown',function(e){
+  pts[e.pointerId]={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId);vx=0;vy=0;lt=performance.now();
+  if(Object.keys(pts).length===1){drag=true;lx=e.clientX;ly=e.clientY;}
+  else{drag=false;pinch0=dist();}
+});
+function up(e){if(drag&&performance.now()-lt>80){vx=0;vy=0;}
+  delete pts[e.pointerId];var k=Object.keys(pts);lt=performance.now();
+  if(k.length===1){drag=true;lx=pts[k[0]].x;ly=pts[k[0]].y;}else drag=false;pinch0=0;}
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+cv.addEventListener('pointermove',function(e){
+  if(!pts[e.pointerId])return;
+  pts[e.pointerId]={x:e.clientX,y:e.clientY};
+  if(Object.keys(pts).length>=2){
+    var d=dist();if(pinch0>0&&d>0)setZoom(zoom*d/pinch0);pinch0=d;return;
+  }
+  if(!drag)return;
+  var dx=(e.clientX-lx)*0.01,dy=(e.clientY-ly)*0.01,now=performance.now(),dt=Math.max(0.004,(now-lt)/1000);
+  root.rotation.y+=dx;root.rotation.x+=dy;
+  vy=Math.max(-12,Math.min(12,vy*0.4+(dx/dt)*0.6));vx=Math.max(-12,Math.min(12,vx*0.4+(dy/dt)*0.6));
+  lt=now;lx=e.clientX;ly=e.clientY;
+});
+cv.addEventListener('wheel',function(e){
+  e.preventDefault();setZoom(zoom*Math.exp(-e.deltaY*0.001));
+},{passive:false});
+function size(){
+  var w=box.clientWidth,h=box.clientHeight;
+  ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();camUpdate();
+}
+if(window.ResizeObserver){new ResizeObserver(size).observe(box);}else{window.addEventListener('resize',size);}
+var t0=performance.now(),tm=0;
+function frame(now){
+  var dt=Math.min(0.05,(now-t0)/1000);t0=now;
+  if(spin.checked&&!drag)root.rotation.y+=dt*0.45;
+  if(!drag&&(Math.abs(vx)>0.01||Math.abs(vy)>0.01)){
+    root.rotation.y+=vy*dt;root.rotation.x+=vx*dt;
+    var k=Math.exp(-dt*1.8);vx*=k;vy*=k;
+    if(Math.abs(vx)<=0.01&&Math.abs(vy)<=0.01){vx=0;vy=0;}
+  }
+  if(play.checked){
+    tm+=dt;var c=tm%9,v;
+    if(c<1.2)v=0;else if(c<3.6)v=(c-1.2)/2.4;else if(c<6)v=1;else if(c<8.4)v=1-(c-6)/2.4;else v=0;
+    mix.value=Math.round(v*100);
+  }
+  apply(mix.value/100);
+  ren.render(scene,cam);
+  requestAnimationFrame(frame);
+}
+build('sp');size();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
