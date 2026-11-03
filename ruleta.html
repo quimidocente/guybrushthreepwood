@@ -1,537 +1,128 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Ruleta Periódica</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Estilos personalizados y animaciones 3D */
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top center, #1e1b4b 0%, #0f172a 60%, #020617 100%);
-            color: #f8fafc;
-            min-height: 100vh;
-        }
-
-        /* Rejilla de la Tabla Periódica (18 columnas) */
-        .periodic-grid {
-            display: grid;
-            grid-template-columns: repeat(18, minmax(0, 1fr));
-            gap: 0.35rem;
-        }
-
-        /* Efecto de volteo 3D de las fichas */
-        .tile {
-            aspect-ratio: 1 / 1.15;
-            perspective: 1000px;
-            cursor: pointer;
-        }
-
-        .tile.empty {
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .tile-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-style: preserve-3d;
-        }
-
-        .tile.flipped .tile-inner {
-            transform: rotateY(180deg);
-        }
-
-        .tile-front, .tile-back {
-            position: absolute;
-            inset: 0;
-            backface-visibility: hidden;
-            border-radius: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-        }
-
-        /* Cara frontal (oculta el símbolo antes de adivinar) */
-        .tile-front {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
-            backdrop-filter: blur(4px);
-            color: #818cf8;
-            font-size: clamp(0.7rem, 1.2vw, 1.2rem);
-            font-weight: 700;
-            transition: all 0.2s ease;
-        }
-
-        .tile:hover:not(.flipped):not(.empty) .tile-front {
-            border-color: #818cf8;
-            box-shadow: 0 0 15px rgba(129, 140, 248, 0.4);
-            transform: translateY(-2px);
-        }
-
-        /* Cara trasera (revela el símbolo y detalles) */
-        .tile-back {
-            transform: rotateY(180deg);
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-            color: #0f172a;
-        }
-
-        /* Estado correcto e incorrecto */
-        .tile.good .tile-back {
-            background: linear-gradient(135deg, #fef08a, #facc15);
-            color: #713f12;
-            border-color: #fef08a;
-            box-shadow: 0 0 20px rgba(250, 204, 21, 0.6);
-        }
-
-        .tile.bad .tile-back {
-            background: linear-gradient(135deg, #fca5a5, #ef4444);
-            color: #ffffff;
-            border-color: #fca5a5;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
-        }
-
-        /* Animación de brillo cuando es correcto */
-        @keyframes glowPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); filter: brightness(1.2); }
-        }
-
-        .tile.good {
-            animation: glowPulse 0.6s ease-in-out;
-        }
-
-        /* Chispas y efectos de partículas */
-        #fx-container {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 50;
-            overflow: hidden;
-        }
-
-        .spark {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: hsl(var(--h), 100%, 65%);
-            box-shadow: 0 0 10px 2px hsl(var(--h), 100%, 65%);
-            animation: sparkFly 2.4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-        }
-
-        @keyframes sparkFly {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
-        }
-
-        /* Ajustes responsive para pantallas pequeñas */
-        @media (max-width: 1024px) {
-            .periodic-grid { gap: 0.2rem; }
-            .tile-name { display: none; }
-        }
-    </style>
-</head>
-<body class="flex flex-col min-h-screen p-2 sm:p-4 lg:p-6">
-
-    <!-- FX Layer -->
-    <div id="fx-container"></div>
-
-    <!-- Header Section -->
-    <header class="text-center mb-4 sm:mb-6">
-        <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white drop-shadow-md" style="text-shadow: 0 0 18px #6df;">
-            ⚛ LA RULETA PERIÓDICA ⚛
-        </h1>
-        <p class="text-indigo-200/80 text-xs sm:text-sm mt-1 max-w-xl mx-auto">
-            Memoriza la pareja de elementos propuesta y localiza sus símbolos en el orden exacto. ¡Demuestra tu dominio de la química!
-        </p>
-    </header>
-
-    <!-- Main Game Panel -->
-    <main class="max-w-[1600px] w-full mx-auto bg-slate-900/70 border border-indigo-500/20 backdrop-blur-xl rounded-2xl p-3 sm:p-6 shadow-2xl shadow-indigo-950/50 flex-1 flex flex-col justify-between">
-        
-        <!-- HUD & Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 mb-4">
-            
-            <!-- Stat: Parejas -->
-            <div class="text-center md:text-left flex md:flex-col justify-between items-center md:items-start">
-                <span class="text-xs font-semibold uppercase tracking-wider text-indigo-300">Parejas Encontradas</span>
-                <span id="stat-pairs" class="text-xl sm:text-2xl font-black text-white">0 / 0</span>
-            </div>
-
-            <!-- Prompt Central -->
-            <div class="text-center bg-indigo-950/50 p-3 rounded-lg border border-indigo-500/30">
-                <span class="text-[10px] sm:text-xs font-bold tracking-widest text-indigo-400 uppercase block mb-1">
-                    OBJETIVO ACTUAL
-                </span>
-                <div id="prompt" class="text-lg sm:text-2xl font-extrabold text-amber-300 min-h-[32px] flex items-center justify-center gap-2">
-                    Pulsa «Empezar»
-                </div>
-            </div>
-
-            <!-- Stat: Descubiertos -->
-            <div class="text-center md:text-right flex md:flex-col justify-between items-center md:items-end">
-                <span class="text-xs font-semibold uppercase tracking-wider text-cyan-300">Elementos Revelados</span>
-                <span id="stat-elements" class="text-xl sm:text-2xl font-black text-white">0 / 0</span>
-            </div>
-        </div>
-
-        <!-- Feedback & Message Area -->
-        <div id="game-message" class="text-center text-xs sm:text-sm font-semibold text-slate-300 min-h-[24px] mb-3">
-            Elige un rango de elementos y pulsa Empezar para jugar.
-        </div>
-
-        <!-- Controls & Range Selector -->
-        <div class="flex flex-wrap items-center justify-center gap-3 mb-5">
-            <button id="btn-start" class="px-6 py-2.5 bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-slate-950 font-extrabold rounded-full shadow-lg shadow-cyan-500/20 active:scale-95 transition-all text-sm sm:text-base">
-                Empezar
-            </button>
-
-            <div class="flex items-center gap-2 bg-slate-800/80 px-4 py-2 rounded-full border border-slate-700">
-                <label for="range-select" class="text-xs sm:text-sm font-semibold text-slate-300">Rango:</label>
-                <select id="range-select" class="bg-slate-900 text-indigo-200 text-xs sm:text-sm font-bold border border-slate-700 rounded-lg px-3 py-1 outline-none focus:border-indigo-400">
-                    <option value="representativos">Elementos representativos</option>
-                    <option value="transicion">Metales de transición</option>
-                    <option value="principal" selected>Bloque principal</option>
-                    <option value="todos">Todo todito</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Board Container -->
-        <div class="overflow-x-auto pb-2">
-            <div id="board" class="periodic-grid min-w-[900px] lg:min-w-0"></div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="text-center text-xs text-indigo-300/60 mt-4 mb-2">
-        La Ruleta Periódica • Diseñado con HTML5, Tailwind CSS & JavaScript JS
-    </footer>
-
-    <!-- Logic Script -->
-    <script>
-        // Datos de la Tabla Periódica [Z, Símbolo, Nombre, Período, Grupo]
-        const ELEMENTS_DATA = [
-            // Período 1
-            [1, 'H', 'Hidrógeno', 1, 1], [2, 'He', 'Helio', 1, 18],
-            // Período 2
-            [3, 'Li', 'Litio', 2, 1], [4, 'Be', 'Berilio', 2, 2],
-            [5, 'B', 'Boro', 2, 13], [6, 'C', 'Carbono', 2, 14], [7, 'N', 'Nitrógeno', 2, 15], [8, 'O', 'Oxígeno', 2, 16], [9, 'F', 'Flúor', 2, 17], [10, 'Ne', 'Neón', 2, 18],
-            // Período 3
-            [11, 'Na', 'Sodio', 3, 1], [12, 'Mg', 'Magnesio', 3, 2],
-            [13, 'Al', 'Aluminio', 3, 13], [14, 'Si', 'Silicio', 3, 14], [15, 'P', 'Fósforo', 3, 15], [16, 'S', 'Azufre', 3, 16], [17, 'Cl', 'Cloro', 3, 17], [18, 'Ar', 'Argón', 3, 18],
-            // Período 4
-            [19, 'K', 'Potasio', 4, 1], [20, 'Ca', 'Calcio', 4, 2], [21, 'Sc', 'Escandio', 4, 3], [22, 'Ti', 'Titanio', 4, 4], [23, 'V', 'Vanadio', 4, 5], [24, 'Cr', 'Cromo', 4, 6], [25, 'Mn', 'Manganeso', 4, 7], [26, 'Fe', 'Hierro', 4, 8], [27, 'Co', 'Cobalto', 4, 9], [28, 'Ni', 'Níquel', 4, 10], [29, 'Cu', 'Cobre', 4, 11], [30, 'Zn', 'Zinc', 4, 12], [31, 'Ga', 'Galio', 4, 13], [32, 'Ge', 'Germanio', 4, 14], [33, 'As', 'Arsénico', 4, 15], [34, 'Se', 'Selenio', 4, 16], [35, 'Br', 'Bromo', 4, 17], [36, 'Kr', 'Criptón', 4, 18],
-            // Período 5
-            [37, 'Rb', 'Rubidio', 5, 1], [38, 'Sr', 'Estroncio', 5, 2], [39, 'Y', 'Itrio', 5, 3], [40, 'Zr', 'Circonio', 5, 4], [41, 'Nb', 'Niobio', 5, 5], [42, 'Mo', 'Molibdeno', 5, 6], [43, 'Tc', 'Tecnecio', 5, 7], [44, 'Ru', 'Rutenio', 5, 8], [45, 'Rh', 'Rodio', 5, 9], [46, 'Pd', 'Paladio', 5, 10], [47, 'Ag', 'Plata', 5, 11], [48, 'Cd', 'Cadmio', 5, 12], [49, 'In', 'Indio', 5, 13], [50, 'Sn', 'Estaño', 5, 14], [51, 'Sb', 'Antimonio', 5, 15], [52, 'Te', 'Telurio', 5, 16], [53, 'I', 'Yodo', 5, 17], [54, 'Xe', 'Xenón', 5, 18],
-            // Período 6
-            [55, 'Cs', 'Cesio', 6, 1], [56, 'Ba', 'Bario', 6, 2], [72, 'Hf', 'Hafnio', 6, 4], [73, 'Ta', 'Tantalio', 6, 5], [74, 'W', 'Wolframio', 6, 6], [75, 'Re', 'Renio', 6, 7], [76, 'Os', 'Osmio', 6, 8], [77, 'Ir', 'Iridio', 6, 9], [78, 'Pt', 'Platino', 6, 10], [79, 'Au', 'Oro', 6, 11], [80, 'Hg', 'Mercurio', 6, 12], [81, 'Tl', 'Talio', 6, 13], [82, 'Pb', 'Plomo', 6, 14], [83, 'Bi', 'Bismuto', 6, 15], [84, 'Po', 'Polonio', 6, 16], [85, 'At', 'Astato', 6, 17], [86, 'Rn', 'Radón', 6, 18],
-            // Período 7
-            [87, 'Fr', 'Francio', 7, 1], [88, 'Ra', 'Radio', 7, 2], [104, 'Rf', 'Rutherfordio', 7, 4], [105, 'Db', 'Dubnio', 7, 5], [106, 'Sg', 'Seaborgio', 7, 6], [107, 'Bh', 'Bohrio', 7, 7], [108, 'Hs', 'Hassio', 7, 8], [109, 'Mt', 'Meitnerio', 7, 9], [110, 'Ds', 'Darmstadtio', 7, 10], [111, 'Rg', 'Roentgenio', 7, 11], [112, 'Cn', 'Copernicio', 7, 12], [113, 'Nh', 'Nihonio', 7, 13], [114, 'Fl', 'Flerovio', 7, 14], [115, 'Mc', 'Moscovio', 7, 15], [116, 'Lv', 'Livermorio', 7, 16], [117, 'Ts', 'Teneso', 7, 17], [118, 'Og', 'Oganesón', 7, 18],
-
-            // Lantánidos (Fila 9 visual para las tierras raras)
-            [57, 'La', 'Lantano', 9, 3], [58, 'Ce', 'Cerio', 9, 4], [59, 'Pr', 'Praseodimio', 9, 5], [60, 'Nd', 'Neodimio', 9, 6], [61, 'Pm', 'Prometio', 9, 7], [62, 'Sm', 'Samario', 9, 8], [63, 'Eu', 'Europio', 9, 9], [64, 'Gd', 'Gadolinio', 9, 10], [65, 'Tb', 'Terbio', 9, 11], [66, 'Dy', 'Disprosio', 9, 12], [67, 'Ho', 'Holmio', 9, 13], [68, 'Er', 'Erbio', 9, 14], [69, 'Tm', 'Tulio', 9, 15], [70, 'Yb', 'Iterbio', 9, 16], [71, 'Lu', 'Lutecio', 9, 17],
-
-            // Actínidos (Fila 10 visual para las tierras raras)
-            [89, 'Ac', 'Actinio', 10, 3], [90, 'Th', 'Torio', 10, 4], [91, 'Pa', 'Protactinio', 10, 5], [92, 'U', 'Uranio', 10, 6], [93, 'Np', 'Neptunio', 10, 7], [94, 'Pu', 'Plutonio', 10, 8], [95, 'Am', 'Americio', 10, 9], [96, 'Cm', 'Curio', 10, 10], [97, 'Bk', 'Berkelio', 10, 11], [98, 'Cf', 'Californio', 10, 12], [99, 'Es', 'Einstenio', 10, 13], [100, 'Fm', 'Fermio', 10, 14], [101, 'Md', 'Mendelevio', 10, 15], [102, 'No', 'Nobelio', 10, 16], [103, 'Lr', 'Lawrencio', 10, 17]
-        ];
-
-        // Elementos DOM
-        const boardEl = document.getElementById('board');
-        const promptEl = document.getElementById('prompt');
-        const msgEl = document.getElementById('game-message');
-        const rangeSelectEl = document.getElementById('range-select');
-        const btnStart = document.getElementById('btn-start');
-        const statPairsEl = document.getElementById('stat-pairs');
-        const statElementsEl = document.getElementById('stat-elements');
-        const fxContainer = document.getElementById('fx-container');
-
-        // Estado del Juego
-        let activeElements = [];
-        let gameOrder = [];
-        let currentPairIndex = 0;
-        let currentStep = 0; // 0 para el 1er elemento de la pareja, 1 para el 2do
-        let isGameActive = false;
-        let isLocked = false;
-        let discoveredZ = new Set();
-
-        /**
-         * Filtra los elementos según las reglas específicas de cada rango seleccionado
-         */
-        function getFilteredElements() {
-            const mode = rangeSelectEl.value;
-
-            if (mode === 'todos') {
-                // Tierras raras completas (Lantánidos y Actínidos Z=57 a 103).
-                // Excluye únicamente transactínidos mayores a 103.
-                return ELEMENTS_DATA.filter(e => e[0] <= 103);
-            }
-
-            const baseElements = ELEMENTS_DATA.filter(e => e[0] <= 89);
-
-            if (mode === 'representativos') {
-                // Grupos 1, 2 y 13-18.
-                // Excluye Lantánidos, Actínidos y Holmio a Lutecio (Z=67 a 71).
-                return baseElements.filter(e => {
-                    const isRepGroup = (e[4] === 1 || e[4] === 2 || (e[4] >= 13 && e[4] <= 18));
-                    const isRareEarth = (e[0] === 57 || e[0] === 89 || (e[0] >= 58 && e[0] <= 71) || (e[0] >= 90 && e[0] <= 103));
-                    return isRepGroup && !isRareEarth;
-                });
-            }
-
-            if (mode === 'transicion') {
-                // Metales de transición: bloque d (grupos 3 a 12), incluyendo La (57) y Ac (89) en grupo 3.
-                return baseElements.filter(e => 
-                    (e[4] >= 3 && e[4] <= 12 && e[3] >= 4 && e[3] <= 7) || e[0] === 57 || e[0] === 89
-                );
-            }
-
-            // Bloque principal: Tabla principal hasta Actinio (incluyendo La y Ac), 
-            // excluyendo series internas completas (Ce-Lu, Th-Lr).
-            return baseElements.filter(e => 
-                ((e[3] >= 1 && e[3] <= 7 && e[4] >= 1 && e[4] <= 18) || e[0] === 57 || e[0] === 89) &&
-                !((e[0] >= 58 && e[0] <= 71) || (e[0] >= 90 && e[0] <= 103))
-            );
-        }
-
-        /**
-         * Obtiene la posición en la cuadrícula [fila, columna] de un elemento
-         */
-        function getDisplayPosition(e) {
-            // Lantano y Actinio en el bloque principal si están en periodo 6/7 y grupo 3
-            if (e[0] === 57 && e[3] === 9) return [6, 3];
-            if (e[0] === 89 && e[3] === 10) return [7, 3];
-            return [e[3], e[4]];
-        }
-
-        /**
-         * Dibuja el tablero en pantalla
-         */
-        function renderBoard() {
-            boardEl.innerHTML = '';
-            const positions = new Map();
-
-            // Mapear elementos a posiciones (físicas/virtuales)
-            activeElements.forEach(e => {
-                const [r, c] = getDisplayPosition(e);
-                positions.set(`${r},${c}`, e);
-            });
-
-            // Dibujar las 10 filas x 18 columnas
-            for (let r = 1; r <= 10; r++) {
-                for (let c = 1; c <= 18; c++) {
-                    const elem = positions.get(`${r},${c}`);
-                    const tile = document.createElement('div');
-                    tile.className = 'tile' + (elem ? '' : ' empty');
-
-                    if (elem) {
-                        tile.dataset.z = elem[0];
-                        
-                        // Si el elemento ya fue descubierto previamente, lo mostramos volteado
-                        const isRevealed = discoveredZ.has(elem[0]);
-                        if (isRevealed) tile.classList.add('flipped', 'good');
-
-                        tile.innerHTML = `
-                            <div class="tile-inner">
-                                <div class="tile-front">✦</div>
-                                <div class="tile-back p-1 text-center">
-                                    <span class="absolute top-1 left-1 text.min-[8px] text-[10px] font-bold opacity-60">${elem[0]}</span>
-                                    <span class="text-sm sm:text-xl font-black leading-none">${elem[1]}</span>
-                                    <span class="tile-name text-[8px] sm:text-[10px] font-semibold leading-tight mt-0.5 max-w-full truncate px-1">${elem[2]}</span>
-                                </div>
-                            </div>
-                        `;
-
-                        tile.addEventListener('click', () => handleTileClick(elem[0]));
-                    }
-
-                    boardEl.appendChild(tile);
-                }
-            }
-        }
-
-        /**
-         * Mezcla aleatoria de arreglos (Fisher-Yates)
-         */
-        function shuffle(arr) {
-            const a = [...arr];
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
-
-        /**
-         * Actualiza contadores y estadísticas
-         */
-        function updateStats() {
-            const totalPairs = Math.floor(activeElements.length / 2);
-            statPairsEl.textContent = `${currentPairIndex} / ${totalPairs}`;
-            statElementsEl.textContent = `${discoveredZ.size} / ${activeElements.length}`;
-        }
-
-        /**
-         * Solicita la siguiente pareja de elementos
-         */
-        function askNextPair() {
-            const totalPairs = Math.floor(gameOrder.length / 2);
-
-            if (currentPairIndex >= totalPairs) {
-                isGameActive = false;
-                promptEl.textContent = '¡RANGO COMPLETADO!';
-                msgEl.textContent = '🏆 ¡Enhorabuena! Has completado todos los elementos de este rango.';
-                triggerFireworks();
-                return;
-            }
-
-            const elem1 = gameOrder[currentPairIndex * 2];
-            const elem2 = gameOrder[currentPairIndex * 2 + 1];
-
-            promptEl.innerHTML = `
-                <span class="px-2 py-1 bg-amber-400/10 rounded border border-amber-400/20">${elem1[2]}</span>
-                <span class="text-indigo-400 text-sm">➔</span>
-                <span class="px-2 py-1 bg-amber-400/10 rounded border border-amber-400/20">${elem2[2]}</span>
-            `;
-
-            currentStep = 0;
-            isLocked = false;
-        }
-
-        /**
-         * Maneja el clic en una casilla de elemento
-         */
-        function handleTileClick(z) {
-            if (!isGameActive || isLocked || discoveredZ.has(z)) return;
-
-            const expectedElement = gameOrder[currentPairIndex * 2 + currentStep];
-            const tileEl = boardEl.querySelector(`[data-z="${z}"]`);
-
-            if (!tileEl) return;
-
-            // Girar la ficha
-            tileEl.classList.add('flipped');
-
-            if (z === expectedElement[0]) {
-                // Acierto
-                tileEl.classList.add('good');
-                discoveredZ.add(z);
-                currentStep++;
-                updateStats();
-
-                if (currentStep === 2) {
-                    // Pareja completada
-                    currentPairIndex++;
-                    isLocked = true;
-                    updateStats();
-                    msgEl.textContent = '✨ ¡Pareja correcta! Buscando siguiente...';
-                    triggerFireworks();
-
-                    setTimeout(() => {
-                        askNextPair();
-                        if (isGameActive) msgEl.textContent = '¡Encuentra la siguiente pareja!';
-                    }, 1200);
-                } else {
-                    msgEl.textContent = '¡Correcto! Ahora pulsa el segundo elemento.';
-                }
-            } else {
-                // Error
-                tileEl.classList.add('bad');
-                isLocked = true;
-                msgEl.textContent = '❌ Símbolo incorrecto. Vuelve a intentarlo.';
-
-                setTimeout(() => {
-                    tileEl.classList.remove('flipped', 'bad');
-                    currentStep = 0;
-                    isLocked = false;
-                    msgEl.textContent = 'Inténtalo de nuevo en el orden indicado.';
-                }, 1000);
-            }
-        }
-
-        /**
-         * Efecto de chispas / fuegos artificiales
-         */
-        function triggerFireworks() {
-            for (let k = 0; k < 5; k++) {
-                const x = 10 + Math.random() * 80;
-                const y = 20 + Math.random() * 60;
-
-                for (let i = 0; i < 20; i++) {
-                    const spark = document.createElement('i');
-                    spark.className = 'spark';
-                    spark.style.left = `${x}%`;
-                    spark.style.top = `${y}%`;
-                    
-                    const angle = (i * Math.PI) / 10;
-                    const dist = 90 + Math.random() * 140;
-                    spark.style.setProperty('--x', `${Math.cos(angle) * dist}px`);
-                    spark.style.setProperty('--y', `${Math.sin(angle) * dist}px`);
-                    spark.style.setProperty('--h', `${Math.floor(Math.random() * 360)}`);
-
-                    fxContainer.appendChild(spark);
-                    setTimeout(() => spark.remove(), 2500);
-                }
-            }
-        }
-
-        /**
-         * Inicia una nueva partida con los parámetros actuales
-         */
-        function startNewGame() {
-            activeElements = getFilteredElements();
-            
-            // Garantizar número par para parejas
-            if (activeElements.length % 2 !== 0) {
-                activeElements.pop();
-            }
-
-            gameOrder = shuffle(activeElements);
-            currentPairIndex = 0;
-            currentStep = 0;
-            discoveredZ.clear();
-            isGameActive = true;
-            isLocked = false;
-
-            renderBoard();
-            updateStats();
-            askNextPair();
-
-            msgEl.textContent = '¡Partida iniciada! Encuentra el primer elemento.';
-        }
-
-        /**
-         * Cambia el rango sin iniciar partida inmediatamente
-         */
-        function handleRangeChange() {
-            isGameActive = false;
-            currentPairIndex = 0;
-            currentStep = 0;
-            discoveredZ.clear();
-
-            activeElements = getFilteredElements();
-            renderBoard();
-            updateStats();
-
-            promptEl.textContent = 'Pulsa «Empezar»';
-            msgEl.textContent = 'Rango cambiado. Pulsa Empezar para jugar.';
-        }
-
-        // Event Listeners
-        btnStart.addEventListener('click', startNewGame);
-        rangeSelectEl.addEventListener('change', handleRangeChange);
-
-        // Inicializar vista inicial
-        handleRangeChange();
-    </script>
-</body>
-</html>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La ruleta periódica</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#303b70,#101426 70%);color:#fff;font-family:system-ui,Arial;padding:18px}header{text-align:center}h1{margin:4px;text-shadow:0 0 18px #6df}p{color:#d5dcff}.panel{max-width:1450px;margin:16px auto;background:#20294dcc;border:1px solid #8294df66;border-radius:18px;padding:14px;box-shadow:0 10px 35px #0006}.hud{display:flex;justify-content:space-between;align-items:center;gap:15px;text-align:center}.stat{font-weight:bold;color:#aef}.stat b{display:block;font-size:1.35rem;color:white}.prompt{font-size:clamp(1.15rem,3vw,1.8rem);font-weight:900;color:#ffdc75}.controls{text-align:center;margin:12px}button{border:0;border-radius:30px;padding:11px 20px;font-weight:bold;cursor:pointer;margin:4px;background:linear-gradient(120deg,#66e7f2,#b5a5ff);color:#111936}button.alt{background:#38466f;color:white}.range-control{display:inline-flex;align-items:center;gap:8px;margin:4px 8px;color:#d5dcff;font-weight:bold;font-size:.88rem}.range-control select{border:1px solid #6676aa88;border-radius:14px;padding:5px 10px;background:#20294d;color:#dce4ff;font:inherit;font-size:.88rem;cursor:pointer;outline:none}.range-control select:focus{border-color:#9eafff}#msg{text-align:center;min-height:28px;font-weight:bold}#board{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));gap:4px}.tile{aspect-ratio:1/1.05;perspective:700px;cursor:pointer;min-width:0}.tile.empty{visibility:hidden}.inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .45s}.tile.flip .inner{transform:rotateY(180deg)}.face{position:absolute;inset:0;border-radius:7px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;border:1px solid #ffffff66}.front{background:linear-gradient(145deg,#46558f,#20294f);font-size:clamp(10px,1.6vw,22px);color:#b9caff}.front:after{content:"✦"}.back{transform:rotateY(180deg);background:linear-gradient(145deg,#f5f7ff,#b8c9f5);color:#182044}.sym{font-size:clamp(12px,1.7vw,24px);font-weight:950}.num{position:absolute;top:2px;left:4px;font-size:clamp(6px,.65vw,10px)}.name{font-size:clamp(5px,.65vw,9px);font-weight:bold;text-align:center;line-height:1.05}.tile.good .back{background:linear-gradient(145deg,#fff7a8,#ffb43e);box-shadow:0 0 14px 5px #ffdf65,inset 0 0 12px white;border:2px solid white}.tile.bad .back{background:#ff9bb3}@keyframes glow{50%{filter:brightness(1.9);transform:scale(1.07)}}.tile.good{animation:glow .7s 2}#fx{position:fixed;inset:0;pointer-events:none;overflow:hidden}.spark{position:absolute;width:7px;height:7px;border-radius:50%;background:hsl(var(--h),100%,65%);box-shadow:0 0 12px 4px hsl(var(--h),100%,60%);animation:boom 2.4s forwards}@keyframes boom{to{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}footer{text-align:center;color:#bac5ed;font-size:.85rem;margin:16px}
+@media(max-width:650px){body{padding:5px}.panel{padding:6px}.hud{flex-wrap:wrap;justify-content:center}.prompt{width:100%;order:-1}#board{gap:2px}.name{display:none}.face{border-radius:3px}.tile{aspect-ratio:1/.95}.sym{font-size:clamp(8px,2.7vw,15px)}}
+</style></head><body><header><h1>⚛ LA RULETA PERIÓDICA ⚛</h1><p>Memoriza los dos nombres y pulsa sus símbolos en el mismo orden. ¡Pon a prueba tu memoria química!</p></header>
+<div class="panel"><div class="hud"><div class="stat">PAREJAS<b id="score">0 / 0</b></div><div><small>BUSCA ESTOS ELEMENTOS, EN ESTE ORDEN</small><div class="prompt" id="prompt">Pulsa «Empezar»</div></div><div class="stat">DESCUBIERTOS<b id="done">0 / 0</b></div></div><div id="msg">Selecciona el rango y... ¡A jugar!</div><div class="controls"><button id="start">Empezar</button><label class="range-control" for="range">Rango <select id="range"><option value="representativos">Elementos representativos</option><option value="transicion">Metales de transición</option><option value="principal" selected>Bloque principal</option><option value="todos">Todo todito</option></select></label></div><div id="board"></div></div><footer>Los lantánidos y actínidos aparecen en las dos filas inferiores cuando eliges «Todo todito». Puedes jugar con ratón o pantalla táctil.</footer><div id="fx"></div>
+<script>
+const E=[
+[1,'H','Hidrógeno',1,1],[2,'He','Helio',1,18],[3,'Li','Litio',2,1],[4,'Be','Berilio',2,2],[5,'B','Boro',2,13],[6,'C','Carbono',2,14],[7,'N','Nitrógeno',2,15],[8,'O','Oxígeno',2,16],[9,'F','Flúor',2,17],[10,'Ne','Neón',2,18],
+[11,'Na','Sodio',3,1],[12,'Mg','Magnesio',3,2],[13,'Al','Aluminio',3,13],[14,'Si','Silicio',3,14],[15,'P','Fósforo',3,15],[16,'S','Azufre',3,16],[17,'Cl','Cloro',3,17],[18,'Ar','Argón',3,18],
+[19,'K','Potasio',4,1],[20,'Ca','Calcio',4,2],[21,'Sc','Escandio',4,3],[22,'Ti','Titanio',4,4],[23,'V','Vanadio',4,5],[24,'Cr','Cromo',4,6],[25,'Mn','Manganeso',4,7],[26,'Fe','Hierro',4,8],[27,'Co','Cobalto',4,9],[28,'Ni','Níquel',4,10],[29,'Cu','Cobre',4,11],[30,'Zn','Zinc',4,12],[31,'Ga','Galio',4,13],[32,'Ge','Germanio',4,14],[33,'As','Arsénico',4,15],[34,'Se','Selenio',4,16],[35,'Br','Bromo',4,17],[36,'Kr','Criptón',4,18],
+[37,'Rb','Rubidio',5,1],[38,'Sr','Estroncio',5,2],[39,'Y','Itrio',5,3],[40,'Zr','Circonio',5,4],[41,'Nb','Niobio',5,5],[42,'Mo','Molibdeno',5,6],[43,'Tc','Tecnecio',5,7],[44,'Ru','Rutenio',5,8],[45,'Rh','Rodio',5,9],[46,'Pd','Paladio',5,10],[47,'Ag','Plata',5,11],[48,'Cd','Cadmio',5,12],[49,'In','Indio',5,13],[50,'Sn','Estaño',5,14],[51,'Sb','Antimonio',5,15],[52,'Te','Telurio',5,16],[53,'I','Yodo',5,17],[54,'Xe','Xenón',5,18],
+[55,'Cs','Cesio',6,1],[56,'Ba','Bario',6,2],[72,'Hf','Hafnio',6,4],[73,'Ta','Tantalio',6,5],[74,'W','Wolframio',6,6],[75,'Re','Renio',6,7],[76,'Os','Osmio',6,8],[77,'Ir','Iridio',6,9],[78,'Pt','Platino',6,10],[79,'Au','Oro',6,11],[80,'Hg','Mercurio',6,12],[81,'Tl','Talio',6,13],[82,'Pb','Plomo',6,14],[83,'Bi','Bismuto',6,15],[84,'Po','Polonio',6,16],[85,'At','Astato',6,17],[86,'Rn','Radón',6,18],
+[87,'Fr','Francio',7,1],[88,'Ra','Radio',7,2],[104,'Rf','Rutherfordio',7,4],[105,'Db','Dubnio',7,5],[106,'Sg','Seaborgio',7,6],[107,'Bh','Bohrio',7,7],[108,'Hs','Hassio',7,8],[109,'Mt','Meitnerio',7,9],[110,'Ds','Darmstadtio',7,10],[111,'Rg','Roentgenio',7,11],[112,'Cn','Copernicio',7,12],[113,'Nh','Nihonio',7,13],[114,'Fl','Flerovio',7,14],[115,'Mc','Moscovio',7,15],[116,'Lv','Livermorio',7,16],[117,'Ts','Teneso',7,17],[118,'Og','Oganesón',7,18],
+[57,'La','Lantano',9,3],[58,'Ce','Cerio',9,4],[59,'Pr','Praseodimio',9,5],[60,'Nd','Neodimio',9,6],[61,'Pm','Prometio',9,7],[62,'Sm','Samario',9,8],[63,'Eu','Europio',9,9],[64,'Gd','Gadolinio',9,10],[65,'Tb','Terbio',9,11],[66,'Dy','Disprosio',9,12],[67,'Ho','Holmio',9,13],[68,'Er','Erbio',9,14],[69,'Tm','Tulio',9,15],[70,'Yb','Iterbio',9,16],[71,'Lu','Lutecio',9,17],
+[89,'Ac','Actinio',10,3],[90,'Th','Torio',10,4],[91,'Pa','Protactinio',10,5],[92,'U','Uranio',10,6],[93,'Np','Neptunio',10,7],[94,'Pu','Plutonio',10,8],[95,'Am','Americio',10,9],[96,'Cm','Curio',10,10],[97,'Bk','Berkelio',10,11],[98,'Cf','Californio',10,12],[99,'Es','Einstenio',10,13],[100,'Fm','Fermio',10,14],[101,'Md','Mendelevio',10,15],[102,'No','Nobelio',10,16],[103,'Lr','Lawrencio',10,17]];
+const board=document.querySelector('#board'),prompt=document.querySelector('#prompt'),msg=document.querySelector('#msg');
+const rangeSelect=document.querySelector('#range');
+let order=[],pair=0,step=0,active=false,locked=false,found=new Set(),activeElements=[...E],currentTurnPicked=[];
+
+function getRange(){
+  const mode=rangeSelect.value;
+  if(mode==='todos') return E.filter(e=>e[0]<=103);
+  const available=E.filter(e=>e[0]<=89);
+  if(mode==='representativos'){
+    return available.filter(e=>{
+      const isRepGroup=(e[4]===1||e[4]===2||(e[4]>=13&&e[4]<=18));
+      const isRareEarth=(e[0]===57||e[0]===89||(e[0]>=58&&e[0]<=71)||(e[0]>=90&&e[0]<=103));
+      return isRepGroup && !isRareEarth;
+    });
+  }
+  if(mode==='transicion'){
+    return available.filter(e=>(e[4]>=3&&e[4]<=12&&e[3]>=4&&e[3]<=7)||e[0]===57||e[0]===89);
+  }
+  return available.filter(e=>(e[3]>=1&&e[3]<=7&&e[4]>=1&&e[4]<=18)||e[0]===57||e[0]===89)
+    .filter(e=>![58,59,60,61,62,63,64,65,66,67,68,69,70,71,90,91,92,93,94,95,96,97,98,99,100,101,102,103].includes(e[0]));
+}
+function displayPosition(e){
+  if(e[0]===57) return [6,3];
+  if(e[0]===89) return [7,3];
+  return [e[3],e[4]];
+}
+function draw(){
+  board.innerHTML='';
+  const positions=new Map();
+  for(const e of activeElements){
+    const [r,c]=displayPosition(e);
+    positions.set(r+','+c,e);
+  }
+  for(let r=1;r<=10;r++)for(let c=1;c<=18;c++){
+    const e=positions.get(r+','+c),t=document.createElement('div');
+    t.className='tile'+(e?'':' empty');
+    if(e){
+      t.dataset.z=e[0];
+      t.innerHTML=`<div class="inner"><div class="face front"></div><div class="face back"><span class="num">${e[0]}</span><span class="sym">${e[1]}</span><span class="name">${e[2]}</span></div></div>`;
+      t.tabIndex=0;
+      t.addEventListener('click',()=>pick(e[0]));
+      t.addEventListener('keydown',v=>{if(v.key==='Enter'||v.key===' '){v.preventDefault();pick(e[0])}});
+    }
+    board.append(t);
+  }
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function stats(){
+  const totalPairs=Math.floor(activeElements.length/2);
+  document.querySelector('#score').textContent=pair+' / '+totalPairs;
+  document.querySelector('#done').textContent=found.size+' / '+activeElements.length;
+}
+function ask(){
+  if(pair>=Math.floor(order.length/2)){
+    active=false;prompt.textContent='¡RANGO COMPLETADO!';msg.textContent='🏆 ¡Has encontrado todos los elementos de este rango!';fire();return;
+  }
+  prompt.textContent=order[2*pair][2]+'  →  '+order[2*pair+1][2];
+  step=0;currentTurnPicked=[];locked=false;
+}
+function pick(z){
+  if(!active||locked||found.has(z))return;
+  let wanted=order[pair*2+step],t=board.querySelector(`[data-z="${z}"]`);
+  if(!t||currentTurnPicked.includes(z))return;
+  t.classList.add('flip');
+  currentTurnPicked.push(z);
+  if(z===wanted[0]){
+    t.classList.add('good');step++;
+    if(step===1){
+      msg.textContent='¡Correcto! Ahora el segundo símbolo.';
+    }else if(step===2){
+      locked=true;found.add(order[pair*2][0]);found.add(order[pair*2+1][0]);pair++;stats();
+      msg.textContent='¡PAREJA CONSEGUIDA! ✨';fire();
+      setTimeout(()=>{ask();if(active)msg.textContent='¡Siguiente pareja!'},1600);
+    }
+  }else{
+    t.classList.add('bad');locked=true;msg.textContent='¡Casi! Revisa la posición e inténtalo de nuevo.';
+    setTimeout(()=>{
+      currentTurnPicked.forEach(id=>{
+        let tile=board.querySelector(`[data-z="${id}"]`);
+        if(tile) tile.classList.remove('flip','good','bad');
+      });
+      step=0;currentTurnPicked=[];locked=false;msg.textContent='Orden: '+prompt.textContent;
+    },900);
+  }
+}
+function fire(){
+  let fx=document.querySelector('#fx');
+  for(let k=0;k<5;k++){
+    let x=10+Math.random()*80,y=15+Math.random()*65;
+    for(let i=0;i<24;i++){
+      let s=document.createElement('i');s.className='spark';s.style.left=x+'%';s.style.top=y+'%';
+      let dist=100+Math.random()*150;
+      s.style.setProperty('--x',Math.cos(i*Math.PI/12)*dist+'px');
+      s.style.setProperty('--y',Math.sin(i*Math.PI/12)*dist+'px');
+      s.style.setProperty('--h',Math.random()*360);fx.append(s);setTimeout(()=>s.remove(),2500);
+    }
+  }
+}
+function applyRange(){
+  active=false;pair=0;step=0;locked=false;found.clear();currentTurnPicked=[];activeElements=getRange();
+  draw();stats();prompt.textContent='Pulsa «Empezar»';msg.textContent='Rango seleccionado. ¡Cuando quieras, empieza la partida!';
+}
+document.querySelector('#start').onclick=()=>{
+  activeElements=getRange();
+  let pool=[...activeElements];
+  if(pool.length%2!==0) pool.pop();
+  order=shuffle(pool);pair=0;step=0;found.clear();currentTurnPicked=[];
+  active=true;locked=false;draw();stats();ask();msg.textContent='¡Encuentra el primer símbolo!';
+};
+rangeSelect.onchange=applyRange;
+activeElements=getRange();draw();stats();
+</script></body></html>
