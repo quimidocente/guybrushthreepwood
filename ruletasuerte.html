@@ -1,0 +1,152 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La ruleta química</title><link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 10%,#4b2a8a55,transparent 40%),radial-gradient(circle at 85% 90%,#0aa5c255,transparent 40%),#0d1226;color:#fff;font-family:system-ui,Arial;padding:14px;min-height:100vh}
+h1{text-align:center;margin:2px;font-family:Bungee,Impact,"Arial Black",sans-serif;font-weight:400;font-size:clamp(1.4rem,4.5vw,2.4rem);letter-spacing:3px;background:linear-gradient(90deg,#66e7f2,#ffdc75,#ff7ab8,#66e7f2);background-size:300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite;filter:drop-shadow(0 0 12px #6df8)}@keyframes sh{to{background-position:300%}}
+.panel{max-width:1000px;margin:12px auto;background:#1b2347e6;border:1px solid #8294df66;border-radius:20px;padding:14px;box-shadow:0 10px 35px #0008}
+button{border:0;border-radius:30px;padding:5px 16px;cursor:pointer;margin:4px;background:linear-gradient(180deg,#8ff3ff,#5aa9ff);color:#0c1330;font:inherit;font-size:.9rem;font-weight:800;box-shadow:0 3px 0 #2b5da8,0 5px 10px #0006;transition:transform .1s}
+button:hover:not(:disabled){transform:translateY(-2px)}button:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 #2b5da8}button:disabled{opacity:.35;cursor:default}button.alt{background:#38466f;color:#fff;box-shadow:0 2px 0 #222c4a}
+#gb{background:linear-gradient(180deg,#ffe46b,#ff9d2e);box-shadow:0 3px 0 #b3600e,0 5px 10px #0006}#bb{background:linear-gradient(180deg,#9cf59a,#2fb86a);box-shadow:0 3px 0 #17703f,0 5px 10px #0006}#sb{background:linear-gradient(180deg,#ffa6d8,#c05cf0);box-shadow:0 3px 0 #7a2fa0,0 5px 10px #0006}
+input,select{border-radius:14px;border:1px solid #6676aa;background:#14193a;color:#fff;padding:8px 12px;font:inherit}
+#ni{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0}#ni input{width:100%}
+#gm{max-width:1400px;padding:10px}#tm{display:flex;gap:6px;flex-wrap:wrap}.team{flex:1;min-width:90px;padding:2px 6px;border-radius:12px;background:#2c3866;text-align:center;border:2px solid transparent;border-top:5px solid var(--c);transition:.2s}
+.team.on{border-color:#ffdc75;transform:scale(1.04);box-shadow:0 0 18px #ffdc7599}.team b{display:block;font-size:1.05rem;line-height:1.1;color:#ffdc75}.team small{color:#bfe6ff;font-size:.7rem;line-height:1.1}
+#stage{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0 4px}
+#pz{width:92px;font-size:.75rem;text-align:center;background:linear-gradient(160deg,#5b2fa8,#2a1760);border:2px solid #ffdc75;border-radius:16px;padding:6px;color:#ffdc75;min-height:60px;box-shadow:0 0 18px #ffdc7566}#pz b{display:block;font-size:1rem;color:#fff;overflow-wrap:anywhere}
+#bd{display:grid;gap:3px;grid-template-columns:repeat(14,1fr);flex:1;min-width:280px;max-width:1300px;padding:8px;border-radius:16px;background:linear-gradient(160deg,#0a3f5c,#0a1e3a);border:4px solid #ffdc75;box-shadow:0 0 28px #ffdc7566,inset 0 0 30px #000a}
+.t{aspect-ratio:1/1.15;perspective:600px;min-width:0}.t.e{background:#06101f;border-radius:5px;box-shadow:inset 0 0 8px #000}
+.in{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .6s}.t.f .in{transform:rotateY(180deg)}
+.fc{position:absolute;inset:0;border-radius:5px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;border:1px solid #ffffff77}
+.fr{background:linear-gradient(145deg,#fff,#a9bcee);box-shadow:inset 0 -4px 6px #5b73b855}.bk{transform:rotateY(180deg);background:linear-gradient(145deg,#fff7a8,#ffb43e);color:#182044;font-weight:950;font-size:clamp(11px,2.6vw,26px);box-shadow:0 0 12px 3px #ffdf6588}
+.t.w .bk{background:linear-gradient(145deg,#d6f8ff,#66d0e8);box-shadow:0 0 12px 3px #66d0e888}
+.t.lit{cursor:pointer;z-index:1}.t.lit .fr{background:linear-gradient(145deg,#fffbd6,#ffe27a);border:3px solid #ffd000;box-shadow:0 0 14px 4px #ffe36a,inset 0 0 8px #fff}
+#cu{text-align:center;font-weight:900;color:#ffdc75;font-size:clamp(1rem,2.6vw,1.4rem);margin:8px;text-shadow:0 0 10px #ffdc7588}#msg{text-align:center;min-height:26px;font-weight:bold;color:#e3e9ff}#tr{text-align:center;color:#ffdc75;letter-spacing:3px;min-height:22px}.ctl{text-align:center}
+#kb{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;max-width:1300px;margin:8px auto}.k{padding:0;margin:0;border-radius:5px;aspect-ratio:1;font-size:clamp(9px,1.7vw,22px);box-shadow:0 2px 0 #2b5da8}
+.k.x{visibility:hidden}.k.u{box-shadow:none;color:#fff;text-shadow:0 0 3px #000;pointer-events:none}.k.hit{background:linear-gradient(180deg,#fff7a8,#ffb43e);color:#182044;text-shadow:none}#kb.off .k:not(.u){opacity:.4;pointer-events:none}
+#gm:not(.tb) #kb,#gm:not(.tb) #tr{display:none}#gm.tb #bd{max-width:540px}#gm.tb .bk{font-size:clamp(8px,1.3vw,14px)}#gm.tb #gb,#gm.tb #bb,#gm.tb #rv{display:none}#gm.tb #kb{max-width:1000px}.sm{font-size:.72rem;padding:2px 10px;opacity:.85}
+#wh{position:fixed;inset:0;background:radial-gradient(#4b2a8a,#0a0e1e);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:7;padding:10px}#wh.on{display:flex}
+#wr{font-size:1.6rem;font-weight:900;color:#ffdc75;margin-bottom:18px;text-align:center;text-shadow:0 0 14px #ffdc75aa}.wrow{display:flex;gap:24px;align-items:center}
+#wp{position:relative}#wp:after{content:"";position:absolute;top:-10px;left:50%;margin-left:-16px;border:16px solid transparent;border-top:32px solid #ff4d6d;border-bottom:0;filter:drop-shadow(0 3px 3px #000)}
+#wc{width:min(calc(100vw - 120px),calc(100vh - 130px),900px);height:auto;display:block;filter:drop-shadow(0 0 25px #ffdc7577)}
+#lv{position:relative;width:54px;height:230px;background:#101834;border-radius:30px;border:2px solid #8294df88;touch-action:none;flex:none}
+#kn{position:absolute;left:3px;top:4px;width:44px;height:44px;border-radius:50%;background:radial-gradient(#ff8fa8,#c0224a);box-shadow:0 4px 10px #0008;cursor:grab;touch-action:none}#kn.ret{transition:top .35s}
+#kd{position:absolute;right:18px;bottom:18px;text-align:center;font-size:.8rem;color:#bfe6ff;touch-action:none}#dk{width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#5a5a5a,#161616 55%,#000);border:2px solid #555;box-shadow:0 4px 10px #000a,inset 0 0 8px #000;position:relative;cursor:grab;touch-action:none;margin:0 auto 4px}#dk i{position:absolute;left:50%;top:6px;width:4px;height:20px;margin-left:-2px;background:#fff;border-radius:2px}
+#dg{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:8;padding:12px}#dg.on{display:flex}
+.box{background:#20294d;border:2px solid #ffdc75;border-radius:18px;padding:20px;max-width:540px;text-align:center}.box input{width:100%;margin:10px 0}
+#fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}.spark{position:absolute;width:7px;height:7px;border-radius:50%;background:hsl(var(--h),100%,65%);box-shadow:0 0 12px 4px hsl(var(--h),100%,60%);animation:boom 2.4s forwards}@keyframes boom{to{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}
+
+/* --- layout: tabla periódica + tablero encima de los metales de transición --- */
+#gm:not([hidden]){display:flex;flex-direction:column}
+#tm{order:0}#stage{order:1}#cu{order:2}#msg{order:3}#tr{order:4}.ctl{order:6}#kw{display:contents}
+#gm.tb #kw{display:block;position:relative;order:5;width:min(100%,1000px,max(360px,calc((100vh - 280px)*2)));margin:6px auto}
+#gm.tb #kb{max-width:none;margin:0}
+#gm.tb #stage{display:contents}
+#gm.tb #bd{position:absolute;top:0;left:calc(11.11% + 3px);width:calc(55.55% - 6px);max-width:none;min-width:0;flex:none;padding:4px;gap:2px;border-width:3px;border-radius:10px;z-index:2}
+#gm.tb .t{aspect-ratio:1/.92}
+#gm.tb .bk{font-size:clamp(8px,1.5vw,16px)}
+#gm.tb #pz{position:absolute;top:0;left:calc(72.22% + 2px);width:calc(22.22% - 4px);height:10.5%;min-height:0;padding:2px;font-size:.6rem;display:flex;flex-direction:column;justify-content:center;border-radius:10px;z-index:2}
+#gm.tb #pz b{font-size:.85rem}
+#gm.tb #cu{font-size:1rem;margin:2px}#gm.tb #msg{min-height:0}#gm.tb #tr{min-height:0}
+/* --- compra: opciones a un lado, sin tapar el tablero --- */
+#dg.side{background:none;pointer-events:none;justify-content:flex-end;padding:12px}
+#dg.side .box{pointer-events:auto;width:230px;padding:14px;box-shadow:0 0 30px #000a}
+#dg.side button{display:block;width:calc(100% - 8px)}
+body.buy #gm{max-width:none;margin-left:12px;margin-right:262px}
+@media(max-width:760px){#dg.side{align-items:flex-end;justify-content:center}#dg.side .box{width:100%}body.buy #gm{margin:12px auto}body.buy{padding-bottom:230px}}
+
+/* --- marcadores de equipo discretos --- */
+#tm{justify-content:center;gap:8px}
+.team{flex:none;min-width:0;width:104px;padding:1px 6px;background:#2c386655;border-width:1px;border-top-width:3px;opacity:.8}
+.team b{font-size:.85rem}.team small{font-size:.62rem}
+.team.on{opacity:1;transform:none;border-color:#ffdc7599;box-shadow:0 0 8px #ffdc7566}
+</style></head><body>
+<h1>⚗ LA RULETA QUÍMICA ⚗</h1>
+<div class="panel" id="su"><p style="text-align:center">Cada casilla es un símbolo químico. Las palabras que no se pueden escribir con símbolos (de, en, el, que…) se <b>compran</b> por categorías.</p><div id="ni"></div>
+<p style="text-align:center">Rondas <select id="nr"><option>3</option><option selected>5</option><option>8</option></select> <button onclick="start()">Empezar</button></p></div>
+<div class="panel" id="gm" hidden><div id="tm"></div><div id="kw"><div id="stage"><div id="pz"></div><div id="bd"></div></div><div id="kb"></div></div><div id="cu"></div><div id="msg"></div><div id="tr"></div>
+<div class="ctl"><button id="gb" onclick="wheel()">Girar</button><button id="bb" onclick="buy()">Compra</button><button id="sb" onclick="solve()">Resuelve</button><button id="rv" class="alt sm" onclick="reveal()">Revelar</button></div></div>
+<div id="wh"><div id="wr"></div><div class="wrow"><div id="wp"><canvas id="wc" width="800" height="800"></canvas></div><div id="lv"><div id="kn"></div></div></div><div id="kd"><div id="dk"><i></i></div><small id="dl"></small></div></div><div id="dg"></div><div id="fx"></div>
+<script>
+const ROWS=["H"+" .".repeat(16)+" He","Li Be"+" .".repeat(10)+" B C N O F Ne","Na Mg"+" .".repeat(10)+" Al Si P S Cl Ar","K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr","Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe","Cs Ba La Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn","Fr Ra Ac"+" .".repeat(15),". . . Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu .",". . . Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr ."];
+const P={};ROWS.forEach((r,i)=>r.split(" ").forEach((s,j)=>{if(s!=".")P[s]=[i,j]}));const SL=new Set(Object.keys(P).map(s=>s.toLowerCase()));
+const CAT={"Artículos":"el la los las un una unos unas lo al del","Preposiciones":"a de en con sin por para sobre hacia ante bajo tras","Pronombres":"yo tu mi su me te se le les nos que ti","Conjunciones":"y o ni pero sino que si","Adverbios y negaciones":"no muy mas ya hoy nunca poco","Verbos auxiliares":"es son soy eres ser hay he has hemos somos"};
+const PH=["Refrán inventado|Con pan y vino se canta","Refrán inventado|Sin vino no se baila","Refrán inventado|No hay beso sin boca","Refrán inventado|Nunca como pan sin vino","Refrán inventado|Ya no hay pan ni vino",
+"Animales|Una cabra bebe vino","Animales|Un oso bebe vino de la copa","Animales|El cuervo canta sobre la luna","Animales|Sobre la nube sube un pato","Animales|Seis cabras sin banco",
+"Luna y cielo|La luna canta y baila en la nube","Luna y cielo|Hoy la luna es blanca","Luna y cielo|Un beso nace con la luna",
+"Dinero|Somos pobres pero tenemos cobre y plata","Dinero|Yo no soy rey ni pobre","Dinero|La plata es de mi pobre amiga","Dinero|Pon cobre y plata sobre la sopa",
+"Planes|Cena con la amiga en el cine","Planes|Baila sobre la nube sin ti","Planes|Pesca con una amiga","Planes|Hoy sobra vino en mi cena",
+"Cosas raras|Una puerta sin techo","Cosas raras|Nunca peso cero","Cosas raras|Un cine sin libro","Geografía|Cuba es una isla","Geografía|La Tierra es una isla"];
+const W=[100,"O",250,150,"S",500,200,"C",300,"O",400,750,"G",600,1000,200],A=2*Math.PI/W.length,cv=wc.getContext("2d"),LBL={O:"☠ ¡TE OXIDAS!",S:"💨 SUBLIMACIÓN",C:"⚡ CATALIZADOR ×2",G:"🛡 GAS NOBLE"},WC={O:"#1c1c1c",S:"#8e44ad",C:"#1f9d55",G:"#14a0b5"},TC=["#ff5c8a","#4dd0e1","#ffd54f","#9ccc65"];
+let T=[],Q=[],N=0,round=0,cur=0,ph="",prize=0,tries=4,pend=0,last="",cells=[],bought=new Set(),th=0,spinning=0;const KB={};
+const nz=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""),say=t=>msg.textContent=t,md=(a,m)=>((a%m)+m)%m;
+ni.innerHTML=[1,2,3,4].map(i=>`<input maxlength="16" value="${i<3?"Equipo "+i:""}" placeholder="Equipo ${i} (opcional)">`).join("");
+ROWS.forEach(r=>r.split(" ").forEach(s=>{const b=document.createElement("button");b.className="k"+(s=="."?" x":"");b.textContent=s=="."?"":s;if(s!="."){b.onclick=()=>kp(s,b);KB[s]=b}kb.append(b)}));
+function dec(w){const m={},f=i=>{if(i==w.length)return[];if(i in m)return m[i];let b=null;for(const l of[1,2]){const s=w.substr(i,l);if(s.length==l&&SL.has(s)){const r=f(i+l);if(r&&(!b||r.length+1<b.length))b=[s,...r]}}return m[i]=b};return f(0)}
+function build(p){
+ const words=p.t.split(" ").map(w=>{const n=nz(w),d=dec(n);return d?{k:"s",n,c:d.map(s=>s[0].toUpperCase()+s.slice(1))}:{k:"w",n,c:[...n.toUpperCase()]}});
+ const rows=[[]];
+ for(const w of words){let r=rows[rows.length-1];if(r.length&&r.length+1+w.c.length>14)rows.push(r=[]);if(r.length)r.push(null);w.c.forEach(c=>r.push({v:c,k:w.k,n:w.n}))}
+ const off=Math.floor((4-rows.length)/2);bd.innerHTML="";cells=[];
+ for(let r=0;r<4;r++){const row=rows[r-off]||[],o=Math.floor((14-row.length)/2);
+  for(let c=0;c<14;c++){const x=row[c-o],t=document.createElement("div");
+   if(x){t.className="t"+(x.k=="w"?" w":"");t.innerHTML=`<div class="in"><div class="fc fr"></div><div class="fc bk">${x.v}</div></div>`;x.el=t;t.onclick=()=>flip(x);cells.push(x)}else t.className="t e";
+   bd.append(t)}}
+}
+function rev(f,d=180){const l=cells.filter(x=>!x.r&&f(x));l.forEach((x,i)=>{x.r=x.fl=1;setTimeout(()=>x.el.classList.add("f"),i*d)});return l.length}
+function light(f,pt){const l=cells.filter(x=>!x.r&&f(x));l.forEach(x=>{x.r=1;x.pt=pt;x.el.classList.add("lit")});pend+=l.length;return l.length}
+function flip(x){if(ph!="flip"||!x.pt&&!x.el.classList.contains("lit")||x.fl)return;x.fl=1;x.el.classList.remove("lit");x.el.classList.add("f");T[cur].b+=x.pt||0;pend--;
+ if(x.pt)say(`+${x.pt} 💰 ${pend?"¡Sigue pulsando las casillas iluminadas!":""}`);if(!pend){ph="turn";prize=0;up();chk()}else up()}
+function up(){tm.innerHTML=T.map((t,i)=>`<div class="team${i==cur?" on":""}" style="--c:${TC[i]}"><small>${t.n} ${t.x?"⚡×2":""}${t.g?"🛡":""}</small><b>${t.b}</b><small>Total ${t.t}</small></div>`).join("");
+ pz.innerHTML=last||"<small>RULETA</small><b>—</b>";tr.textContent=ph=="pick"?"Intentos: "+"●".repeat(tries)+"○".repeat(4-tries):"";
+ gb.disabled=ph!="turn";sb.disabled=ph!="turn"&&ph!="pick";rv.disabled=ph!="turn";bb.disabled=ph!="turn"||(T[cur].b<250&&!T[cur].g);const tb=ph=="pick";if(gm.classList.contains("tb")!=tb)scrollTo(0,0);gm.classList.toggle("tb",tb)}
+function start(){T=[...ni.children].map(i=>i.value.trim().replace(/[<>&"]/g,"")).filter(Boolean).map(n=>({n,b:0,t:0}));
+ if(T.length<2)return alert("Hacen falta al menos 2 equipos");
+ Q=PH.map(x=>x.split("|")).sort(()=>Math.random()-.5).slice(0,+nr.value).map(([c,t])=>({c,t}));N=Q.length;round=0;cur=0;su.hidden=true;gm.hidden=false;newRound()}
+function newRound(){const p=Q[round];T.forEach(t=>{t.b=0;t.x=t.g=0});bought.clear();last="";ph="turn";prize=0;pend=0;build(p);cu.textContent="PISTA: "+p.c;
+ bad.clear();Object.values(KB).forEach(b=>{b.className="k";b.style.background=""});
+ const ps=[...new Set(cells.filter(x=>x.k=="s").map(x=>x.v))].sort(()=>Math.random()-.5).slice(0,3);
+ ps.forEach(s=>{KB[s].classList.add("u","hit");rev(x=>x.k=="s"&&x.v==s)});
+ say(`Ronda ${round+1} de ${N}. Te regalo 3 símbolos: ${ps.join(", ")}. Empieza ${T[cur].n}: ¡gira la ruleta!`);up()}
+function next(){cur=(cur+1)%T.length;ph="turn";prize=0;msg.textContent+=` Turno de ${T[cur].n}.`;up()}
+function drawW(){const s=400,r=s/2;cv.clearRect(0,0,800,800);cv.save();cv.scale(2,2);cv.translate(r,r);cv.rotate(th);
+ W.forEach((w,i)=>{cv.beginPath();cv.moveTo(0,0);cv.arc(0,0,r-14,i*A,(i+1)*A);cv.fillStyle=typeof w=="number"?`hsl(${i*53%360},80%,${50+(i%2)*7}%)`:WC[w];cv.fill();cv.strokeStyle="#fff";cv.lineWidth=2;cv.stroke();
+  cv.save();cv.rotate((i+.5)*A);cv.fillStyle="#fff";cv.shadowColor="#000";cv.shadowBlur=4;cv.font="bold "+(typeof w=="number"?26:12)+"px system-ui";cv.textAlign="right";cv.fillText(typeof w=="number"?w:LBL[w],r-24,8);cv.restore()});
+ cv.beginPath();cv.arc(0,0,r-8,0,7);cv.lineWidth=14;cv.strokeStyle="#ffcf3a";cv.stroke();
+ for(let i=0;i<32;i++){cv.beginPath();cv.arc((r-8)*Math.cos(i*Math.PI/16),(r-8)*Math.sin(i*Math.PI/16),4,0,7);cv.fillStyle=i%2?"#fff":"#ff4d6d";cv.fill()}
+ cv.beginPath();cv.arc(0,0,24,0,7);cv.fillStyle="#ffcf3a";cv.fill();cv.fillStyle="#182044";cv.font="22px system-ui";cv.textAlign="center";cv.fillText("⚛",0,8);cv.restore()}
+function wheel(){cd();last="";up();spinning=0;wr.textContent="Arrastra la palanca hacia abajo";wh.classList.add("on");drawW()}
+function spin(v){const k=.993-(dur-1)*.0045,f=()=>{th+=v;v*=k;drawW();if(v>.003)requestAnimationFrame(f);else res(W[Math.floor(md(1.5*Math.PI-th,2*Math.PI)/A)])};f()}
+function res(v){wr.textContent=typeof v=="number"?"¡"+v+"!":LBL[v];setTimeout(()=>{wh.classList.remove("on");const t=T[cur];last=`<small>RULETA</small><b>${typeof v=="number"?v:LBL[v]}</b>`;
+ if(v=="O"){if(t.g){t.g=0;say("🛡 ¡Tu Gas Noble te salva de oxidarte! Gira otra vez.")}else{t.b=0;say(`☠ ¡${t.n} se oxida! Pierde el dinero de la ronda.`);return next()}}
+ else if(v=="S"){say(`💨 Sublimación: ${t.n} pasa el turno.`);return next()}
+ else if(v=="C"){t.x=1;say("⚡ ¡Catalizador! Tu próximo símbolo acertado vale el doble. Gira otra vez.")}
+ else if(v=="G"){t.g=1;say("🛡 ¡Gas Noble! Te protege de la próxima oxidación o te da una pista gratis. Gira otra vez.")}
+ else{prize=v;tries=4;ph="pick";say("")}
+ up()},1500)}
+let dur=5,kdr=0;const setK=()=>{dk.style.transform=`rotate(${(dur-1)/9*270-135}deg)`;dl.textContent="Resistencia "+dur.toFixed(1)},mv=e=>{const r=dk.getBoundingClientRect();let a=Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)*180/Math.PI+90;if(a>180)a-=360;a=Math.max(-135,Math.min(135,a));dur=Math.round((1+(a+135)/270*9)*10)/10;setK()};
+dk.onpointerdown=e=>{kdr=1;dk.setPointerCapture(e.pointerId);mv(e)};dk.onpointermove=e=>{if(kdr)mv(e)};dk.onpointerup=dk.onpointercancel=()=>kdr=0;setK();
+let y0=null,pw=0;
+kn.onpointerdown=e=>{if(spinning)return;y0=e.clientY;pw=0;kn.classList.remove("ret");kn.setPointerCapture(e.pointerId)};
+kn.onpointermove=e=>{if(y0==null)return;pw=Math.max(0,Math.min(1,(e.clientY-y0)/160));kn.style.top=4+pw*160+"px"};
+kn.onpointerup=kn.onpointercancel=()=>{if(y0==null)return;y0=null;kn.classList.add("ret");kn.style.top="4px";if(pw>.2){spinning=1;wr.textContent="…";spin(.2+.35*pw)}};
+const bad=new Set(),dist=s=>{const ps=[...new Set(cells.filter(x=>x.k=="s"&&!x.r).map(x=>x.v))];return Math.min(...ps.map(q=>Math.abs(P[s][0]-P[q][0])+Math.abs(P[s][1]-P[q][1])))},recolor=()=>bad.forEach(s=>KB[s].style.background=`hsl(${Math.round(220*Math.max(0,Math.min(1,(dist(s)-1)/7)))},85%,48%)`);
+function kp(s,b){if(ph!="pick"||b.classList.contains("u"))return;b.classList.add("u");const t=T[cur];let pr=prize;
+ if(cells.some(x=>!x.r&&x.k=="s"&&x.v==s)){if(t.x){pr*=2;t.x=0}b.classList.add("hit");const n=light(x=>x.k=="s"&&x.v==s,pr);recolor();ph="flip";say(`✨ ¡Hay ${n} × ${s}! Pulsa cada casilla iluminada (+${pr} cada una).`);up();return}
+ bad.add(s);const d=dist(s);recolor();
+ tries--;
+ const h=d<=1?"🔥 ¡Ardiendo!":d<=2?"muy caliente":d<=4?"templado":d<=6?"frío":"🧊 helado";
+ if(tries<=0){say(`❌ No hay ${s} (${h}). Sin intentos.`);next()}else{say(`❌ No hay ${s}: ${h}. Te quedan ${tries}.`);up()}}
+const chk=()=>{if(cells.every(x=>x.fl))setTimeout(win,900)};
+function dlg(h,side){dg.innerHTML=`<div class="box">${h}</div>`;dg.classList.toggle("side",!!side);document.body.classList.toggle("buy",!!side);dg.classList.add("on")}const cd=()=>{dg.classList.remove("on");document.body.classList.remove("buy")};
+function buy(){const g=T[cur].g;dlg(`<h3>Comprar pista</h3><p>${g?"🛡 GRATIS con tu Gas Noble (lo gastas)":"Cuesta 250"}. Se iluminan todas las palabras de la categoría.</p><div>${Object.keys(CAT).filter(k=>!bought.has(k)).map(k=>`<button onclick="bw('${k}')">${k}</button>`).join("")}</div><button class="alt" onclick="cd()">Cancelar</button>`,1)}
+function bw(k){cd();const t=T[cur];if(t.g)t.g=0;else t.b-=250;bought.add(k);const l=CAT[k].split(" "),n=light(x=>l.includes(x.n),0);recolor();
+ if(n){ph="flip";say(`🛒 ${k}: ${n} casillas. ¡Púlsalas para girarlas!`);up()}else{say(`🛒 No hay ${k.toLowerCase()} en la frase.`);next()}}
+function solve(){dlg(`<h3>Resolver</h3><input id="sv" placeholder="Escribe la frase completa" autocomplete="off"><button onclick="sol()">Comprobar</button><button class="alt" onclick="cd()">Cancelar</button>`);sv.focus()}
+function sol(){const f=s=>nz(s).replace(/[^a-z]/g,""),ok=f(sv.value)==f(Q[round].t);cd();if(ok)win();else{say("❌ Esa no es la frase.");next()}}
+function win(){if(ph=="end")return;ph="end";const t=T[cur],g=t.b;t.t+=g;rev(()=>1,70);fire();say(`🎉 ¡${t.n} resuelve la frase!`);up();
+ setTimeout(()=>dlg(`<h3>🎉 ${t.n} resuelve</h3><p style="font-size:1.25rem;color:#ffdc75">${Q[round].t}</p><p>+${g} puntos</p><button onclick="nx()">${round+1<N?"Siguiente ronda":"Ver resultado"}</button>`),3200)}
+function reveal(){dlg(`<h3>¿Revelar la frase?</h3><p>La ronda termina y nadie suma el dinero.</p><button onclick="dr()">Revelar</button><button class="alt" onclick="cd()">Cancelar</button>`)}
+function dr(){cd();ph="end";rev(()=>1,70);say("👀 Frase revelada: nadie suma el dinero de la ronda.");up();setTimeout(()=>dlg(`<h3>👀 Frase revelada</h3><p style="font-size:1.25rem;color:#ffdc75">${Q[round].t}</p><p>Nadie suma puntos esta ronda.</p><button onclick="nx()">${round+1<N?"Siguiente ronda":"Ver resultado"}</button>`),3200)}
+function nx(){cd();round++;if(round>=N)return fin();cur=round%T.length;newRound()}
+function fin(){const s=[...T].sort((a,b)=>b.t-a.t);dlg(`<h3>🏆 ¡Gana ${s[0].n}!</h3>${s.map((t,i)=>`<p>${i+1}. ${t.n} — <b>${t.t}</b></p>`).join("")}<button onclick="location.reload()">Jugar otra vez</button>`);fire()}
+function fire(){for(let k=0;k<4;k++){const x=10+Math.random()*80,y=15+Math.random()*65;for(let i=0;i<20;i++){const s=document.createElement("i"),d=100+Math.random()*120;s.className="spark";s.style.cssText=`left:${x}%;top:${y}%;--x:${Math.cos(i*Math.PI/10)*d}px;--y:${Math.sin(i*Math.PI/10)*d}px;--h:${Math.random()*360}`;fx.append(s);setTimeout(()=>s.remove(),2500)}}}
+</script></body></html>
