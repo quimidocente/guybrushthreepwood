@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Física y Química · Practica y aprende</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Della+Respira&family=Bricolage+Grotesque:wght@800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#0A1020; --bg2:#141033; --ink:#F1F5FF; --muted:#AAB6D3; --card:rgba(255,255,255,.04);
+  --cyan:#22D3EE; --lime:#A3FF4F; --violet:#A78BFA; --pink:#FF4DB8; --amber:#FFB020;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Figtree,system-ui,sans-serif;font-size:1.0625rem;line-height:1.6;
+  background:radial-gradient(1200px 700px at 80% -10%,var(--bg2),transparent 60%),var(--bg1);background-attachment:fixed}
+h1,h2,h3,.tips strong{font-family:'Della Respira',Georgia,serif;font-weight:400;line-height:1.15;margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+#atoms{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 1.25rem}
+
+/* Hero */
+.hero{padding:4rem 0 3rem;display:grid;gap:2.5rem;grid-template-columns:1.2fr 1fr;align-items:center}
+.hero h1{font-size:clamp(3.2rem,10vw,6.5rem);color:#fff;
+  text-shadow:0 0 6px rgba(34,211,238,.7),0 0 22px rgba(34,211,238,.45);animation:neon 5s ease-in-out infinite}
+@keyframes neon{0%,100%{text-shadow:0 0 6px rgba(34,211,238,.7),0 0 22px rgba(34,211,238,.45)}50%{text-shadow:0 0 4px rgba(34,211,238,.45),0 0 14px rgba(34,211,238,.25)}}
+.hero p{max-width:34rem;color:var(--muted);font-size:1.2rem;margin:1.25rem 0 1.75rem}
+.btn{display:inline-block;font-weight:600;padding:.85rem 1.6rem;border-radius:999px;text-decoration:none;color:var(--cyan);
+  border:2px solid var(--cyan);box-shadow:0 0 14px rgba(34,211,238,.45),inset 0 0 10px rgba(34,211,238,.2);transition:transform .15s,background .15s}
+.btn:hover{transform:translateY(-2px);background:rgba(34,211,238,.12)}
+.cluster{display:grid;grid-template-columns:repeat(6,1fr);gap:.8rem;max-width:340px;justify-self:center}
+.el{grid-column:span 2;aspect-ratio:1;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:2.1rem;
+  color:var(--c);border:2px solid var(--c);background:rgba(255,255,255,.03);
+  box-shadow:0 0 12px var(--g),inset 0 0 12px var(--g);animation:pop .6s cubic-bezier(.2,1.4,.4,1) both,glow var(--t) ease-in-out infinite}
+.el:nth-child(1){--c:var(--lime);--g:rgba(163,255,79,.35);--t:4.1s;animation-delay:.05s,0s}
+.el:nth-child(2){--c:var(--cyan);--g:rgba(34,211,238,.35);--t:5.3s;animation-delay:.12s,.4s}
+.el:nth-child(3){--c:var(--pink);--g:rgba(255,77,184,.35);--t:4.7s;animation-delay:.19s,.9s}
+.el:nth-child(4){--c:var(--violet);--g:rgba(167,139,250,.35);--t:5.9s;animation-delay:.26s,1.3s}
+.el:nth-child(5){--c:var(--amber);--g:rgba(255,176,32,.35);--t:4.4s;animation-delay:.33s,.2s}
+.el:nth-child(6){--c:var(--cyan);--g:rgba(34,211,238,.35);--t:6.1s;animation-delay:.4s,1.7s}
+.el:nth-child(7){--c:var(--pink);--g:rgba(255,77,184,.35);--t:5.1s;animation-delay:.47s,.6s}
+.el:nth-child(8){--c:var(--lime);--g:rgba(163,255,79,.35);--t:4.9s;animation-delay:.54s,2.1s}
+.el:nth-child(9){--c:var(--amber);--g:rgba(255,176,32,.35);--t:5.6s;animation-delay:.61s,1.1s}
+  .el.second{grid-column:2 / span 2}
+@keyframes pop{from{transform:scale(.3) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}
+
+/* Secciones */
+section{padding:2.5rem 0}
+.head{margin-bottom:1.5rem;max-width:38rem}
+.head h2{font-size:clamp(1.8rem,4vw,2.6rem)}
+.head p{color:var(--muted);margin:.5rem 0 0}
+.grid{display:grid;gap:1.4rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.tile{--c:var(--cyan);--g:rgba(34,211,238,.4);--t:5s;
+  display:flex;flex-direction:column;gap:.9rem;background:var(--card);border:2px solid var(--c);border-radius:18px;padding:1.4rem;text-decoration:none;
+  box-shadow:0 0 14px var(--g),inset 0 0 14px var(--g);animation:glow var(--t) ease-in-out infinite;transition:transform .15s}
+.tile:hover{transform:translateY(-4px);animation-play-state:paused;box-shadow:0 0 28px var(--c),inset 0 0 18px var(--g)}
+@keyframes glow{0%,100%{opacity:1}50%{opacity:.78}}
+.sym{width:4.5rem;height:4.5rem;border-radius:12px;border:2px solid var(--c);display:flex;align-items:center;justify-content:center;
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5rem;color:var(--c);text-shadow:0 0 10px var(--c)}
+.tile h3{font-size:1.5rem}
+.sym.emoji{font-size:2.2rem;text-shadow:none}
+.tile p{margin:0;color:var(--muted)}
+.tile .go{margin-top:auto;font-weight:600;color:var(--c)}
+.a1{--c:var(--cyan);--g:rgba(34,211,238,.35);--t:4.6s}
+.a2{--c:var(--lime);--g:rgba(163,255,79,.3);--t:5.4s}
+.a3{--c:var(--violet);--g:rgba(167,139,250,.35);--t:6.2s}
+.a4{--c:var(--pink);--g:rgba(255,77,184,.35);--t:5s}
+.a5{--c:var(--amber);--g:rgba(255,176,32,.32);--t:5.8s}
+
+/* Motivación */
+.quote{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);border-radius:24px;padding:2.5rem 2rem;margin:1rem 0}
+.quote h2{font-size:clamp(1.6rem,4vw,2.4rem);max-width:30rem}
+.tips{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:1.5rem}
+.tips div{border-top:3px solid var(--c);padding-top:.75rem}
+.tips div:nth-child(1){--c:var(--lime)}.tips div:nth-child(2){--c:var(--pink)}.tips div:nth-child(3){--c:var(--cyan)}
+.tips strong{font-size:1.25rem}
+.tips p{margin:.25rem 0 0;color:var(--muted)}
+
+footer{padding:2.5rem 0 3rem;color:var(--muted);font-size:.95rem}
+
+@media (max-width:760px){.hero{grid-template-columns:1fr;padding-top:2.5rem}.cluster{max-width:300px}}
+@media (prefers-reduced-motion:reduce){.el,.tile,.hero h1{animation:none}.tile,.btn{transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<canvas id="atoms" aria-hidden="true"></canvas>
+<main class="wrap">
+
+  <header class="hero">
+    <div>
+      <h1>Química</h1>
+      <p>Somos más que un montón de átomos haciéndonos preguntas... pero empieza por responder algunas.<br>
+      Aquí no hay notas, ni nervios.<br>
+      Entrena a tu ritmo, juega, equivócate todo lo que quieras y vuelve a intentarlo.<br>
+      Así es como se aprende.</p>
+      <a class="btn" href="#practica">Vamos allá</a>
+    </div>
+    <div class="cluster" aria-hidden="true">
+      <div class="el">H</div><div class="el">O</div><div class="el">La</div>
+      <div class="el second">Ca</div><div class="el">Ra</div>
+      <div class="el">C</div><div class="el">O</div><div class="el">La</div>
+    </div>
+  </header>
+
+  <section id="practica">
+    <div class="head">
+      <h2>Practica y entrena</h2>
+      <p>Tres herramientas para dominar lo que más se pregunta en los exámenes.</p>
+    </div>
+    <div class="grid">
+      <a class="tile a1" href="unidades.html">
+        <div class="sym">km/h</div>
+        <h3>Cambio de unidades</h3>
+        <p>¿Te lías con los factores de conversión? Aquí los practicas hasta que te salgan sin pensar.</p>
+        <span class="go">Quiero practicar</span>
+      </a>
+      <a class="tile a2" href="formula.html">
+        <div class="sym">H₂O</div>
+        <h3>Formulación</h3>
+        <p>Formula, comprueba y corrige al momento. Cuando te quieras dar cuenta, estarás nombrando compuestos de memoria.</p>
+        <span class="go">Quiero practicar</span>
+      </a>
+      <a class="tile a3" href="hibrida.html">
+        <div class="sym">sp³</div>
+        <h3>Hibridación de orbitales</h3>
+        <p>Mira cómo se mezclan los orbitales y por fin entenderás por qué las moléculas tienen esas formas tan curiosas.</p>
+        <span class="go">Quiero verlo</span>
+      </a>
+    </div>
+  </section>
+
+  <div class="quote">
+    <h2>Nadie nace sabiéndose la tabla periódica.</h2>
+    <div class="tips">
+      <div><strong>Diez minutos al día</strong><p>Es mejor un ratito cada día que una tarde entera la víspera del examen.</p></div>
+      <div><strong>Equivocarte es aprender</strong><p>Cada error que corriges hoy es un punto que ganarás mañana.</p></div>
+      <div><strong>¿Dudas? Compártelas en clase.</strong><p>Si algo no te encaja, apúntalo, levanta la mano en clase y pregunta. Para eso estamos.</p></div>
+    </div>
+  </div>
+
+  <section id="juegos">
+    <div class="head">
+      <h2>¿Ya has practicado? Te lo has ganado.</h2>
+      <p>Ahora, a jugar. Repasa la tabla periódica sin darte cuenta de que estás estudiando. ¡Vaya! ¡Se me ha escapado! ;)</p>
+    </div>
+    <div class="grid">
+      <a class="tile a4" href="ruleta.html">
+        <div class="sym">Ti</div>
+        <h3>Parejas de la tabla periódica</h3>
+        <p>Destapa, recuerda y empareja. Tu memoria y la tabla periódica, frente a frente.</p>
+        <span class="go">A jugar</span>
+      </a>
+      <a class="tile a5" href="ruletasuerte.html">
+        <div class="sym emoji" aria-hidden="true">🎡</div>
+        <h3>Ruleta de la suerte</h3>
+        <p>Gira la ruleta, prueba suerte con los símbolos de la tabla y demuestra cuántos elementos dominas.</p>
+        <span class="go">A jugar</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  Hecho con cariño por un docente de Física y Química para su alumnado de instituto.
+</footer>
+
+<script>
+(function(){
+  var cv=document.getElementById('atoms'),ctx=cv.getContext('2d');
+  var cols=['34,211,238','163,255,79','167,139,250','255,77,184','255,176,32'];
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W,H,atoms=[];
+  function size(){
+    var d=window.devicePixelRatio||1;
+    W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);
+  }
+  function init(){
+    var n=Math.max(8,Math.min(16,Math.round(W/90)));
+    atoms=[];
+    for(var i=0;i<n;i++)atoms.push({
+      x:Math.random()*W,y:Math.random()*H,
+      vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,
+      r:14+Math.random()*22,c:cols[i%cols.length],
+      rot:Math.random()*Math.PI,vr:(Math.random()-.5)*.003,ph:Math.random()*6.28
+    });
+  }
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    atoms.forEach(function(a){
+      if(!reduce){a.x+=a.vx;a.y+=a.vy;a.rot+=a.vr;
+        if(a.x<-60)a.x=W+60;if(a.x>W+60)a.x=-60;
+        if(a.y<-60)a.y=H+60;if(a.y>H+60)a.y=-60;}
+      ctx.strokeStyle='rgba('+a.c+',.22)';ctx.fillStyle='rgba('+a.c+',.35)';ctx.lineWidth=1.2;
+      for(var k=0;k<3;k++){
+        ctx.beginPath();ctx.ellipse(a.x,a.y,a.r,a.r*.38,a.rot+k*Math.PI/3,0,6.283);ctx.stroke();
+        var ang=(t||0)/1000*(.8+k*.3)+a.ph+k*2;
+        var ex=a.r*Math.cos(ang),ey=a.r*.38*Math.sin(ang),cr=Math.cos(a.rot+k*Math.PI/3),sr=Math.sin(a.rot+k*Math.PI/3);
+        ctx.beginPath();ctx.arc(a.x+ex*cr-ey*sr,a.y+ex*sr+ey*cr,2.2,0,6.283);ctx.fill();
+      }
+      ctx.beginPath();ctx.arc(a.x,a.y,3.5,0,6.283);ctx.fill();
+    });
+    if(!reduce)requestAnimationFrame(draw);
+  }
+  size();init();requestAnimationFrame(draw);
+  addEventListener('resize',function(){size();init();if(reduce)draw(0);});
+})();
+</script>
+</body>
+</html>
