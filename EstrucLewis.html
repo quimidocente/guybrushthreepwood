@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laboratorio de Lewis</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#efeaff;--card:#fff;--ink:#1d1450;--mute:#5c5590;--pri:#6c3cff;--acc:#ff5c8a;--ok:#12a875;--el:#ffb400;--lp:#00a6c7;--soft:#e4dcff;--svgbg:#f7f4ff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#150f38;--card:#241b5c;--ink:#f3f0ff;--mute:#b7aee8;--pri:#9b7bff;--ok:#3ddc97;--el:#ffd23f;--lp:#33d6f5;--soft:#372b83;--svgbg:#1b1448}}
+:root[data-theme="dark"]{--bg:#150f38;--card:#241b5c;--ink:#f3f0ff;--mute:#b7aee8;--pri:#9b7bff;--ok:#3ddc97;--el:#ffd23f;--lp:#33d6f5;--soft:#372b83;--svgbg:#1b1448}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 'Fredoka',system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
+h1{font-size:clamp(26px,5vw,38px);margin:4px 0;line-height:1.1}
+h1 span{color:var(--acc)}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+select,input,button{font:inherit}
+select{padding:10px 14px;border-radius:14px;border:3px solid var(--pri);background:var(--card);color:var(--ink);font-weight:600;font-size:18px}
+.stars{font-weight:600;background:var(--card);padding:8px 14px;border-radius:14px}
+.chips{display:flex;gap:6px;margin:0;overflow-x:auto;padding:22px 20px}
+.chip{flex:1 0 auto;min-width:76px;border:0;border-radius:12px;padding:8px 6px;background:var(--soft);color:var(--ink);cursor:pointer;font-weight:600}
+.chip.on{background:var(--pri);color:#fff;transform:scale(1.06);box-shadow:0 0 14px var(--pri),0 0 32px #8a5cff99}
+.chip.done{background:var(--ok);color:#fff}
+.chip small{display:block;font-weight:400;font-size:11px;line-height:1.15;margin-top:2px}
+.card{background:var(--card);border-radius:22px;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px;box-shadow:0 6px 0 var(--soft)}
+@media(max-width:720px){.card{grid-template-columns:1fr}}
+svg{width:100%;background:var(--svgbg);border-radius:16px;display:block}
+h2{margin:0 0 6px;font-size:23px;color:var(--pri)}
+.box{background:var(--soft);border-radius:14px;padding:10px 14px;margin:10px 0}
+.tip{border-left:6px solid var(--el)}
+.ok{border-left:6px solid var(--ok)}
+.msg{font-weight:600;min-height:1.5em}
+input{width:90px;padding:8px;border-radius:10px;border:3px solid var(--pri);background:var(--card);color:var(--ink);text-align:center;font-size:20px}
+.btn{border:0;border-radius:14px;padding:10px 18px;background:var(--pri);color:#fff;font-weight:600;cursor:pointer;margin:4px 4px 0 0;box-shadow:0 0 14px #8a5cff99}
+.btn.alt{background:var(--soft);color:var(--ink);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default}
+.nav{display:flex;justify-content:space-between;margin-top:12px}
+.at{cursor:pointer}
+.fin{text-align:center;font-size:14px;letter-spacing:.03em;color:var(--mute);margin-top:8px}
+button:focus-visible,select:focus-visible,input:focus-visible,.at:focus-visible{outline:4px solid var(--acc);outline-offset:2px}
+.pop{animation:pop .5s}@keyframes pop{50%{transform:scale(1.04)}}
+@media(prefers-reduced-motion:reduce){.pop{animation:none}.chip.on{transform:none}}
+</style></head><body><div class="wrap">
+<div class="top"><h1>Laboratorio de <span>Lewis</span> ⚗️</h1><div class="stars" id="stars"></div></div>
+<label for="sel" style="font-weight:600">Elige una molécula: </label><select id="sel"></select>
+<div class="box tip" id="rare" hidden>🎓 <b>Respira:</b> esta molécula es de nivel extra. En la PAU lo normal es que pidan moléculas sencillas que cumplen el octeto. Está aquí para que practiques y entiendas las excepciones.</div>
+<div class="chips" id="chips"></div>
+<div class="card pop" id="card"></div>
+<div class="nav"><button class="btn alt" id="prev">← Anterior</button><button class="btn" id="next">Siguiente →</button></div>
+</div>
+<script>
+const V={H:1,C:4,N:5,O:6,S:6,Cl:7,P:5,B:3,F:7,Be:2},COL={H:'#fff',C:'#b5b9cc',N:'#7ea0ff',O:'#ff7b7b',S:'#ffd23f',Cl:'#4fe0a0',P:'#ffb27a',B:'#f4b6a6',F:'#c3f584',Be:'#d9c2ff'},NEON={H:'#00c8ff',C:'#7d86ff',N:'#2f6bff',O:'#ff2d55',S:'#ffa600',Cl:'#00e08a',P:'#ff7a00',B:'#ff6b9d',F:'#7ad400',Be:'#b44cff'};
+const M={
+h2o:{f:'H₂O',q:0,a:[['O',160,90],['H',100,165],['H',220,165]],b:[[0,1],[0,2]],x:[],why:'El oxígeno aparece una sola vez y los hidrógenos nunca pueden ser centrales (solo forman 1 enlace).'},
+nh3:{f:'NH₃',q:0,a:[['N',160,110],['H',95,170],['H',225,170],['H',160,35]],b:[[0,1],[0,2],[0,3]],x:[],why:'El nitrógeno es el único que no se repite. El hidrógeno nunca es central.'},
+co2:{f:'CO₂',q:0,a:[['C',160,120],['O',60,120],['O',260,120]],b:[[0,1],[0,2]],x:[[0,1],[0,2]],why:'El carbono es el único que aparece una vez (y el menos electronegativo).'},
+o2:{f:'O₂',q:0,a:[['O',100,120],['O',220,120]],b:[[0,1]],x:[[0,1]],nc:1,why:'En el O₂ solo hay dos átomos y son iguales: no puede haber átomo central, se unen directamente entre sí.'},
+c2h2:{f:'C₂H₂',q:0,nc:1,tri:1,s5:'Une los átomos en cadena H–C–C–H: <b>3 enlaces sencillos</b> (rayas rosas).',a:[['C',120,120],['C',200,120],['H',50,120],['H',270,120]],b:[[0,1],[0,2],[1,3]],x:[[0,1],[0,1]],why:'Los dos C son iguales y los H nunca son centrales: el esqueleto es H–C–C–H, con los dos C unidos entre sí (no hay un único átomo central).'},
+so2cl2:{f:'SO₂Cl₂',q:0,t:'exp',eb:6,qtxt:'Cuenta: 2 enlaces dobles S=O (cada uno cuenta como 2) + 2 enlaces sencillos S–Cl. ¿Cuántos enlaces (pares enlazantes) hay en total?',warn:'Por octeto bastarían 4 enlaces sencillos, pero así el S tendría carga formal +2 y cada O −1. Con 2 enlaces dobles S=O (6 enlaces en total) todas las cargas formales son 0.',a:[['S',160,120],['O',95,55],['O',225,55],['Cl',95,185],['Cl',225,185]],b:[[0,1],[0,2],[0,3],[0,4]],x:[[0,1],[0,2]],why:'El azufre es el único que aparece una sola vez.',note:'🔬 <b>Octeto expandido:</b> el S forma 2 enlaces dobles (S=O) y 2 sencillos (S–Cl): tiene 12 e⁻ a su alrededor y ningún par libre. Es posible porque el S es del 3.er periodo y dispone de orbitales d. Los O y los Cl sí cumplen el octeto (8 e⁻).'},
+h2so4:{f:'H₂SO₄',q:0,t:'exp',eb:8,qtxt:'Cuenta: 4 enlaces S–O + 2 enlaces O–H + 2 enlaces extra de los dobles S=O. ¿Cuántos enlaces (pares enlazantes) hay en total?',warn:'Por octeto bastarían 6 enlaces sencillos (4 S–O y 2 O–H), pero así el S tendría carga formal +2 y dos O −1. Con 2 enlaces dobles S=O (8 enlaces en total) todas las cargas formales son 0.',s5:'Une el S con los 4 O y cada H con su O: <b>6 enlaces sencillos</b> (rayas rosas).',a:[['S',160,120],['O',95,55],['O',225,55],['O',95,170],['O',225,170],['H',40,208],['H',280,208]],b:[[0,1],[0,2],[0,3],[0,4],[3,5],[4,6]],x:[[0,1],[0,2]],why:'El azufre es el único que aparece una sola vez. Los H nunca son centrales: cada uno se une a un O (grupos –OH).',note:'🔬 <b>Octeto expandido:</b> el S tiene 12 e⁻ a su alrededor (2 enlaces dobles S=O + 2 sencillos S–OH) y ningún par libre. Los H van unidos a los O, no al S: es un oxoácido (S–O–H). Todos los O cumplen el octeto (8 e⁻).'},
+nh4:{f:'NH₄⁺',q:1,a:[['N',160,120,1],['H',160,40],['H',160,200],['H',80,120],['H',240,120]],b:[[0,1],[0,2],[0,3],[0,4]],x:[],why:'El nitrógeno es el único que no se repite. Es un catión: restamos 1 e⁻.'},
+bf3:{f:'BF₃',q:0,t:'inc',eb:3,warn:'Para unir los 4 átomos bastan 3 enlaces sencillos: el B no puede completar el octeto.',a:[['B',160,120],['F',160,42],['F',228,160],['F',92,160]],b:[[0,1],[0,2],[0,3]],x:[],why:'El boro es el único que no se repite (y el menos electronegativo).',note:'🔬 <b>Octeto incompleto:</b> el B solo tiene 3 e⁻ de valencia y queda con 6 e⁻ a su alrededor. Por eso el BF₃ es un ácido de Lewis: acepta un par de e⁻ (enlace dativo) de, por ejemplo, el NH₃.'},
+bef2:{f:'BeF₂',q:0,t:'inc',eb:2,warn:'Por octeto saldrían 4 enlaces, pero el Be solo aporta 2 e⁻ de valencia: solo puede formar 2 enlaces.',a:[['Be',160,120],['F',60,120],['F',260,120]],b:[[0,1],[0,2]],x:[],why:'El berilio es el único que aparece una sola vez (y el menos electronegativo).',note:'🔬 <b>Caso curioso:</b> el Be queda con solo 4 e⁻ a su alrededor, el octeto más incompleto de todos. Por eso en estado sólido el BeF₂ no es una molécula aislada: cada Be se rodea de 4 F compartidos con otros Be (red parecida a la del cuarzo).'},
+pcl5:{f:'PCl₅',q:0,t:'exp',eb:5,warn:'Para unir los 6 átomos hacen falta 5 enlaces (más de los 4 que da el octeto).',a:[['P',160,125],['Cl',160,47],['Cl',234,101],['Cl',206,188],['Cl',114,188],['Cl',86,101]],b:[[0,1],[0,2],[0,3],[0,4],[0,5]],x:[],why:'El fósforo es el único que aparece una sola vez.',note:'🔬 <b>Octeto expandido:</b> el P tiene 10 e⁻ a su alrededor. Los elementos del 3.er periodo o posteriores pueden superar los 8 e⁻ (PCl₅: 10 e⁻; SF₆: 12 e⁻) porque tienen orbitales d vacíos en su capa de valencia. El N, del 2.º periodo, no puede: no existe el NCl₅.'},
+sf6:{f:'SF₆',q:0,t:'exp',eb:6,warn:'Para unir los 7 átomos hacen falta 6 enlaces (más de los 4 que da el octeto).',a:[['S',160,120],['F',160,42],['F',228,81],['F',228,159],['F',160,198],['F',92,159],['F',92,81]],b:[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6]],x:[],why:'El azufre es el único que aparece una sola vez.',note:'🔬 <b>Octeto expandido:</b> el S tiene 12 e⁻ a su alrededor (6 enlaces). Es posible porque el S es del 3.er periodo y dispone de orbitales d vacíos; el O, del 2.º periodo, no forma OF₆.'},
+o3:{f:'O₃ (ozono)',q:0,res:1,a:[['O',160,95,1],['O',80,170,-1],['O',240,170]],b:[[0,1],[0,2]],x:[[0,2]],why:'Los tres átomos son oxígeno: elegimos el del medio para poder unir los otros dos.'},
+co3:{f:'CO₃²⁻',q:-2,a:[['C',160,120],['O',160,40],['O',90,170,-1],['O',230,170,-1]],b:[[0,1],[0,2],[0,3]],x:[[0,1]],why:'El carbono es el único que aparece una vez. Es un anión: sumamos 2 e⁻.'},
+no3:{f:'NO₃⁻',q:-1,res:3,a:[['N',160,120,1],['O',160,40],['O',90,170,-1],['O',230,170,-1]],b:[[0,1],[0,2],[0,3]],x:[[0,1]],why:'El nitrógeno es el único que aparece una vez. Es un anión: sumamos 1 e⁻.',note:'🔬 <b>Cargas formales:</b> el N tiene carga +1 y dos O tienen −1; la suma es la carga del ion (−1). El N, del 2.º periodo, no puede expandir el octeto: por eso no hay ningún N=O extra.',rtxt:'<b>🔁 ¡Tiene 3 estructuras de resonancia!</b><br>El doble enlace N=O puede estar en cualquiera de los tres O, y las tres cumplen el octeto. Ninguna es la real: se unen con flechas ↔.<br>El ion real es un <b>híbrido</b>: los tres enlaces N–O son iguales (intermedios entre sencillo y doble, orden de enlace 4/3) y la carga − está repartida entre los tres O (−⅓ en cada uno).<br><button class="btn" onclick="flip()">Ver la siguiente forma resonante ⇄</button>'}
+};
+const LB=['Necesitamos','Tenemos','Enlaces y pares libres','Átomo central','Enlaces','Pares libres','Comprueba octetos y cargas'];
+const st={k:'h2o',s:1,pick:null,score:0,mode:'mix',done:{}};
+const $=id=>document.getElementById(id);
+const RARE=['bf3','so2cl2','h2so4','bef2','pcl5','sf6'],KEYS=[...Object.keys(M).filter(k=>!RARE.includes(k)),...RARE];
+const sel=$('sel');[['Básicas',k=>!RARE.includes(k)],['Casos raros (para practicar)',k=>RARE.includes(k)]].forEach(([l,f])=>{const g=document.createElement('optgroup');g.label=l;KEYS.filter(f).forEach(k=>g.appendChild(new Option(M[k].f,k)));sel.appendChild(g)});
+function calc(m){const n=m.a.length,need=m.a.reduce((t,a)=>t+(a[0]=='H'?2:8),0),val=m.a.reduce((t,a)=>t+V[a[0]],0)-m.q,sh=need-val;
+const eb=m.eb||sh/2;return{n,need,val,sh,oct:sh/2,bonds:eb,lp:(val-2*eb)/2,extra:eb-(n-1),H:m.a.some(a=>a[0]=='H')}}
+function pairsInfo(m){const bo=m.a.map(()=>0),ord={};
+[...m.b,...m.x].forEach(([i,j])=>{const k=i+'-'+j;ord[k]=(ord[k]||0)+1;bo[i]++;bo[j]++});return{bo,ord}}
+function lones(m,i,k,bo){const [,x,y]=m.a[i];const used=[];
+Object.keys(pairsInfo(m).ord).forEach(key=>{const[a,b]=key.split('-').map(Number);if(a==i||b==i){const o=m.a[a==i?b:a];used.push(Math.atan2(o[2]-y,o[1]-x))}});
+const out=[];for(let c=0;c<k;c++){let best=0,bd=-1;for(let d=0;d<360;d+=15){const r=d*Math.PI/180;
+const md=Math.min(...used.concat(out).map(u=>{let t=Math.abs(r-u)%(2*Math.PI);return t>Math.PI?2*Math.PI-t:t}),9);if(md>bd){bd=md;best=r}}out.push(best)}return out}
+function lones2(m,i,k){const[,x,y]=m.a[i];let an=[];Object.keys(pairsInfo(m).ord).forEach(key=>{const[a,b]=key.split('-').map(Number);if(a==i||b==i){const o=m.a[a==i?b:a];an.push(Math.atan2(o[2]-y,o[1]-x))}});
+const T=2*Math.PI;an=an.map(t=>(t+T)%T).sort((p,q)=>p-q);if(!an.length)an=[Math.PI/2];
+const gp=an.map((t,j)=>({s:t,l:(j+1<an.length?an[j+1]:an[0]+T)-t}));let best=null;
+(function rec(j,left,al){if(j==gp.length){if(!left){const sc=Math.min(...gp.map((g,t)=>g.l/(al[t]+1)));if(!best||sc>best.s+1e-9)best={s:sc,a:al.slice()}}return}for(let c=0;c<=left;c++){al[j]=c;rec(j+1,left-c,al)}})(0,k,[]);
+const out=[];gp.forEach((g,t)=>{for(let u=1;u<=best.a[t];u++)out.push(g.s+g.l*u/(best.a[t]+1))});return out}
+function badgePos(m,i,k){const[,x,y]=m.a[i],T=2*Math.PI;let an=lones2(m,i,k).slice();Object.keys(pairsInfo(m).ord).forEach(key=>{const[a,b]=key.split('-').map(Number);if(a==i||b==i){const o=m.a[a==i?b:a];an.push(Math.atan2(o[2]-y,o[1]-x))}});
+an=an.map(t=>(t%T+T)%T).sort((p,q)=>p-q);let bg=-1,ba=0;an.forEach((t,j)=>{const l=(j+1<an.length?an[j+1]:an[0]+T)-t;if(l>bg+1e-9){bg=l;ba=t+l/2}});return[x+42*Math.cos(ba),y+42*Math.sin(ba)]}
+const dotE=(x,y,c)=>`<circle cx="${x}" cy="${y}" r="3.8" fill="${c}"/>`;
+const crossE=(x,y,c)=>`<path d="M${x-3.8} ${y-3.8}l7.6 7.6M${x-3.8} ${y+3.8}l7.6-7.6" stroke="${c}" stroke-width="2.4" stroke-linecap="round"/>`;
+function draw(s){const m=M[st.k],{bo,ord}=pairsInfo(m);let g='<svg viewBox="0 0 320 240" role="img" aria-label="Estructura de '+m.f+'">';
+if(s>=5)for(const key in ord){const[a,b]=key.split('-').map(Number),A=m.a[a],B=m.a[b],dx=B[1]-A[1],dy=B[2]-A[2],L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L,k=ord[key];
+for(let t=0;t<k;t++){const o=(t-(k-1)/2)*10;if(st.mode!='cross')g+=`<line x1="${A[1]+nx*o}" y1="${A[2]+ny*o}" x2="${B[1]+nx*o}" y2="${B[2]+ny*o}" stroke="#ff5c8a" stroke-width="5" stroke-linecap="round"/>`;else{const mx=(A[1]+B[1])/2+nx*o,my=(A[2]+B[2])/2+ny*o,ux=dx/L*6,uy=dy/L*6;g+=(a==0&&st.mode=='cross'?crossE:dotE)(mx-ux,my-uy,'#ff5c8a')+dotE(mx+ux,my+uy,'#ff5c8a')}}}
+m.a.forEach((a,i)=>{const[e,x,y,fc]=a,c=(s==4&&st.pick==null)||(s>=4&&i==0);
+g+=`<g class="${s==4?'at':''}" ${s==4?`tabindex="0" role="button" aria-label="Átomo ${e}" onclick="pick(${i})" onkeydown="if(event.key=='Enter')pick(${i})"`:''}>`;
+const hl=s>=4&&i==0&&(s>4||st.pick==0)&&!m.nc,hc=e=='S'||e=='H'?'#00b8ff':'#ffc400';
+g+=`<circle cx="${x}" cy="${y}" r="19" fill="${COL[e]}" stroke="${NEON[e]}" stroke-width="2.5" style="filter:drop-shadow(0 0 3px ${NEON[e]}) drop-shadow(0 0 8px ${NEON[e]})"/><text x="${x}" y="${y+6}" text-anchor="middle" font-size="19" font-weight="700" fill="#1d1450" ${hl?`style="filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 3px ${hc}) drop-shadow(0 0 7px ${hc})"`:''}>${e}</text></g>`;
+if(s>=6){const k=(V[e]-(fc||0)-bo[i])/2;lones2(m,i,k).forEach(r=>{const cx=x+33*Math.cos(r),cy=y+33*Math.sin(r),px=-Math.sin(r),py=Math.cos(r);
+g+=st.mode!='line'?(i==0&&st.mode=='cross'?crossE:dotE)(cx+px*5,cy+py*5,'#00a6c7')+(i==0&&st.mode=='cross'?crossE:dotE)(cx-px*5,cy-py*5,'#00a6c7')
+:`<line x1="${cx+px*8}" y1="${cy+py*8}" x2="${cx-px*8}" y2="${cy-py*8}" stroke="#00a6c7" stroke-width="4" stroke-linecap="round"/>`})}
+if(s>=7&&fc){const[bx,by]=badgePos(m,i,(V[e]-fc-bo[i])/2);g+=`<circle cx="${bx}" cy="${by}" r="9" fill="#fff" stroke="#ff5c8a" stroke-width="2.5"/><text x="${bx}" y="${by+5}" text-anchor="middle" font-size="15" font-weight="700" fill="#d6246a">${fc>0?'+':'−'}</text>`}});
+if(m.q&&s>=7)g+=`<text x="310" y="24" text-anchor="end" font-size="16" font-weight="700" fill="#ff5c8a">carga total ${m.q>0?'+':'−'}${Math.abs(m.q)>1?Math.abs(m.q):''}</text>`;
+return g+'</svg>'}
+function q(id,text,ans,exp){const key=st.k+id;if(st.done[key])return`<div class="box ok">✅ ${exp}</div>`;
+return`<div class="box tip"><b>🎯 Pruébalo tú:</b> ${text}<br><input id="in${id}" type="number" inputmode="numeric" aria-label="Tu respuesta"> <button class="btn" onclick="chk('${id}',${ans})">Comprobar</button><button class="btn alt" onclick="chk('${id}',${ans},1)">Ver solución</button><div class="msg" id="m${id}"></div></div>`}
+function chk(id,ans,show){const v=$('in'+id).value;if(show||+v==ans){if(!show&&!st.done[st.k+id])st.score++;st.done[st.k+id]=1;render()}else $('m'+id).textContent=v===''?'Escribe un número 🙂':'Casi… revisa el cálculo y prueba otra vez 💪'}
+function pick(i){if(M[st.k].nc)i=0;st.pick=i;if(i==0&&!st.done[st.k+'p']){st.done[st.k+'p']=1;st.score++}render()}
+function text(s){const m=M[st.k],c=calc(m),qx=m.q?(m.q>0?` (catión: restamos ${m.q} e⁻)`:` (anión: sumamos ${-m.q} e⁻)`):'';
+const vs=[...new Set(m.a.map(a=>a[0]))].map(e=>{const n=m.a.filter(a=>a[0]==e).length;return`${n}×${V[e]} e⁻ (${e})`}).join(' + ');
+if(s==1)return`<h2>Paso 1 · ¿Cuántos electrones necesitan?</h2><p>Cada átomo quiere acabar con <b>8 e⁻</b> en su última capa (octeto).${c.H?' <b>Ojo:</b> el hidrógeno solo necesita 2 e⁻.':''}</p>`+q('1',`${c.n} átomos... ¿cuántos electrones necesitan en total?`,c.need,`Necesitamos <b>${c.need} e⁻</b> en total.`);
+if(s==2)return`<h2>Paso 2 · ¿Cuántos electrones tenemos?</h2><p>Suma los electrones de valencia de cada átomo${qx}.</p><div class="box">${vs}${m.q?(m.q>0?' − '+m.q+' e⁻':' + '+(-m.q)+' e⁻'):''}</div>`+q('2','¿Cuántos electrones de valencia hay en total?',c.val,`Tenemos <b>${c.val} e⁻</b>.`);
+if(s==3&&m.eb)return`<h2>Paso 3 · Pares que enlazan y pares libres</h2><div class="box">Por el octeto: ${c.need} e⁻ − ${c.val} e⁻ = ${c.need-c.val} e⁻ → ${c.oct} enlaces.<br>⚠ ${m.warn}<br>Usamos <b>${c.bonds} enlaces</b> (${2*c.bonds} e⁻).<br>Los demás: ${c.val} e⁻ − ${2*c.bonds} e⁻ = ${c.val-2*c.bonds} e⁻ = <b>${c.lp} pares libres</b>.</div>`+q('3',m.qtxt||`Para unir los ${c.n} átomos al central, ¿cuántos enlaces hacen falta?`,c.bonds,`<b>${c.bonds} enlaces</b> y <b>${c.lp} pares no enlazantes</b>.`);
+if(s==3)return`<h2>Paso 3 · Pares que enlazan y pares libres</h2><div class="box">Faltan: ${c.need} e⁻ − ${c.val} e⁻ = <b>${c.sh} e⁻</b> → se comparten.<br>Cada enlace son 2 e⁻ → <b>${c.bonds} enlaces</b>.<br>Los demás: ${c.val} e⁻ − ${c.sh} e⁻ = ${c.val-c.sh} e⁻ = <b>${c.lp} pares libres</b>.</div>`+q('3',`Si se comparten ${c.sh} e⁻, ¿cuántos enlaces (pares enlazantes) hay?`,c.bonds,`<b>${c.bonds} enlaces</b> y <b>${c.lp} pares no enlazantes</b>.`);
+if(s==4)return`<h2>Paso 4 · Elige el átomo central</h2><p>Regla: el que <b>no se repite</b>. Si ninguno es único, el menos electronegativo.</p><div class="box tip">👆 Toca el átomo central en el dibujo.</div>`+(st.pick==null?'':st.pick==0?`<div class="box ok">🎉 ${m.nc?'':'¡Correcto! '}${m.why}</div>`:`<div class="box">🤔 Ese se repite o no puede ser central. Pista: ${m.why}</div>`);
+if(s==5)return`<h2>Paso 5 · Coloca los enlaces</h2><p>${m.s5||`Une el átomo central con los demás: <b>${c.n-1} enlaces sencillos</b> (rayas rosas).`}</p><div class="box">Enlaces usados: ${c.n-1} de ${c.bonds}.<br>${c.extra>0?`Quedan <b>${c.extra}</b> por colocar: ${m.tri?'se suman al enlace C–C hasta hacerlo <b>triple</b> (paso 6)':'serán enlaces dobles (paso 6)'}.`:'No sobra ninguno: todos son sencillos.'}</div>`;
+if(s==6)return`<h2>Paso 6 · Completa la estructura</h2>${c.extra>0?`<p>${m.tri?`Los ${c.extra} enlaces que sobran se suman al enlace C–C: pasa de sencillo a <b>triple</b>.`:`Los ${c.extra} enlace(s) que sobran convierten sencillos en <b>dobles</b>, entre átomos a los que les falten electrones.`}</p>`:''}<p>Los <b>${c.lp} pares libres</b> se reparten hasta que cada átomo llegue a su octeto.</p><div class="box tip">Elige cómo dibujar los electrones:</div>${MB()}`;
+const{bo}=pairsInfo(m);return`<h2>Paso 7 · ¡Comprueba el octeto! 🎉</h2>`+`<div class="box ok">`+m.a.map((a,i)=>{const e=a[0],k=(V[e]-(a[3]||0)-bo[i])/2;const tot=bo[i]*2+k*2,okk=e=='H'?tot==2:tot==8;return`${e}: ${bo[i]*2} (enlaces) + ${k*2} (libres) = <b>${tot} e⁻</b> ${okk?'✔':(tot>8?'✦ octeto expandido':'✦ octeto incompleto')}`}).join('<br>')+`</div>${MB()}<p style="font-size:14px;color:var(--mute)">Todas son válidas: una raya = dos puntos = un par de e⁻. En "puntos y aspas", × son los e⁻ del átomo central y • los del otro átomo: solo sirve para ver qué aporta cada átomo; los electrones son todos iguales. En iones y en el ozono, algunos e⁻ extra vienen de la carga.</p>`+(m.q?`<p>Las cargas formales (+ / −) muestran dónde está la carga del ion.</p>`:'')+(m.note?`<div class="box tip">${m.note}</div>`:'')+(m.res?`<div class="box tip">${m.rtxt||`<b>🔁 ¡Es una estructura de resonancia!</b><br>El doble enlace del O₃ se puede dibujar a la izquierda o a la derecha, y las dos estructuras cumplen el octeto. Ninguna es la real: se llaman <b>formas resonantes</b> y se unen con una flecha ↔.<br>La molécula real es un <b>híbrido</b> de las dos: los dos enlaces O–O son iguales (ni sencillos ni dobles, intermedios) y la carga − está repartida entre los dos O de los extremos.<br><button class="btn" onclick="flip()">Ver la otra forma resonante ⇄</button>`}</div>`:'')+`<p>🧪 Prueba otra molécula del menú. Estructura ${KEYS.indexOf(st.k)+1} de ${KEYS.length}.</p>`}
+function render(){$('rare').hidden=!RARE.includes(st.k);$('card').innerHTML=`<div>${draw(st.s)}${st.s>=6?`<div class="fin">✦ Estructura de Lewis final · ${M[st.k].f}${M[st.k].t?(M[st.k].t=='exp'?' · octeto expandido':' · octeto incompleto'):''}</div>`:''}</div><div>${text(st.s)}</div>`;
+$('chips').innerHTML=[1,2,3,4,5,6,7].map(i=>`<button class="chip ${i==st.s?'on':i<st.s?'done':''}" onclick="go(${i})">${i}<small>${LB[i-1]}</small></button>`).join('');
+$('stars').textContent='⭐ '+st.score;$('prev').disabled=st.s==1;$('next').disabled=st.s==7}
+function MB(){const N={mix:'enlaces en rayas, pares libres en puntos',line:'todos los pares en rayas',cross:'aspas del central, puntos de los otros'};return `<button class="btn" onclick="st.mode=({mix:'line',line:'cross',cross:'mix'})[st.mode];render()">Cambiar vista 🔄</button><div class="msg" style="font-size:14px;color:var(--mute)">Vista: ${N[st.mode]}</div>`}
+function flip(){const m=M[st.k];if(m.res==3){const d=m.x[0][1],n=d%3+1;m.x=[[0,n]];m.a[d][3]=-1;m.a[n][3]=undefined;render();return}m.x=[[0,m.x[0][1]==2?1:2]];const t=m.a[1][3];m.a[1][3]=m.a[2][3];m.a[2][3]=t;render()}
+function go(i){st.s=i;if(i!=4)st.pick=st.pick;render()}
+sel.onchange=()=>{st.k=sel.value;st.s=1;st.pick=null;render()};
+$('prev').onclick=()=>go(st.s-1);$('next').onclick=()=>go(st.s+1);render();
+</script></body></html>
