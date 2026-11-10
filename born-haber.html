@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ciclo de Born–Haber · del elemento al cristal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f3f0ff;--cd:#fff;--tx:#1c1a3a;--mu:#6e6a94;--ln:#ddd8f7}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0b0920;--cd:#16133a;--tx:#f1eeff;--mu:#a29fcf;--ln:#2d2a5e}}
+:root[data-theme=dark]{--bg:#0b0920;--cd:#16133a;--tx:#f1eeff;--mu:#a29fcf;--ln:#2d2a5e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 15% 0,#7c4dff33,transparent 50%),radial-gradient(circle at 90% 15%,#ec407a22,transparent 45%),var(--bg);color:var(--tx);font:15px/1.45 system-ui,"Segoe UI",sans-serif}
+header{text-align:center;padding:20px 12px 4px}
+h1{margin:0;font-size:clamp(24px,5vw,40px);background:linear-gradient(90deg,#f97316,#ec407a,#a259ff,#0aa5d8);-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{margin:4px 0 0;color:var(--mu)}
+h3{margin:0 0 6px;font-size:19px}
+.row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:8px 12px}
+button,select,input{font:inherit;color:var(--tx)}
+.chip,.b{border:1px solid var(--ln);background:var(--cd);border-radius:999px;padding:6px 13px;cursor:pointer;transition:.2s}
+.chip small{display:block;font-size:10px;color:var(--mu);line-height:1.1}
+.chip:hover,.b:hover{transform:translateY(-2px);border-color:#a259ff}
+button:focus-visible{outline:2px solid #a259ff;outline-offset:2px}
+.on{background:linear-gradient(135deg,#7c4dff,#ec407a)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 4px 18px #7c4dff66}
+.on small{color:#fff!important}
+main{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:14px;max-width:1200px;margin:auto;padding:6px 12px 30px}
+.card{background:var(--cd);border:1px solid var(--ln);border-radius:18px;padding:12px;box-shadow:0 8px 30px #0002;min-width:0}
+#in{grid-column:1/-1}
+canvas{width:100%;height:auto;display:block;border-radius:12px;background:linear-gradient(#0d0a2a,#1d1255)}
+.dg{overflow-x:auto}svg{display:block;min-width:560px;width:100%;height:auto}
+svg text{fill:var(--mu);paint-order:stroke;stroke:var(--cd);stroke-width:3px;stroke-linejoin:round}
+svg .c{fill:currentColor}svg .e{stroke:none}svg .t{fill:var(--tx)}
+.bl{stroke:var(--mu);stroke-dasharray:3 5;opacity:.5}
+.eq{font:14px ui-monospace,Consolas,monospace;color:var(--mu);margin:2px 0 8px;overflow-wrap:anywhere}
+.eqb{margin:6px 0 10px;padding:10px 14px;border:1px solid var(--ln);border-radius:12px;font:500 19px/2.1 Cambria,"Cambria Math",Georgia,serif;overflow-wrap:anywhere}
+.eqb span{display:inline-block;padding:0 7px;border-radius:8px;transition:.3s}
+.eqb .hi{font-weight:800;font-size:1.1em}
+.eqb .nr{font-size:17px;color:var(--tx)}
+.big{font-size:clamp(20px,4.5vw,30px);font-weight:800;margin:4px 0}.big small{font-size:13px;font-weight:500;color:var(--mu)}
+.mu{color:var(--mu)}.ok{color:#14b86a;font-weight:700}.er{color:#ec407a;font-weight:600}
+.mv{margin-top:8px;padding:8px 12px;border-radius:12px;background:linear-gradient(90deg,#7c4dff22,#ec407a22);font-weight:600}
+.dat{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.dc{border:1px solid var(--ln);border-radius:12px;padding:5px 10px;font-size:13px;display:flex;flex-direction:column}.dc b{font-size:16px}
+select,input{border:1px solid var(--ln);background:var(--bg);border-radius:10px;padding:7px 10px;max-width:100%}
+.pop{animation:fd .9s both}@keyframes fd{from{opacity:0}}.pop line{filter:drop-shadow(0 0 5px currentColor)}
+@media(prefers-reduced-motion:reduce){.pop{animation:none}}
+</style></head><body>
+<header><h1>⚛️ Ciclo de Born–Haber</h1><p>Del elemento nativo al cristal ordenado, escalón a escalón</p></header>
+<div class="row" id="sl"></div>
+<div class="row"><button class="b on" id="m0" data-a="m" data-v="s">🎬 Simulación</button><button class="b" id="m1" data-a="m" data-v="p">🧮 Resolver problema</button></div>
+<main>
+<section class="card"><canvas id="cv" width="640" height="420"></canvas><div class="row" id="sp"></div></section>
+<section class="card dg"><svg id="dg" viewBox="0 0 640 420"></svg></section>
+<section class="card" id="in"></section>
+</main>
+<script>
+const $=q=>document.querySelector(q),R=Math.random,sum=a=>a.reduce((x,y)=>x+y,0),sb=n=>'₀₁₂₃₄₅₆₇₈₉'[n],ch=(n,c)=>(n>1?'²³'[n-2]:'')+c,co=x=>x==1?'':x==.5?'½':x==1.5?'3/2':x,sg=x=>x>0?'+'+x:x<0?'−'+-x:'0',U=x=>sg(x)+' kJ/mol',fu=x=>'('+U(x)+')',
+AB=x=>x>0?'<b><u>se absorbe energía</u></b>':'<b><u>se libera energía</u></b>';
+// M, X, nº M, nº X, carga M, carga X, unidades en la escena, E.sublimación, EI[], E.disociación X2, AE[], ΔHf  (kJ/mol)
+const D=[['Na','Cl',1,1,1,1,6,107,[496],242,[-349],-411],['Li','F',1,1,1,1,6,159,[520],158,[-328],-616],['Mg','O',1,1,2,2,6,148,[738,1451],498,[-141,744],-602],['Ca','Cl',1,2,2,1,3,178,[590,1145],242,[-349],-795],['Mg','Cl',1,2,2,1,3,148,[738,1451],242,[-349],-641],['Na','O',2,1,1,2,2,107,[496],498,[-141,744],-418],['Al','F',1,3,3,1,2,330,[578,1817,2745],158,[-328],-1510]].map(([M,X,a,b,n,m,k,s,i,d,e,H])=>({M,X,a,b,n,m,k,s,i,d,e,H,Mi:M+ch(n,'⁺'),Xi:X+ch(m,'⁻'),F:M+(a>1?sb(a):'')+X+(b>1?sb(b):'')}));
+const T=s=>{const c=[s.a,s.a,s.b/2,s.b],v=[s.s,sum(s.i),s.d,sum(s.e)],e=c.map((q,j)=>q*v[j]);return{c,v,e,U:s.H-sum(e)}};
+const CL=['#f97316','#e6a700','#a259ff','#0aa5d8','#14b86a','#ec407a'],IC=['🧱','💨','⚡','✂️','🧲','💎','🏆'],
+NM=['Energía de sublimación','Energía de ionización','Energía de disociación','Afinidad electrónica','Energía reticular','Entalpía de formación'],
+NL=[['Energía de','sublimación'],['Energía de','ionización'],['Energía de','disociación'],['Afinidad','electrónica'],['Energía','reticular'],['Entalpía de','formación']],
+NS=['Energía de sublimación (ΔHsub)','Energía de ionización total (ΣEI)','Energía de disociación (ΔHdis)','Afinidad electrónica total (ΣAE)','Energía reticular (Ur)','Entalpía de formación (ΔHf)'],
+SY=['ΔH<sub>sub</sub>','EI','ΔH<sub>dis</sub>','AE','U<sub>r</sub>'],
+MV=['¡Empecemos la aventura!','¡Primer escalón superado!','¡Vas genial! Arrancar electrones es lo más duro.','¡Ya tenemos átomos sueltos!','¡Ahora los átomos ganan electrones!','¡Nace el cristal!','🎉 ¡Ciclo completado! Ya dominas Born–Haber.'];
+let ci=0,st=0,mode='s',pu=5,rev=0,sc=0,fbh='',play=0,tm,stage=0,tt=0,M=[],Xs=[],El=[],cr,gM=[],gX=[],gE=[],bd=[],fx=[],cf=[];
+const sp=j=>{const s=D[ci],a=co(s.a),h=co(s.b/2)+s.X+'₂(g)',e=co(s.a*s.n)+'e⁻',x=`${a}${s.Mi}(g)`;return[`${a}${s.M}(s) + ${h}`,`${a}${s.M}(g) + ${h}`,`${x} + ${e} + ${h}`,`${x} + ${e} + ${co(s.b)}${s.X}(g)`,`${x} + ${co(s.b)}${s.Xi}(g)`,s.F+'(s)'][j]};
+const dn=s=>{const c=s.b/2,X=s.X+'₂';return c==.5?`Energía de disociación (la mitad: ½ mol de ${X} da 1 mol de átomos de ${s.X})`:`Energía de disociación (${co(c)||1} mol de ${X} da ${s.b} mol de átomos de ${s.X})`};
+const cof=(j,s)=>{const k=T(s).c[j];if(j>3||k==1)return['',''];const q=j<2?s.M:j==2?s.X+'₂':s.X;return[co(k),`para ${k==.5?'medio':co(k)} mol de ${q}`]};
+const cv=$('#cv'),g=cv.getContext('2d'),dpr=Math.min(devicePixelRatio||1,2),dg=$('#dg');cv.width=640*dpr;cv.height=420*dpr;g.scale(dpr,dpr);
+const FS="'Cormorant Garamond','Palatino Linotype',Palatino,Georgia,serif";
+function tg(p,k){
+ if(stage>=5)return cr[k][p.i];
+ if(stage==0||k=='X'&&stage<3){if(k=='M')return[90+p.i%3*34+(p.i/3|0)%2*17,190+(p.i/3|0)*30];const j=p.i>>1;return[420+j%2*100+(p.i%2?11:-11),130+(j>>1)*62]}
+ return k=='M'?gM[p.i]:gX[p.i]}
+function build(){
+ const s=D[ci],nm=s.a*s.k,nx=s.b*s.k,ne=s.a*s.n*s.k,pc=(A,x,y)=>A.push([320+x,215+y]);
+ cr={M:[],X:[]};bd=[];
+ if(s.a==s.b){for(let r=0;r<3;r++)for(let c=0;c<4;c++)pc((r+c)%2?cr.X:cr.M,(c-1.5)*50,(r-1)*50)}
+ else if(s.b==3){for(let c=0;c<s.k;c++){const x=(c-(s.k-1)/2)*150;pc(cr.M,x,0);[-90,30,150].forEach(d=>pc(cr.X,x+42*Math.cos(d*Math.PI/180),42*Math.sin(d*Math.PI/180)))}}
+ else{const mx=s.b>s.a;for(let c=0;c<s.k;c++){const x=(c-(s.k-1)/2)*52;[-50,0,50].forEach((y,r)=>pc((r==1)!=mx?cr.X:cr.M,x,y))}}
+ cr.M.forEach((a,i)=>cr.X.forEach((b,j)=>{if(Math.hypot(a[0]-b[0],a[1]-b[1])<=56)bd.push([i,j])}));
+ const gp=(n,x0,x1,y0,y1)=>{const c=Math.max(1,Math.round(Math.sqrt(n*(x1-x0)/(y1-y0)))),r=Math.ceil(n/c);return[...Array(n)].map((_,i)=>[x0+((i%c)+.5)*(x1-x0)/c+(R()-.5)*16,y0+((i/c|0)+.5)*(y1-y0)/r+(R()-.5)*16])};
+ gM=gp(nm,40,230,100,350);gX=gp(nx,410,600,100,350);gE=gp(ne,255,385,100,350);
+ M=[...Array(nm)].map((_,i)=>({i,r:17}));Xs=[...Array(nx)].map((_,i)=>({i,r:13,q:0}));
+ [[M,'M'],[Xs,'X']].forEach(([A,k])=>A.forEach(p=>{[p.x,p.y]=tg(p,k)}));
+ El=[...Array(ne)].map((_,j)=>({j,om:j/s.n|0,ox:j/s.m|0,d:0,x:0,y:0}))}
+function dot(x,y,r,c,l,q){const o=g.createRadialGradient(x-r/3,y-r/3,1,x,y,r);o.addColorStop(0,'#fff');o.addColorStop(.3,c);o.addColorStop(1,c+'99');g.fillStyle=o;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.fillStyle='#14103a';g.font=`700 ${Math.max(10,r*.78)}px system-ui`;g.textAlign='center';g.fillText(l,x,y+1);if(q){g.font='700 12px system-ui';g.fillStyle='#fff';g.fillText(q,x+r*.9,y-r*.9)}}
+const boom=()=>{for(let i=0;i<110;i++)cf.push({x:320,y:215,vx:(R()-.5)*14,vy:-R()*12-2,c:`hsl(${R()*360},90%,60%)`,l:140})};
+const bnd=(sc,ox,oy,al)=>{g.strokeStyle='#fff';g.globalAlpha=al;g.lineWidth=2;bd.forEach(([i,j])=>{const a=M[i],b=Xs[j];g.beginPath();g.moveTo(ox+(a.x-320)*sc,oy+(a.y-215)*sc);g.lineTo(ox+(b.x-320)*sc,oy+(b.y-215)*sc);g.stroke()});g.globalAlpha=1};
+function schem(s){
+ const Bc='#7fb0ff',Rd='#ff8a8a',jt=(i,a)=>Math.sin(tt*2.2+i*1.9+a)*1.8,cx=[54,204,354],yT=140,yB=300,c=s.b/2,
+ S=[[-22,-11],[0,-11],[22,-11],[-22,11],[0,11],[22,11]],G=[[-26,-18],[24,-22],[-20,20],[26,16]],Mo=[[-27,-14],[-9,-14],[9,16],[27,16]],
+ qM=(s.n>1?s.n:'')+'+',qX=(s.m>1?s.m:'')+'−',
+ tx=(t,x,y,col,fs,w,it)=>{g.font=`${it?'italic ':''}${w} ${fs}px ${FS}`;g.fillStyle=col;g.textAlign='center';g.fillText(t,x,y)},
+ ar=(x1,y1,x2,y2,col)=>{const a=Math.atan2(y2-y1,x2-x1),ca=Math.cos(a),sa=Math.sin(a);g.strokeStyle=g.fillStyle=col;g.lineWidth=4;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2-8*ca,y2-8*sa);g.stroke();g.beginPath();g.moveTo(x2,y2);g.lineTo(x2-14*ca+7*sa,y2-14*sa-7*ca);g.lineTo(x2-14*ca-7*sa,y2-14*sa+7*ca);g.fill()},
+ cl=(O,x,y,r,col,l,q,off)=>O.forEach((o,i)=>dot(x+o[0]+jt(i+off,0),y+o[1]+jt(i+off,2),r,col,l,q));
+ g.textBaseline='middle';
+ cl(S,cx[0],yT,10,'#feca57',s.M,'',0);cl(G,cx[1],yT,10,'#feca57',s.M,'',6);cl(G,cx[2],yT,10,'#ff6b6b',s.M,qM,10);
+ g.strokeStyle='#ffffffcc';g.lineWidth=3;for(let k=0;k<4;k+=2){g.beginPath();g.moveTo(cx[0]+Mo[k][0]+jt(14+k,0),yB+Mo[k][1]+jt(14+k,2));g.lineTo(cx[0]+Mo[k+1][0]+jt(15+k,0),yB+Mo[k+1][1]+jt(15+k,2));g.stroke()}
+ cl(Mo,cx[0],yB,9,'#1dd1a1',s.X,'',14);cl(G,cx[1],yB,9,'#1dd1a1',s.X,'',20);cl(G,cx[2],yB,9,'#54a0ff',s.X,qX,24);
+ [s.M+'(s)',s.M+'(g)',s.Mi+'(g)'].forEach((l,i)=>tx(l,cx[i],yT+46,Bc,22,700));
+ [s.X+'₂(g)',s.X+'(g)',s.Xi+'(g)'].forEach((l,i)=>tx(l,cx[i],yB+46,Rd,22,700));
+ const PP=[...T(s).e,T(s).U],lb=(j,x,y)=>{const[pf,pa]=j<4?cof(j,s):['',''],[a,b]=NL[j];tx((pf?pf+' ':'')+a,x,y-9,'#ece8ff',16,700);tx(b,x,y+9,'#ece8ff',16,700);if(pa)tx(pa,x,y+27,'#ffd1d1',15,600,1)},
+ sgn=(x,y,v)=>{const col=v>0?'#ff9f43':'#5ef2a8';g.strokeStyle=col;g.lineWidth=2.5;g.fillStyle='#14103a';g.beginPath();g.arc(x,y,12,0,7);g.fill();g.stroke();g.fillStyle=col;g.font='800 20px system-ui';g.textAlign='center';g.fillText(v>0?'+':'−',x,y+1)};
+ ar(cx[0]+38,yT,cx[1]-38,yT,Bc);ar(cx[1]+38,yT,cx[2]-38,yT,Bc);
+ ar(cx[0]+38,yB,cx[1]-38,yB,Rd);ar(cx[1]+38,yB,cx[2]-38,yB,Rd);
+ const m1=(cx[0]+cx[1])/2,m2=(cx[1]+cx[2])/2;
+ lb(0,m1,yT-48);lb(1,m2,yT-48);lb(2,m1,yB-48);lb(3,m2,yB-48);
+ sgn(m1,yT+24,PP[0]);sgn(m2,yT+24,PP[1]);sgn(m1,yB+24,PP[2]);sgn(m2,yB+24,PP[3]);
+ ar(392,yT+4,456,190,Bc);ar(392,yB-4,456,242,Rd);
+ lb(4,424,206);sgn(424,240,PP[4]);
+ bnd(.72,550,215,.35);
+ M.forEach((p,i)=>dot(550+(p.x-320)*.72+jt(i,0)*.5,215+(p.y-215)*.72+jt(i,2)*.5,p.r*.72,'#ff6b6b',s.M,qM));
+ Xs.forEach((p,i)=>dot(550+(p.x-320)*.72+jt(i+7,0)*.5,215+(p.y-215)*.72+jt(i+7,2)*.5,p.r*.72,'#54a0ff',s.X,qX));
+ tx(s.F+'(s)',550,318,'#9dffc9',24,700,1)}
+function fr(ts){
+ tt=ts/1e3;const s=D[ci],t=T(s),P=[...t.e,t.U,s.H],J=stage>=5?1.2:1.5;
+ g.clearRect(0,0,640,420);g.textAlign='center';g.textBaseline='middle';
+ if(stage>=5){const gx=stage>5?550:320,gr=stage>5?120:170,o=g.createRadialGradient(gx,215,10,gx,215,gr);o.addColorStop(0,'#14b86a'+(stage>5?'77':'44'));o.addColorStop(1,'#14b86a00');g.fillStyle=o;g.fillRect(0,0,640,420)}
+ M.forEach(p=>{const[x,y]=tg(p,'M');p.x+=(x-p.x)*.05;p.y+=(y-p.y)*.05;p.r+=((stage>=2?11:17)-p.r)*.1});
+ Xs.forEach(p=>{const[x,y]=tg(p,'X');p.x+=(x-p.x)*.05;p.y+=(y-p.y)*.05;p.q=0});
+ El.forEach(e=>{
+  if(stage<2){const m=M[e.om];e.x=m.x;e.y=m.y;e.d=0;return}
+  let x,y;
+  if(stage>=4){const o=Xs[e.ox];x=o.x;y=o.y;if(Math.hypot(x-e.x,y-e.y)<8)e.d=1}
+  else{e.d=0;[x,y]=gE[e.j]}
+  e.x+=(x-e.x)*.07;e.y+=(y-e.y)*.07});
+ El.forEach(e=>{if(e.d)Xs[e.ox].q++});
+ Xs.forEach(p=>p.r+=((p.q?13+2.5*p.q:13)-p.r)*.1);
+ const jt=(p,a)=>Math.sin(tt*2.2+p.i*1.7+a)*J;
+ if(stage==6)schem(s);
+ else{
+  if(stage==5)bnd(1,320,215,.3);
+  if(stage<3){g.strokeStyle='#ffffffaa';g.lineWidth=5;Xs.forEach(p=>{if(p.i%2==0){const o=Xs[p.i+1];g.beginPath();g.moveTo(p.x,p.y);g.lineTo(o.x,o.y);g.stroke()}})}
+  Xs.forEach(p=>dot(p.x+jt(p,0),p.y+jt(p,2),p.r,p.q?'#54a0ff':'#1dd1a1',s.X,p.q?(p.q>1?p.q:'')+'−':''));
+  M.forEach(p=>dot(p.x+jt(p,0),p.y+jt(p,2),p.r,stage>=2?'#ff6b6b':'#feca57',s.M,stage>=2?(s.n>1?s.n:'')+'+':''));
+  g.shadowColor='#fff200';g.shadowBlur=12;g.fillStyle='#fff200';
+  El.forEach(e=>{if(stage>=2&&!e.d){g.beginPath();g.arc(e.x+Math.sin(tt*2.5+e.j*2.3)*1.2,e.y+Math.cos(tt*2.1+e.j*1.7)*1.2,4,0,7);g.fill()}});g.shadowBlur=0;
+  g.textAlign='center';g.font='16px system-ui';g.fillStyle='#e6e2ff';g.fillText(sp(Math.min(stage,5)),320,402)}
+ fx=fx.filter(o=>o.v<0?o.r>6:o.a>0);fx.forEach(o=>{o.r+=o.v;if(o.v>0)o.a-=.012;const al=o.v<0?Math.min(1,(1-o.r/o.R)*1.6+.1):Math.min(1,o.a);g.strokeStyle=o.c;g.globalAlpha=Math.max(0,al);g.lineWidth=3;g.beginPath();g.arc(320,215,Math.max(1,o.r),0,7);g.stroke()});g.globalAlpha=1;
+ cf=cf.filter(o=>o.l>0);cf.forEach(o=>{o.x+=o.vx;o.y+=o.vy;o.vy+=.2;o.l--;g.fillStyle=o.c;g.fillRect(o.x,o.y,6,4)});
+ g.textAlign='left';g.fillStyle=stage?stage<6?CL[stage-1]:CL[5]:'#d9d4ff';
+ g.font=stage==6?`italic 700 28px ${FS}`:'700 20px system-ui';
+ g.fillText(IC[stage]+' '+(stage?stage<6?NM[stage-1]:'Cristal formado':'Elementos nativos'),14,26);
+ if(stage){const v=stage<6?P[stage-1]:s.H,lab=(stage<6?U(v):'Entalpía de formación: '+U(v))+'  ·  ',ph=v>0?'SE ABSORBE ENERGÍA':'SE LIBERA ENERGÍA';
+  g.font='600 16px system-ui';g.fillStyle='#d9d4ff';g.fillText(lab,14,56);const w=g.measureText(lab).width;
+  g.font='800 16px system-ui';g.fillStyle=v>0?'#ff9f43':'#5ef2a8';g.fillText(ph,14+w,56);g.fillRect(14+w,65,g.measureText(ph).width,2)}
+ requestAnimationFrame(fr)}
+function drawD(){
+ const s=D[ci],t=T(s),P=[...t.e,t.U,s.H],c=s.b/2;let a=0;
+ const lv=[0,...t.e.map(x=>a+=x),s.H],v=mode=='p'?6:st,u=mode=='p'&&!rev?pu:-1,mn=Math.min(...lv),mx=Math.max(...lv),
+ Y=e=>372-(e-mn)/(mx-mn)*255,X=j=>62+96*j,pc=i=>mode!='p'&&i==v?'pop':'',
+ hd=(x,y1,y2,w,z)=>{const d=y2<y1?9:-9;return`<line x1="${x}" x2="${x}" y1="${y1}" y2="${y2+d*.7}" stroke="currentColor" stroke-width="${w}"${z?' stroke-dasharray="6 4"':''} /><polygon points="${x},${y2} ${x-6},${y2+d} ${x+6},${y2+d}" fill="currentColor" />`},
+ cp=(x,i)=>{const[n1,l2]=NL[i-1],[pf,l3]=i<5?cof(i-1,s):['',''],l1=(pf?pf+' ':'')+n1,xx=i==6?594:x;return`<text x="${x}" y="26" text-anchor="middle" font-size="19" class="e">${IC[i]}</text><text x="${xx}" y="42" text-anchor="middle" font-size="12" font-weight="700" class="c">${l1}</text><text x="${xx}" y="56" text-anchor="middle" font-size="12" font-weight="700" class="c">${l2}</text>${l3?`<text x="${xx}" y="70" text-anchor="middle" font-size="11" font-style="italic" class="c">${l3}</text>`:''}`};
+ let o=`<line x1="110" x2="614" y1="${Y(0)}" y2="${Y(0)}" class="bl" />`;
+ for(let j=0;j<=Math.min(v,5);j++){const y=Y(lv[j]);o+=`<g class="${pc(j)}" style="color:${j?CL[j-1]:'var(--mu)'}"><line x1="${X(j)-45}" x2="${X(j)+45}" y1="${y}" y2="${y}" stroke="currentColor" stroke-width="4" stroke-linecap="round" /><text x="${X(j)}" y="${j%2?y+19:y-9}" text-anchor="middle" font-size="${j==5?13:11.5}"${j==5?' class="t"':''}>${sp(j)}</text></g>`}
+ for(let i=1;i<=Math.min(v,5);i++){const x=110+96*(i-1),y1=Y(lv[i-1]),y2=Y(lv[i]);o+=`<g class="${pc(i)}" style="color:${CL[i-1]}">${hd(x,y1,y2,3.5,u==i-1)}${cp(x,i)}<text x="${x+7}" y="${(y1+y2)/2+4}" font-size="12" font-weight="700" class="t">${u==i-1?'?':U(P[i-1])}</text></g>`}
+ if(v>5){const y1=Y(0),y2=Y(s.H);o+=`<line x1="${X(5)+45}" x2="614" y1="${y2}" y2="${y2}" class="bl" /><g class="${pc(6)}" style="color:${CL[5]}">${hd(614,y1,y2,5,u==5)}${cp(614,6)}<text x="606" y="${(y1+y2)/2+4}" text-anchor="end" font-size="12" font-weight="700" class="t">${u==5?'?':U(s.H)}</text></g>`}
+ dg.innerHTML=o+`<text x="320" y="410" text-anchor="middle" font-size="14">Altura de cada flecha ∝ energía · <tspan font-weight="800" text-decoration="underline">↑ se absorbe energía</tspan> · <tspan font-weight="800" text-decoration="underline">↓ se libera energía</tspan> · kJ/mol</text>`}
+function eqn(s,t,i){
+ const c=t.c,P=[...t.e,t.U],cur=i-1,
+ hl=(j,h)=>{const col=CL[j];return j==cur?`<span class="hi" style="background:${col}33;color:${col};box-shadow:0 0 0 2px ${col}">${h}</span>`:j<cur?`<span style="color:${col}">${h}</span>`:`<span style="opacity:.28">${h}</span>`},
+ sy=SY.map((x,j)=>hl(j,(j<4&&c[j]!=1?co(c[j]):'')+x)).join(' + ')+' = '+hl(5,'ΔH<sub>f</sub>'),
+ nr=[];
+ for(let j=0;j<=Math.min(cur,4);j++)nr.push(hl(j,(j<4&&c[j]!=1?co(c[j])+' mol × ':'')+fu(j<4?t.v[j]:t.U)));
+ let n=nr.join(' + ');if(cur>=0&&cur<4)n+=' <span style="opacity:.3">+ …</span>';if(cur==5)n+=' = '+hl(5,U(s.H));
+ return`<div class="eqb"><div>${sy}</div>${i?`<div class="nr">${n}</div>`:''}</div>`}
+function infoS(){
+ const s=D[ci],t=T(s),P=[...t.e,t.U],i=st,j=i-1,c=s.b/2,e=sum(s.e),
+ TX=[`Los átomos escapan de la red metálica y pasan a gas: ${AB(1)} (endotérmico).`,
+ `Arrancamos ${s.a*s.n} e⁻ por unidad de fórmula (${s.i.map((x,k)=>`${k+1}.ª: ${U(x)}`).join(', ')} por mol de átomos). Suele ser el escalón más alto: ${AB(1)}.`,
+ `Rompemos el enlace ${s.X}–${s.X} de ${co(c)||1} mol de ${s.X}₂ para tener ${s.b} mol de átomos de ${s.X}. ${c==.5?`Como la estequiometría es 1:1, solo se usa <b>la mitad</b> de la energía de disociación del ${s.X}₂ (½ mol de ${s.X}₂ da 1 mol de átomos de ${s.X}). `:''}${AB(1)}.`,
+ `Cada átomo de ${s.X} capta ${s.m} e⁻ y se convierte en ${s.Xi}. ${s.e.length>1?`La 1.ª afinidad (${U(s.e[0])}) libera energía, pero la 2.ª (${U(s.e[1])}) es positiva: meter un e⁻ en un anión cuesta energía. En total ${AB(e)}.`:`${AB(e)}.`}`,
+ `¡El gran momento! Los iones gaseosos se atraen y se ordenan en la red cristalina: ${AB(-1)} y esa energía estabiliza el sólido iónico.`],eq=eqn(s,t,i);
+ return(i==0?`<h3>🧱 Elementos nativos</h3><p class="eq">${sp(0)}</p>${eq}<p>Punto de partida: elementos en su estado estándar (entalpía de formación = 0 kJ/mol por convenio). Vamos a construir <b>${s.F}</b> escalón a escalón: ¡pulsa «Siguiente»!</p>`:i<6?`<h3>${IC[i]} ${j==2?dn(s):NM[j]}</h3><p class="eq">${sp(j)} → ${sp(i)}</p><div class="big" style="color:${CL[j]}">${NM[j]} = ${j<4&&t.c[j]!=1?co(t.c[j])+' mol × '+fu(t.v[j])+' = ':''}${U(P[j])}</div>${eq}<p>${TX[j]}</p><p class="mu">Energía acumulada: ${U(sum(P.slice(0,i)))}</p>`:`<h3>🏆 Esquema completo · ${s.F}</h3>${eq}<div class="big">${P.map((x,k)=>`<span style="color:${CL[k]}">${fu(x)}</span>`).join(' + ')} = <span style="color:${CL[5]}">${U(s.H)}</span></div><p>Cada término ya incluye su estequiometría. Como la entalpía de formación es negativa, formar ${s.F} desde sus elementos ${AB(-1)}: la red cristalina compensa con creces el coste de crear iones gaseosos.</p>`)+`<div class="mv">${MV[i]}</div>`}
+function solH(){
+ const s=D[ci],t=T(s),P=[...t.e,t.U],k=pu<4?t.c[pu]:1,kx=k==1?'x':co(k)+' mol × x',o=sum(P.filter((_,j)=>j!=pu)),H=U(s.H);
+ return pu==5?`ΔHf = ${P.map(fu).join(' + ')} = <b>${H}</b>`:`${H} = ${P.map((x,j)=>j==pu?kx:fu(x)).join(' + ')}<br>${kx} = ${H} − (${U(o)}) = ${U(s.H-o)}${k==1?'':` → x = ${U(s.H-o)} ÷ ${co(k)} mol`} ⇒ <b>x = ${U(pu<4?t.v[pu]:t.U)}</b>`}
+function infoP(){
+ const s=D[ci],t=T(s),X2=s.X+'₂',
+ L=[`la energía de sublimación del ${s.M}`,`la energía de ionización total del ${s.M} (${s.i.length>1?'suma de sus '+s.i.length+' ionizaciones':'su ionización'})`,`la energía de disociación del ${X2}`,`la afinidad electrónica total del ${s.X}${s.e.length>1?' (1.ª + 2.ª)':''}`,`la energía reticular del ${s.F}`,`la entalpía de formación del ${s.F}`],
+ d=[[[`Energía de sublimación del ${s.M}`,s.s]],s.i.map((v,k)=>[`${k+1}.ª energía de ionización del ${s.M}`,v]),[[`Energía de disociación del ${X2}`,s.d]],s.e.map((v,k)=>[`${k+1}.ª afinidad del ${s.X}`,v]),[['Energía reticular',t.U]],[[`Entalpía de formación del ${s.F}`,s.H]]];
+ return`<h3>🧮 Problema de ${s.F} <small class="mu">⭐ aciertos: ${sc}</small></h3><p>Para formar <b>1 mol de ${s.F}</b> se parte de ${co(s.a)||1} mol de ${s.M}(s) y ${co(s.b/2)||1} mol de ${X2}(g). Calcula <b>${L[pu]}</b>. <span class="mu">(Datos por mol de cada especie.)</span></p><div class="dat">${d.flatMap((a,j)=>j==pu?[]:a.map(([l,v])=>`<div class="dc"><span>${l}</span><b>${U(v)}</b></div>`)).join('')}</div><div class="row" style="justify-content:flex-start;padding:4px 0"><select id="un">${NS.map((l,j)=>`<option value="${j}"${j==pu?' selected':''}>${l}</option>`).join('')}</select><input id="ans" type="number" step="any" placeholder="tu resultado (kJ/mol)"><button class="b" data-a="chk">✅ Comprobar</button><button class="b" data-a="sol">👁 Solución</button><button class="b" data-a="rnd">🎲 Otro</button></div><div id="fb">${fbh}</div>`}
+function chk(){
+ const s=D[ci],t=T(s),v=parseFloat($('#ans').value),r=pu<4?t.v[pu]:pu==4?t.U:s.H,k=pu<4?t.c[pu]:1,m=h=>{fbh=h;$('#fb').innerHTML=h};
+ if(isNaN(v))return m('<span class="mu">Escribe tu resultado en kJ/mol 🙂</span>');
+ if(Math.abs(v-r)<=Math.max(2,Math.abs(r)*.004)){sc++;rev=1;fbh=`<div class="ok">🎉 ¡Correcto! ${NS[pu]} = ${U(r)}</div><div class="mu">${solH()}</div>`;boom();ui()}
+ else m(`<span class="er">${Math.abs(v+r)<2?'Casi: revisa el <b>signo</b> (¿se absorbe o se libera energía?).':k!=1&&(Math.abs(v-r*k)<2||Math.abs(v*k-r)<2)?'Ojo con la <b>estequiometría</b>: cada paso se multiplica por sus moles.':'Aún no 💪 Recuerda ΔHf = ΔHsub + EI + ΔHdis + AE + Ur, con cada término × sus moles. ¡Otro intento!'}</span>`)}
+function ui(){
+ const v=mode=='p'?6:st;
+ if(v!=stage){stage=v;if(v>0){const s=D[ci],P=[...T(s).e,T(s).U,s.H],c=CL[v-1];
+  if(P[v-1]>0)[300,370,440].forEach(r=>fx.push({r,R:440,v:-3.2,c}));else fx.push({r:8,a:1,v:3,c},{r:8,a:.8,v:2,c});
+  if(v==5)fx.push({r:8,a:1,v:5,c:'#14b86a'},{r:8,a:1,v:8,c:'#fff'});if(v==6)boom()}}
+ $('#sl').innerHTML=D.map((s,i)=>`<button class="chip${i==ci?' on':''}" data-a="s" data-i="${i}">${s.F}<small>${co(s.a)}${s.Mi} + ${co(s.b)}${s.Xi}</small></button>`).join('');
+ $('#m0').className='b'+(mode=='s'?' on':'');$('#m1').className='b'+(mode=='p'?' on':'');
+ $('#sp').style.display=mode=='s'?'':'none';
+ document.querySelectorAll('#sp [data-i]').forEach(b=>b.classList.toggle('on',+b.dataset.i==st));
+ $('#pl').textContent=play?'⏸ Pausa':'▶ Auto';
+ drawD();$('#in').innerHTML=mode=='s'?infoS():infoP()}
+function auto(){clearInterval(tm);play=!play;if(play){if(st>=6)st=0;tm=setInterval(()=>{if(st<6){st++;ui()}else{play=0;clearInterval(tm);ui()}},3800)}ui()}
+document.onclick=e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a,i=+b.dataset.i;
+ if(a=='s'){ci=i;rev=0;fbh='';build();ui()}
+ else if(a=='g'){st=i;ui()}
+ else if(a=='nx'){st=Math.min(6,st+1);ui()}
+ else if(a=='pv'){st=Math.max(0,st-1);ui()}
+ else if(a=='pl')auto();
+ else if(a=='fin'){st=6;ui();dg.scrollIntoView({behavior:'smooth',block:'center'})}
+ else if(a=='m'){mode=b.dataset.v;if(mode=='p'){play=0;clearInterval(tm)}ui()}
+ else if(a=='chk')chk();
+ else if(a=='sol'){rev=1;fbh=`<div class="ok">${solH()}</div>`;ui()}
+ else if(a=='rnd'){ci=R()*D.length|0;pu=R()*6|0;rev=0;fbh='';build();ui()}};
+document.onchange=e=>{if(e.target.id=='un'){pu=+e.target.value;rev=0;fbh='';ui()}};
+document.onkeydown=e=>{if(e.key=='Enter'&&e.target.id=='ans')chk()};
+$('#sp').innerHTML=IC.map((x,i)=>`<button class="b" data-a="g" data-i="${i}" title="${i?i<6?NM[i-1]:'Resultado':'Inicio'}">${x}</button>`).join('')+'<button class="b" data-a="pv">◀</button><button class="b" data-a="nx">Siguiente ▶</button><button class="b" data-a="pl" id="pl">▶ Auto</button><button class="b" data-a="fin">📊 Esquema final</button>';
+build();ui();requestAnimationFrame(fr);
+</script></body></html>
