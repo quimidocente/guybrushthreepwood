@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laboratorio de velocidades iniciales</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f5f4;--panel:#fff;--ink:#17262b;--mut:#5b6b70;--line:#d4dedd;--acc:#0f7f86;--accT:#fff;--ok:#1f8a4c;--bad:#c2412d;--A:#e59a1f;--B:#0f7f86;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#10191c;--panel:#18262a;--ink:#e6efee;--mut:#9db0b3;--line:#2b3d41;--acc:#3cc0c8;--accT:#08181a;--ok:#4fcf84;--bad:#ff8068;--A:#f0b04a;--B:#3cc0c8}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#10191c;--panel:#18262a;--ink:#e6efee;--mut:#9db0b3;--line:#2b3d41;--acc:#3cc0c8;--accT:#08181a;--ok:#4fcf84;--bad:#ff8068;--A:#f0b04a;--B:#3cc0c8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "DM Sans",system-ui,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+h1{font:700 clamp(1.5rem,4vw,2.2rem)/1.1 Fraunces,Georgia,serif;margin:0 0 4px}
+.sub{color:var(--mut);margin:0;max-width:52ch}
+.score{text-align:right}.score b{font:700 1.6rem Fraunces,Georgia,serif}
+.grid{display:grid;gap:16px}
+@media(min-width:860px){.grid{grid-template-columns:380px 1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+h2{font:600 1.1rem Fraunces,Georgia,serif;margin:0 0 10px}
+canvas{width:100%;height:auto;display:block;border-radius:10px;background:linear-gradient(var(--bg),var(--panel))}
+.chr{display:flex;justify-content:space-between;align-items:baseline;margin:10px 0}
+.chr span{color:var(--mut)}.chr b{font:700 1.8rem Fraunces,Georgia,serif;font-variant-numeric:tabular-nums}
+.lbl{margin:12px 0 4px;font-weight:500}.lbl i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.seg{display:flex;gap:6px}
+button,select,input{font:inherit;color:inherit}
+.seg button,.opt{flex:1;min-height:44px;border:1px solid var(--line);background:var(--bg);border-radius:10px;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--accT);border-color:var(--acc);font-weight:700}
+.go{width:100%;min-height:48px;margin-top:14px;border:0;border-radius:10px;background:var(--acc);color:var(--accT);font-weight:700;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums}
+th,td{padding:7px 8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mut);font-weight:500}
+.note{color:var(--mut);font-size:.88rem;margin:8px 0 0}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.steps li{padding:12px;border:1px solid var(--line);border-radius:10px}
+.steps li.off{opacity:.45;pointer-events:none}.steps li.done{border-color:var(--ok)}
+.steps p{margin:0 0 8px;font-weight:500}.row{display:flex;gap:6px;flex-wrap:wrap}
+.row select,.row input{min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);flex:1;min-width:140px}
+.row .opt{min-width:90px}.row .chk{min-height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--acc);color:var(--accT);font-weight:700;cursor:pointer}
+#msg{min-height:1.5em;margin:12px 0 0;font-weight:500}.ok{color:var(--ok)}.bad{color:var(--bad)}
+#fin{display:none;margin-top:12px;padding:14px;border-radius:10px;border:2px solid var(--ok)}
+#fin b.big{font:700 1.3rem Fraunces,Georgia,serif}
+.lvl{display:flex;gap:8px;align-items:center;margin-top:8px}.lvl select{min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}.sol{min-height:44px;padding:0 14px;border:1px dashed var(--mut);border-radius:10px;background:transparent;cursor:pointer;color:var(--mut)}
+</style></head><body><div class="wrap">
+<header>
+ <div><h1>Laboratorio de velocidades iniciales</h1>
+ <p class="sub">En cada reacción, el líquido cambia de color cuando se ha formado una cantidad fija de producto. Mide cuánto tarda con distintas concentraciones y deduce la ley de velocidad.</p>
+ <div class="lvl"><label for="lv">Órdenes:</label><select id="lv"><option value="0-1">0 a 1</option><option value="0-2" selected>0 a 2</option><option value="0-3">0 a 3</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div>
+ <div class="score"><div><b id="tot">0 puntos</b></div><div id="rank" class="sub"></div></div>
+</header>
+<div class="grid">
+ <div>
+  <div class="card"><h2>Matraz de reacción</h2>
+   <canvas id="cv" width="320" height="290" aria-label="Matraz con partículas A y B"></canvas>
+   <div class="chr"><span>Cronómetro</span><b id="chr">0,00 s</b></div>
+   <div class="lbl"><i style="background:var(--A)"></i>Concentración inicial de A</div>
+   <div class="seg" id="sa"></div>
+   <div class="lbl"><i style="background:var(--B)"></i>Concentración inicial de B</div>
+   <div class="seg" id="sb"></div>
+   <button class="go" id="go">Medir el tiempo</button>
+   <p class="note">Consejo: cambia solo una concentración cada vez y compara.</p>
+  </div>
+ </div>
+ <div style="display:grid;gap:16px;align-content:start">
+  <div class="card"><h2>Experimentos realizados</h2>
+   <div class="tw"><table><thead><tr><th>Nº</th><th>[A]</th><th>[B]</th><th>Tiempo hasta el color</th><th>v₀</th></tr></thead><tbody id="tb"></tbody></table></div>
+   <p class="note" id="empty">Aún no hay medidas. Elige concentraciones y pulsa «Medir el tiempo».</p>
+   <p class="note">Hasta que cambia el color se forman 0,0020 mol/L de producto, así que v₀ = 0,0020 mol/L ÷ tiempo.</p>
+  </div>
+  <div class="card"><h2>Caso nº <span id="nm">1</span></h2>
+   <ol class="steps">
+    <li id="s0"><p>¿Qué orden tiene la reacción respecto a A?</p><div class="row" data-ord="m"><button class="opt" data-o="0">Orden 0</button><button class="opt" data-o="1">Orden 1</button><button class="opt" data-o="2">Orden 2</button><button class="opt" data-o="3">Orden 3</button><button class="sol" data-s="0">Ver solución</button></div></li>
+    <li id="s1"><p>¿Qué orden tiene la reacción respecto a B?</p><div class="row" data-ord="n"><button class="opt" data-o="0">Orden 0</button><button class="opt" data-o="1">Orden 1</button><button class="opt" data-o="2">Orden 2</button><button class="opt" data-o="3">Orden 3</button><button class="sol" data-s="1">Ver solución</button></div></li>
+    <li id="s2"><p id="law">Con esa ley de velocidad, ¿qué unidades tiene k?</p><div class="row"><select id="un"><option value="">Elige las unidades…</option></select><button class="chk" id="cu">Comprobar</button><button class="sol" data-s="2">Ver solución</button></div></li>
+    <li id="s3"><p>Calcula k con los datos de la tabla (con 5 % de margen).</p><div class="row"><input id="kv" inputmode="decimal" placeholder="p. ej. 2,5e-3"><button class="chk" id="ck">Comprobar</button><button class="sol" data-s="3">Ver solución</button></div></li>
+   </ol>
+   <p id="msg"></p>
+   <div id="fin"><b class="big" id="fp"></b><p id="ft" style="margin:6px 0 10px"></p><button class="go" id="nx" style="margin:0">Nuevo caso</button></div>
+  </div>
+ </div>
+</div></div>
+<script>
+const $=id=>document.getElementById(id),C=[.1,.2,.4],DC=.002;
+const UN=['mol·L⁻¹·s⁻¹','s⁻¹','L·mol⁻¹·s⁻¹','L²·mol⁻²·s⁻¹'];
+const f=(x,d=2)=>x.toFixed(d).replace('.',','),sup=s=>String(s).replace(/[-0-9]/g,c=>'⁻⁰¹²³⁴⁵⁶⁷⁸⁹'['-0123456789'.indexOf(c)]);
+const sci=x=>{const e=Math.floor(Math.log10(x));return f(x/10**e,1)+'·10'+sup(e)};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+let S,sel={a:1,b:1},lvl='0-2',total=0,run=null,P=[],tint=0,AC;
+function beep(fq,d=.15){try{AC=AC||new AudioContext();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=fq;g.gain.value=.06;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function seg(id,key){const el=$(id);el.innerHTML=C.map((c,i)=>`<button data-i="${i}">${f(c)} mol/L</button>`).join('');
+ el.onclick=e=>{const i=e.target.dataset.i;if(i===undefined||run)return;sel[key]=+i;paint();spawn()};}
+function paint(){[['sa','a'],['sb','b']].forEach(([id,k])=>[...$(id).children].forEach((b,i)=>b.classList.toggle('on',i===sel[k])))}
+function mk(t){return{t,x:70+Math.random()*180,y:110+Math.random()*150,vx:(Math.random()-.5)*2.4,vy:(Math.random()-.5)*2.4}}
+function spawn(){P=[];for(let i=0;i<Math.round(C[sel.a]*100);i++)P.push(mk('A'));for(let i=0;i<Math.round(C[sel.b]*100);i++)P.push(mk('B'))}
+function mystery(){const[lo,hi]=lvl.split('-').map(Number),Ns=[];for(let i=lo;i<=(hi??lo);i++)Ns.push(i);const N=pick(Ns),prs=[];for(let i=0;i<=N;i++)prs.push([i,N-i]);const[m,n]=pick(prs);
+ const k=pick([1.2,1.5,2,2.5,3])*10**[-4,-3,-2,-1][N];
+ S={m,n,N,k,exps:[],step:0,wrong:0,shown:0};$('tb').innerHTML='';$('empty').style.display='';$('fin').style.display='none';
+ $('kv').value='';$('un').value='';$('msg').textContent='';$('law').textContent='Con esa ley de velocidad, ¿qué unidades tiene k?';tint=0;$('chr').textContent='0,00 s';steps();$('go').disabled=false}
+function steps(){for(let i=0;i<4;i++){const li=$('s'+i);li.classList.toggle('off',i>S.step);li.classList.toggle('done',i<S.step)}}
+const law=()=>'v₀ = k'+(S.m?'·[A]'+(S.m>1?sup(S.m):''):'')+(S.n?'·[B]'+(S.n>1?sup(S.n):''):'');
+function say(t,ok){$('msg').textContent=t;$('msg').className=ok?'ok':'bad';beep(ok?660:200,ok?.12:.25)}
+function miss(t){S.wrong++;say(t,0)}
+function advance(t){S.step++;steps();say(t,1);if(S.step===2)$('law').innerHTML='La ley de velocidad es <b>'+law()+'</b> y el orden global es '+S.N+'. ¿Qué unidades tiene k?';if(S.step===4)finish()}
+document.querySelectorAll('[data-ord]').forEach(r=>r.onclick=e=>{const o=e.target.dataset.o;if(o===undefined)return;const key=r.dataset.ord,i=key==='m'?0:1,x=key==='m'?'A':'B';
+ if(S.exps.length<2)return say('Haz al menos 2 experimentos para poder comparar.',0);
+ if(S.step!==i)return;+o===S[key]?advance('¡Correcto! Orden '+o+' respecto a '+x+'.'):miss('No coincide. Busca dos experimentos en los que solo cambie ['+x+'] y mira cómo cambia v₀ al duplicar la concentración.')});
+$('un').innerHTML+=UN.map((u,i)=>`<option value="${i}">${u}</option>`).join('');
+$('cu').onclick=()=>{if(S.step!==2)return;const v=$('un').value;if(v==='')return say('Elige unas unidades.',0);
+ +v===S.N?advance('¡Bien! Unidades de k: '+UN[S.N]+'.'):miss('Esas unidades no cuadran. Despeja k en '+law()+' y sustituye las unidades de v₀ y de la concentración.')};
+$('ck').onclick=()=>{if(S.step!==3)return;const t=$('kv').value.trim().replace(/\s/g,'').replace(',','.').replace(/[x×·]10\^?/,'e'),v=parseFloat(t);
+ if(!isFinite(v))return say('Escribe un número, por ejemplo 2,5e-3.',0);
+ Math.abs(v-S.k)/S.k<=.05?advance('¡Exacto! k = '+sci(S.k)+' '+UN[S.N]+'.'):miss('Aún no. Calcula k = v₀ ÷ ([A]'+(S.m>1?sup(S.m):'')+'·[B]'+(S.n>1?sup(S.n):'')+') con un experimento de la tabla y revisa las unidades.')};
+function rank(){return total<100?'Ayudante de laboratorio':total<300?'Técnico de laboratorio':total<500?'Investigadora o investigador':'Jefatura de laboratorio'}
+function finish(){const p=Math.max(10,100-10*S.wrong-20*S.shown-5*Math.max(0,S.exps.length-4));total+=p;$('tot').textContent=total+' puntos';$('rank').textContent=rank();
+ $('fp').textContent='Caso resuelto: +'+p+' puntos';$('ft').textContent=law()+' · orden global '+S.N+' · k = '+sci(S.k)+' '+UN[S.N]+'. Hiciste '+S.exps.length+' experimentos, '+S.wrong+' errores y viste '+S.shown+' soluciones.';
+ $('fin').style.display='block';$('msg').textContent='';$('nm').textContent=+$('nm').textContent+1;beep(880,.3);$('go').disabled=true}
+$('nx').onclick=mystery;
+function solve(i){const p=i?S.n:S.m,x=i?'B':'A',N=S.N;
+ if(i<2)return 'orden '+p+' respecto a '+x+'. Al duplicar ['+x+'] (con la otra concentración fija), v₀ se multiplica por 2'+sup(p)+' = '+2**p+' y el tiempo se divide entre '+2**p+'.';
+ if(i===2)return 'k se mide en '+UN[N]+'. Con orden global '+N+': k = v₀ ÷ (concentración)'+sup(N)+', es decir, (mol·L⁻¹·s⁻¹) ÷ (mol/L)'+sup(N)+'.';
+ return 'con [A] = [B] = 0,20 mol/L, v₀ = k·0,20'+sup(N)+' = '+sci(S.k*.2**N)+' mol·L⁻¹·s⁻¹, luego k = v₀ ÷ 0,20'+sup(N)+' = '+sci(S.k)+' '+UN[N]+'.'}
+document.querySelectorAll('.sol').forEach(b=>b.onclick=()=>{const i=+b.dataset.s;if(S.step!==i)return;S.shown++;advance('Solución: '+solve(i))});
+$('lv').onchange=()=>{lvl=$('lv').value;mystery()};
+$('go').onclick=()=>{if(run||S.step>3)return;const A=C[sel.a],B=C[sel.b],t=DC/(S.k*A**S.m*B**S.n),rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+ run={t0:performance.now(),dur:rm?300:Math.max(600,t*250),t,A,B};tint=0;$('go').disabled=true;spawn()};
+function done(){const{t,A,B}=run;run=null;tint=.01;S.exps.push({A,B,t});const n=S.exps.length;$('empty').style.display='none';
+ $('tb').insertAdjacentHTML('beforeend',`<tr><td>${n}</td><td>${f(A)} mol/L</td><td>${f(B)} mol/L</td><td>${f(t)} s</td><td>${sci(DC/t)} mol·L⁻¹·s⁻¹</td></tr>`);
+ $('chr').textContent=f(t)+' s';beep(520,.2);$('go').disabled=S.step>3}
+const cv=$('cv'),cx=cv.getContext('2d');
+function frame(now){const cs=getComputedStyle(document.documentElement),ink=cs.getPropertyValue('--ink').trim()||'#222';
+ cx.clearRect(0,0,320,290);
+ if(run){const el=Math.min(1,(now-run.t0)/run.dur);$('chr').textContent=f(run.t*el)+' s';if(el>=1)done()}
+ if(tint>0&&tint<1)tint=Math.min(1,tint+.04);
+ const r=Math.round(205-130*tint),g=Math.round(230-183*tint),b=Math.round(232-72*tint);
+ cx.beginPath();cx.moveTo(60,30);cx.lineTo(60,240);cx.quadraticCurveTo(60,272,92,272);cx.lineTo(228,272);cx.quadraticCurveTo(260,272,260,240);cx.lineTo(260,30);
+ cx.save();cx.lineTo(260,100);cx.lineTo(60,100);cx.closePath();cx.fillStyle=`rgb(${r},${g},${b})`;cx.fill();cx.restore();
+ cx.lineWidth=4;cx.strokeStyle=ink;cx.globalAlpha=.6;cx.stroke();cx.globalAlpha=1;
+ const sp=run?1.6:.7;
+ for(const p of P){p.x+=p.vx*sp;p.y+=p.vy*sp;if(p.x<70||p.x>250)p.vx*=-1;if(p.y<108||p.y>262)p.vy*=-1;
+  cx.beginPath();cx.arc(p.x,p.y,5,0,7);cx.fillStyle=p.t==='A'?cs.getPropertyValue('--A'):cs.getPropertyValue('--B');cx.fill()}
+ if(tint>0&&tint<.6){cx.fillStyle=`rgba(255,255,255,${.5-tint*.8})`;cx.fillRect(60,100,200,172)}
+ requestAnimationFrame(frame)}
+seg('sa','a');seg('sb','b');paint();spawn();mystery();$('rank').textContent=rank();requestAnimationFrame(frame);
+</script></body></html>
