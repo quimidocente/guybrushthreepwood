@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mecanismos y etapa limitante</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9f2ff;--card:#fff;--ink:#10264a;--mut:#5b6b8c;--line:#d3def2;--slow:#ff4f6d;--fast:#0fb27f;--mid:#ffb020;--acc:#5b5bf0;--prod:#12a4c8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1630;--card:#16224a;--ink:#eaf0ff;--mut:#9db0d8;--line:#2b3b6e;--slow:#ff6b86;--fast:#2fd9a0;--mid:#ffc24a;--acc:#8d8dff;--prod:#4cc9e8}}
+:root[data-theme="dark"]{--bg:#0d1630;--card:#16224a;--ink:#eaf0ff;--mut:#9db0d8;--line:#2b3b6e;--slow:#ff6b86;--fast:#2fd9a0;--mid:#ffc24a;--acc:#8d8dff;--prod:#4cc9e8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.5 Nunito,system-ui,sans-serif}
+h1,h2,h3,.big{font-family:'Baloo 2',system-ui,sans-serif;margin:0;line-height:1.1}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+h1{font-size:clamp(26px,5vw,42px);font-weight:800}
+.score{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:6px 16px;font-weight:700;transition:background .3s}.score.flash{background:var(--fast);color:#fff;border-color:var(--fast)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.tab,.mode button,.btn{font:700 15px Nunito,system-ui,sans-serif;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:9px 14px;cursor:pointer}
+.tab small{display:block;font-weight:500;color:var(--mut);font-size:12px}
+.tab[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.tab[aria-selected=true] small{color:#e6e6ff}
+.mode{display:inline-flex;gap:6px;margin-bottom:12px}
+.mode button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}@media(max-width:600px){#tm .tx{display:none}}
+canvas{width:100%;height:auto;display:block;border-radius:14px;background:linear-gradient(180deg,transparent,rgba(91,91,240,.07))}
+.eq{display:flex;gap:10px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.pill{border-radius:999px;padding:2px 12px;font-weight:700;font-size:13px;color:#fff}
+.s1{background:var(--slow)}.s2{background:var(--fast)}
+.sl label{display:flex;justify-content:space-between;font-weight:700;margin-top:10px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.btn.hot{background:var(--slow);border-color:var(--slow);color:#fff}.btn.cool{background:var(--fast);border-color:var(--fast);color:#fff}
+.btn:active{transform:scale(.97)}
+.big{font-size:44px;font-weight:800}
+.bar{height:16px;border-radius:99px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--prod));transition:width .25s}
+.msg{border-radius:14px;padding:12px;background:rgba(91,91,240,.12);min-height:70px;font-weight:700}
+.msg.ok{background:rgba(15,178,127,.18)}.msg.bad{background:rgba(255,79,109,.16)}.msg.warn{background:rgba(255,176,32,.2)}
+table{border-collapse:collapse;width:100%;font-size:15px}td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+.zero{color:var(--fast);font-weight:800}.law{font:800 26px 'Baloo 2',system-ui;color:var(--acc)}
+.quests{display:flex;flex-wrap:wrap;gap:8px}.q{border:2px dashed var(--line);border-radius:12px;padding:4px 10px;font-size:14px}.q.done{border:2px solid var(--fast);background:rgba(15,178,127,.15)}
+.cand{border:2px solid var(--line);border-radius:16px;padding:14px;margin:10px 0}
+.cand.ok{border-color:var(--fast)}.cand.no{border-color:var(--slow)}
+.v{height:10px;border-radius:9px;background:var(--acc);display:inline-block;vertical-align:middle}
+.pop{position:fixed;font-size:28px;pointer-events:none;animation:up 1.2s ease-out forwards;z-index:9}
+@keyframes up{to{transform:translateY(-160px) rotate(40deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){.pop{animation:none;opacity:0}.bar i{transition:none}}
+.knob{position:absolute;right:22px;top:18px;width:42px;height:42px;z-index:3;border-radius:50%;border:2px solid var(--line);background:var(--card);cursor:grab;touch-action:none;box-shadow:0 2px 6px rgba(16,38,74,.18)}.knob:active{cursor:grabbing}.knob i{position:absolute;left:50%;top:4px;width:4px;height:15px;margin-left:-2px;border-radius:3px;background:var(--acc);transform-origin:50% 17px}.hide{display:none}select{font:700 16px Nunito,system-ui,sans-serif;border:2px solid var(--acc);background:var(--card);color:var(--ink);border-radius:14px;padding:9px 14px;width:min(100%,680px)}
+</style></head><body><div class="wrap">
+<header><h1>🧪 Mecanismos y etapa limitante</h1><div class="score" id="score">⭐ 0 puntos</div></header>
+<p>Una reacción es una cadena de etapas. Acelera, frena y descubre cuál manda. Luego comprueba qué mecanismos encajan con los datos del laboratorio.</p>
+<div class="tabs"><label for="rx" style="font-weight:800;font-size:18px">Reacciones</label><select id="rx"></select></div>
+<div class="mode"><button id="mLab" aria-pressed="true">🔬 Laboratorio</button><button id="mTest" aria-pressed="false">📊 Análisis de datos</button></div>
+
+<section id="lab">
+<div class="grid"><div>
+ <div class="card" style="position:relative"><div class="knob" id="kn" role="slider" tabindex="0" aria-label="Velocidad de la simulación" aria-valuemin="1" aria-valuemax="8" aria-valuenow="1"><i></i></div><button class="btn" id="tm" style="position:absolute;left:26px;top:26px;z-index:2;padding:3px 10px;font-size:12px" aria-label="Quitar moléculas">🙈<span class="tx"> quitar moléculas</span></button><canvas id="cv" width="900" height="320" aria-label="Animación del mecanismo"></canvas>
+ <p style="margin:0 0 6px;color:var(--mut);font-weight:700">👆 Arrastra una presa hacia arriba o abajo para cambiar su constante. Rosa: reactivo que se añade. Azul claro: producto que sale.</p><div class="eq" id="eqs"></div><div id="net" style="color:var(--mut);font-weight:700"></div></div>
+ <div class="card"><h3>🧪 Experimentos</h3><div class="quests" id="quests"></div></div>
+</div><div>
+ <div class="card sl"><h3>🎛️ Constantes de velocidad</h3>
+  <label><span><span class="pill s1">Etapa 1</span> k₁</span><b id="k1v"></b></label><input type="range" id="e1" min="-1" max="4" step="0.05" aria-label="k1">
+  <label><span><span class="pill s2">Etapa 2</span> k₂</span><b id="k2v"></b></label><input type="range" id="e2" min="-1" max="4" step="0.05" aria-label="k2">
+  <div class="row"><button class="btn cool" id="b2">⚡ ×10 etapa 2</button><button class="btn hot" id="b1">⚡ ×10 etapa 1</button><button class="btn" id="b3">🐢 ÷1000 etapa 2</button><button class="btn" id="b0">↺ Reiniciar</button></div>
+  <h3 style="margin-top:14px">🧴 Concentraciones</h3><div id="concs"></div></div>
+ <div class="card"><div style="color:var(--mut);font-weight:700">Velocidad global (teórica)</div><div class="big" id="vt"></div><div class="bar"><i id="vb"></i></div>
+  <p style="margin:8px 0 0">Respecto al inicio: <b id="vr"></b> · Medida en la animación: <b id="vm"></b> pasos/s</p>
+  <p style="margin:4px 0 0">Cuello de botella: <b id="bn"></b></p></div>
+ <div class="msg" id="msg">Mueve un deslizador y observa qué le pasa a la velocidad global.</div>
+</div></div>
+<div class="card"><h3>🧮 Deducción de la ecuación de velocidad</h3>
+ <p style="margin:6px 0">La velocidad la fija la etapa limitante. Duplica cada concentración (en el modelo) y mira cuánto cambia v:</p>
+ <table id="ord"></table><p>Ley deducida ahora mismo: <span class="law" id="law"></span></p><p id="lawnote" style="color:var(--mut);margin:0"></p></div>
+</section>
+
+<section id="test" class="hide"><div class="card"><h3>🕵️ Datos del laboratorio</h3><p style="margin:4px 0">Predice si cada mecanismo es compatible con estos datos y comprueba tu respuesta.</p><div style="overflow-x:auto"><table id="data"></table></div></div><div id="cands"></div>
+<div class="msg warn" id="warn" style="display:none">⚠️ Que un mecanismo sea compatible <b>no demuestra que sea el verdadero</b>: solo no ha sido descartado. Los datos pueden descartar mecanismos, pero nunca confirmarlos del todo; otro mecanismo distinto podría dar la misma ley de velocidad.</div></section>
+</div>
+<script>
+const EX=[
+{n:'NO₂ + CO',t:'intermedio NO₃',sp:['NO₂','CO'],o1:[2,0],o2:[0,1],e1:'NO₂ + NO₂ → NO₃ + NO',e2:'NO₃ + CO → NO₂ + CO₂',net:'Global: NO₂ + CO → NO + CO₂',lab:['NO₂','NO₃','NO₂'],c:['+ NO','+ CO₂'],rec:0,u:'M/s',
+ q3:'Frena la etapa 2 hasta que el CO sí influya',
+ rows:[[.1,.1,.0051],[.2,.1,.0198],[.1,.3,.0049],[.3,.2,.0452]],
+ cand:[{n:'Mecanismo A · dos etapas',s:['NO₂ + NO₂ → NO₃ + NO (lenta)','NO₃ + CO → NO₂ + CO₂ (rápida)'],o:[2,0],ok:1,why:'Con la etapa 1 lenta: v = k·[NO₂]². El CO entra después del cuello de botella, así que su orden es cero.'},
+ {n:'Mecanismo B · una etapa',s:['NO₂ + CO → NO + CO₂ (elemental)'],o:[1,1],ok:0,why:'Predice v = k·[NO₂][CO], pero los datos muestran que duplicar [CO] no cambia v.'}]},
+{n:'2 NO + 2 H₂',t:'intermedio H₂O₂',sp:['NO','H₂'],o1:[2,1],o2:[0,1],e1:'2 NO + H₂ → N₂ + H₂O₂',e2:'H₂O₂ + H₂ → 2 H₂O',net:'Global: 2 NO + 2 H₂ → N₂ + 2 H₂O',lab:['2 NO','H₂O₂','2 H₂O'],c:['+ N₂',''],rec:0,u:'M/s',
+ q3:'Frena la etapa 2 hasta que mande ella',
+ rows:[[.1,.1,.0010],[.2,.1,.0040],[.1,.2,.0021],[.3,.2,.0178]],
+ cand:[{n:'Mecanismo A · H₂O₂ intermedio',s:['2 NO + H₂ → N₂ + H₂O₂ (lenta)','H₂O₂ + H₂ → 2 H₂O (rápida)'],o:[2,1],ok:1,why:'La etapa lenta contiene 2 NO y 1 H₂, lo que da v = k·[NO]²·[H₂]. El segundo H₂ actúa después, sin aparecer en la ley.'},
+ {n:'Mecanismo B · NO + H₂ lenta',s:['NO + H₂ → N + H₂O (lenta)','…etapas rápidas posteriores'],o:[1,1],ok:0,why:'Predice orden 1 en NO, pero al duplicar [NO] la velocidad se cuadruplica.'}]},
+{n:'Descomposición de H₂O₂',t:'catalizador I⁻ · intermedio IO⁻',sp:['H₂O₂','I⁻'],o1:[1,1],o2:[1,0],e1:'H₂O₂ + I⁻ → H₂O + IO⁻',e2:'H₂O₂ + IO⁻ → H₂O + O₂ + I⁻',net:'Global: 2 H₂O₂ → 2 H₂O + O₂ (I⁻ no se consume)',lab:['I⁻','IO⁻','I⁻'],c:['+ H₂O','+ H₂O + O₂'],rec:1,u:'M/s',
+ q3:'Frena la etapa 2 y mira cómo se acumula el IO⁻',
+ rows:[[.1,.01,.00050],[.2,.01,.00102],[.1,.02,.00098],[.2,.03,.00305]],
+ cand:[{n:'Mecanismo A · catálisis por I⁻',s:['H₂O₂ + I⁻ → H₂O + IO⁻ (lenta)','H₂O₂ + IO⁻ → H₂O + O₂ + I⁻ (rápida)'],o:[1,1],ok:1,why:'El I⁻ es catalizador (entra y sale intacto, aparece en la ley) y el IO⁻ es intermedio (se forma y se gasta, no aparece en la ley).'},
+ {n:'Mecanismo B · sin catalizador',s:['H₂O₂ + H₂O₂ → 2 H₂O + O₂ (elemental)'],o:[2,0],ok:0,why:'Ignora al I⁻: los datos muestran que duplicar [I⁻] duplica v.'}]},
+{n:'Ozono + Cl',t:'catalizador Cl · intermedio ClO',sp:['Cl','O₃','O'],o1:[1,1,0],o2:[0,0,1],e1:'Cl + O₃ → ClO + O₂',e2:'ClO + O → Cl + O₂',net:'Global: O₃ + O → 2 O₂ (Cl se recupera)',lab:['Cl','ClO','Cl'],c:['+ O₂','+ O₂'],rec:1,u:'u.a.',
+ q3:'Frena la etapa 2: ¡el ClO se acumula!',
+ rows:[[1,1,2.0],[2,1,4.1],[1,2,3.9],[2,2,7.8]],
+ cand:[{n:'Mecanismo A · ciclo del Cl',s:['Cl + O₃ → ClO + O₂ (lenta en este modelo)','ClO + O → Cl + O₂ (rápida)'],o:[1,1],ok:1,why:'Un solo átomo de Cl destruye miles de moléculas de O₃ porque se regenera en cada ciclo.'},
+ {n:'Mecanismo B · sin cloro',s:['O₃ → O₂ + O (lenta)','O + O₃ → 2 O₂ (rápida)'],o:[0,1],ok:0,why:'No depende de [Cl], pero los datos muestran que v se duplica al duplicar [Cl].'}]}];
+EX[3].rows=EX[3].rows.map(r=>[r[0],r[1],r[2]]);
+EX[3].dataSp=['Cl','O₃'];
+EX[0].k='';EX[0].co=['','CO'];EX[0].by=['NO','CO₂'];EX[1].k='H₂';EX[1].co=['','H₂'];EX[1].by=['N₂',''];EX[2].k='H₂O₂';EX[2].co=['','H₂O₂'];EX[2].by=['H₂O','H₂O + O₂'];EX[3].k='O₃';EX[3].co=['','O'];EX[3].by=['O₂','O₂'];
+const $=id=>document.getElementById(id);
+let ix=0,e1=0,e2=3,c=[],ref=1,vBase=1,pts=0,quests={},answered={},mode='lab';
+const prod=(c,o)=>c.reduce((a,x,i)=>a*Math.pow(x,o[i]),1);
+function rates(cc=c,a=e1,b=e2){const E=EX[ix],v1=Math.pow(10,a)*prod(cc,E.o1),v2=Math.pow(10,b)*prod(cc,E.o2);return{v1,v2,v:v1*v2/(v1+v2)}}
+const fmt=x=>x>=100?x.toFixed(0):x>=10?x.toFixed(1):x>=1?x.toFixed(2):x.toPrecision(2);
+const sup=['','','²','³'];
+const GL=[['NO₂ + CO → NO + CO₂','','NO₃'],['2 NO + 2 H₂ → N₂ + 2 H₂O','','H₂O₂'],['2 H₂O₂ → 2 H₂O + O₂','I⁻','IO⁻'],['O₃ + O → 2 O₂','Cl','ClO']];$('rx').innerHTML=EX.map((e,i)=>`<option value="${i}">${GL[i][0]} · ${GL[i][1]?'catalizador '+GL[i][1]+' · ':''}intermedio ${GL[i][2]}</option>`).join('');
+$('rx').onchange=e=>pick(+e.target.value);
+function pick(i){ix=i;e1=0;e2=3;const E=EX[i];c=E.sp.map(()=>1);quests[i]=quests[i]||{f:0,s:0,m:0};
+ $('rx').value=i;
+ $('eqs').innerHTML=`<span class="pill s1">1 · lenta</span><b>${E.e1}</b><span class="pill s2">2 · rápida</span><b>${E.e2}</b>`;
+ $('net').textContent=E.net;
+ $('concs').innerHTML=E.sp.map((s,j)=>`<label style="margin-top:6px"><span>[${s}]</span><b id="cv${j}">×1.0</b></label><input type="range" min="0.5" max="4" step="0.1" value="1" data-j="${j}" class="cs" aria-label="${s}">`).join('');
+ document.querySelectorAll('.cs').forEach(r=>{r.onpointerdown=r.onkeydown=()=>ref=rates().v;r.oninput=()=>{c[+r.dataset.j]=+r.value;$('cv'+r.dataset.j).textContent='×'+(+r.value).toFixed(1);feed('c')}});
+ $('e1').value=e1;$('e2').value=e2;vBase=ref=rates().v;sim.reset();upd();feedReset();renderTest();}
+function feedReset(){setMsg('Mueve un deslizador y observa qué le pasa a la velocidad global.','')}
+function setMsg(t,k){const m=$('msg');m.className='msg '+k;m.innerHTML=t}
+function quest(k){const q=quests[ix];if(!q[k]){q[k]=1;pts+=15;score(1)}upd()}
+function feed(w){const r=rates(),p=(r.v-ref)/ref,E=EX[ix];
+ if(w=='f'){if(Math.abs(p)<.02&&r.v1<r.v2){setMsg(`😴 Cambió la etapa 2 y la velocidad global varió solo un ${(p*100).toFixed(1)} %. Es una etapa rápida: no frena a nadie. Prueba con la etapa 1.`,'ok');quest('f')}
+  else if(p<-.2){setMsg('🚧 Has frenado tanto la etapa 2 que ahora el cuello de botella es ella. Mira cómo se atascan los intermedios (ámbar) y cómo cambia la ley.','warn');quest('m')}
+  else setMsg('Sigue moviendo la etapa 2: ¿cuándo empieza a notarse?','')}
+ else if(w=='s'){if(Math.abs(p)>.2){setMsg(`🚀 La velocidad global cambió ×${fmt(r.v/ref)}. La etapa 1 es el cuello de botella: lo que le pasa a ella le pasa a todo.`,'bad');quest('s')}
+  else setMsg('Cambia un poco más la etapa 1 y observa.','')}
+ else setMsg(`Has cambiado una concentración: v va ×${fmt(r.v/ref)}. Mira abajo qué especies influyen de verdad.`,'');upd()}
+const setE=(w,v)=>{ref=rates().v;if(w=='f')e2=v;else e1=v;$('e1').value=e1;$('e2').value=e2;feed(w)};
+$('e1').oninput=e=>{e1=+e.target.value;feed('s')};$('e2').oninput=e=>{e2=+e.target.value;feed('f')};
+$('e1').onpointerdown=$('e2').onpointerdown=$('e1').onkeydown=$('e2').onkeydown=()=>ref=rates().v;
+$('b2').onclick=()=>setE('f',Math.min(4,e2+1));$('b1').onclick=()=>setE('s',Math.min(4,e1+1));$('b3').onclick=()=>setE('f',Math.max(-1,e2-3));$('b0').onclick=()=>{ref=rates().v;e1=0;e2=3;c=c.map(()=>1);document.querySelectorAll('.cs').forEach((r,j)=>{r.value=1;$('cv'+j).textContent='×1.0'});$('e1').value=0;$('e2').value=3;feedReset();upd()};
+function ordOf(j){const cc=c.slice();cc[j]*=2;return Math.log2(rates(cc).v/rates().v)}
+function upd(){const E=EX[ix],r=rates();
+ $('k1v').textContent='k₁ = '+fmt(Math.pow(10,e1));$('k2v').textContent='k₂ = '+fmt(Math.pow(10,e2));
+ $('vt').textContent=fmt(r.v);$('vr').textContent='×'+fmt(r.v/vBase);
+ $('vb').style.width=Math.max(2,Math.min(100,(Math.log10(r.v)+2)/6*100))+'%';
+ $('bn').innerHTML=r.v1<r.v2?'<span class="pill s1">etapa 1</span>':'<span class="pill s2">etapa 2</span>';
+ let rowsH='<tr><th>Especie</th><th>Al duplicar su concentración…</th><th>Orden</th></tr>',txt=[],clean=true;
+ E.sp.forEach((s,j)=>{const o=ordOf(j),oo=Math.round(o*2)/2;if(Math.abs(o-oo)>.12)clean=false;
+  rowsH+=`<tr><td>${s}</td><td>v × ${fmt(Math.pow(2,o))}</td><td class="${oo==0&&Math.abs(o)<.12?'zero':''}">${Math.abs(o)<.12?'0 · ¡no influye!':o.toFixed(1)}</td></tr>`;
+  if(Math.abs(o)>=.12)txt.push(`[${s}]${o>1.6?'²':o>1.1?'^'+oo:''}`)});
+ $('ord').innerHTML=rowsH;$('law').textContent=clean?'v = k·'+txt.join('·'):'v = ley compleja (dos etapas mandan)';
+ $('lawnote').textContent=clean?(txt.length<E.sp.length?'Las especies con orden 0 reaccionan después de la etapa lenta: no aparecen en la ley.':''):'Cuando ninguna etapa domina, la ley deja de ser un producto sencillo de potencias.';
+ const Q=quests[ix];$('quests').innerHTML=[['f','Acelera la etapa 2 y comprueba que no cambia nada'],['s','Acelera la etapa 1 y comprueba que v cambia'],['m',E.q3]].map(([k,t])=>`<span class="q ${Q[k]?'done':''}">${Q[k]?'✅':'⬜'} ${t}</span>`).join('')}
+function score(f){const s=$('score');s.textContent='⭐ '+pts+' puntos'+(f?' · ¡experimento completado! +15':'');if(f){s.classList.add('flash');setTimeout(()=>{s.classList.remove('flash');s.textContent='⭐ '+pts+' puntos'},2500)}}
+function burst(e){for(let i=0;i<8;i++){const s=document.createElement('span');s.className='pop';s.textContent=e;s.style.left=(30+Math.random()*40)+'vw';s.style.top=(50+Math.random()*20)+'vh';document.body.appendChild(s);setTimeout(()=>s.remove(),1300)}}
+
+/* ---------- animación ---------- */
+const cv=$('cv'),g=cv.getContext('2d'),G1=300,G2=620,Y=150;
+const sim={q:[],m:[],o:[],ch:[],ev:[],t:0,fl:[0,0],l1:8,l2:8,b:[],c:[],k:[],fx:[],h:[],ht:0,p1:[],p2:[],
+ reset(){this.q=[];this.m=[];this.o=[];this.ch=[];this.ev=[];this.b=[];this.c=[];this.k=[];this.fx=[];this.h=[];this.p1=[];this.p2=[];for(let i=0;i<NK&&EX[ix].k;i++)this.k.push({x:-70-i*30,y:PY,s:EX[ix].k});for(let i=0;i<5;i++)this.add(i*-1)},
+ add(){this.q.push({x:-70,y:PY,st:0})}};
+const col=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NK=3,PY=152,PM=174,PO=196,kx=G1-38,hx=G2-38,qx=i=>G1-100-(i%2)*92,qy=i=>PY-Math.floor(i/2)*30,mx=i=>G2-100-(i%3)*80,my=i=>PM-Math.floor(i/3)*30;
+const opf=x=>Math.max(0,Math.min(1,(x+1)/5)),crest=i=>i?192-(110-opf(e2)*95):170-(130-opf(e1)*95);
+let bn=0;function spawn(i){const E=EX[ix],G=i?G2:G1,zy=i?192:170;
+ 
+ if(E.by[i]){const y0=crest(i)-8,an=(15+(bn++*67)%150)*Math.PI/180;sim.b.push(i?{x:G+62,y:y0,vy:0,lt:0,ld:0,L:99,fin:1,ax:45,ay:0,s:E.by[i],ty:PO}:{x:G+62,y:y0,vy:0,lt:0,ld:1,L:1.5,ax:Math.cos(an)*8,ay:Math.sin(an)*8,s:E.by[i],ty:192-sim.l2-8})}}
+/* regiones donde las moléculas se dispersan (más a la izquierda de cada compartimento) */
+function rgn(i){const n=i?sim.m.length+sim.h.length:sim.q.length+sim.k.length;
+ return i?{x0:350,x1:Math.min(520,480+Math.max(0,n-9)*12),top:Math.min(PM,204-sim.l2),bot:PM}:{x0:34,x1:Math.min(236,212+Math.max(0,n-8)*12),top:Math.min(PY,182-sim.l1),bot:PY}}
+function homeP(p,L,rg){let best=null,bs=-1;
+ for(let n=0;n<8;n++){const x=rg.x0+(rg.x1-rg.x0)*Math.pow(Math.random(),1.15),v=Math.random(),y=rg.top+(rg.bot-rg.top)*v;let d=1e9;
+  for(const o of L){if(o===p||o.pr||!o.hm)continue;d=Math.min(d,Math.hypot((o.hm.x-x)*.45,rg.top+(rg.bot-rg.top)*o.hm.v-y))}
+  if(d>bs){bs=d;best={x,v}}}
+ p.hm=best;p.hr=5+Math.random()*6}
+function idleSet(L,rg,dt){L.forEach(p=>{if(p.pr)return;if(!p.hm||(p.hr-=dt)<=0)homeP(p,L,rg);p.idl=1;p.tx=p.hm.x;p.ty=rg.top+(rg.bot-rg.top)*p.hm.v;if(p.jet&&p.y>p.ty)p.ty=p.y;p.top=rg.top;p.bot=rg.bot})}
+function nearest(L,x,y){let b=null,d=1e9;L.forEach(p=>{const e=Math.hypot(p.x-x,p.y-y);if(e<d){d=e;b=p}});return b}
+function moveP(p,dt){
+ if(p.jet){p.vy=(p.vy||0)+380*dt;p.y+=p.vy*dt;p.x=p.jx;if(p.y>=p.ty){p.y=p.ty;p.jet=0;p.vy=0}return}
+ if(p.way&&p.way.length){p.tx=p.way[0].x;p.ty=p.way[0].y;if(Math.hypot(p.x-p.tx,p.y-p.ty)<14)p.way.shift()}
+ if(p.idl&&!(p.way&&p.way.length)){const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy);
+  if(d>.5){const k=Math.min(1,(p.x<24?120:Math.max(10,Math.min(70,d*.5)))*dt/d);p.x+=dx*k;p.y+=dy*k}
+  if(p.top!=null)p.y=Math.max(p.top,Math.min(p.bot,p.y));return}
+ const f=p.way&&p.way.length?4:(p.f||3.5);p.x+=(p.tx-p.x)*Math.min(1,dt*f);p.y+=(p.ty-p.y)*Math.min(1,dt*f)}
+/* una pareja se junta (fase 0), va unida hasta la barrera (fase 1) y reacciona */
+function pairStep(g,cx,rg,j,dt,fire){const a=g.a,b=g.b,o=b?31:0;
+ if(g.ph==0){a.tx=g.x-o;a.ty=g.y;a.f=4;if(b){b.tx=g.x+o;b.ty=g.y;b.f=4}
+  if(Math.hypot(a.x-a.tx,a.y-a.ty)<5&&(!b||Math.hypot(b.x-b.tx,b.y-b.ty)<5))g.ph=1}
+ else{const sy=Math.max(rg.top,rg.bot-30*j),k=Math.min(1,dt*3.5);g.x+=(cx-g.x)*k;g.y+=(sy-g.y)*k;
+  a.x=a.tx=g.x-o;a.y=a.ty=g.y;if(b){b.x=b.tx=g.x+o;b.y=b.ty=g.y}
+  if(Math.hypot(g.x-cx,g.y-sy)<4)fire(g)}}
+function step(dt){const r=rates(),E=EX[ix];
+ const p1=1-Math.exp(-.7*r.v1*dt),p2=1-Math.exp(-.7*r.v2*dt);sim.t+=dt;
+ const rg1=rgn(0),rg2=rgn(1),hc=E.co[1]&&E.co[1]!=E.lab[1],rnd=L=>L.length?L[Math.floor(Math.random()*L.length)]:null,
+ fire1=g=>{const a=g.a,b=g.b;sim.p1.splice(sim.p1.indexOf(g),1);sim.q.splice(sim.q.indexOf(a),1);
+  sim.fx.push({x:a.x,y:a.y,s:E.lab[0],t:0,tx:a.x,ty:a.y,c:col('--acc')});
+  if(b){const L=E.k?sim.k:sim.q;L.splice(L.indexOf(b),1);sim.fx.push({x:b.x,y:b.y,s:b.s||E.lab[0],t:0,tx:a.x,ty:a.y,c:E.k?undefined:col('--acc')})}
+  a.pr=0;a.idl=0;a.f=0;a.hm=null;a.st=1;sim.m.push(a);a.x=a.jx=G1+24;a.y=crest(0)+4;a.jet=1;a.vy=0;spawn(0);sim.fl[0]=1},
+ fire2=g=>{const m=g.a,w=g.b;sim.p2.splice(sim.p2.indexOf(g),1);sim.m.splice(sim.m.indexOf(m),1);
+  if(w){sim.h.splice(sim.h.indexOf(w),1);sim.fx.push({x:w.x,y:w.y,s:w.s,t:0,tx:m.x,ty:m.y})}
+  sim.fx.push({x:m.x,y:m.y,s:E.lab[1],t:0,tx:m.x,ty:m.y,c:col('--mid')});
+  m.pr=0;m.idl=0;m.f=0;m.hm=null;m.st=2;sim.ev.push(sim.t);spawn(1);sim.fl[1]=1;
+  m.x=m.jx=G2+24;m.y=crest(1)+4;m.jet=1;m.vy=0;if(E.rec){m.st=0;m.back=1;m.way=[{x:870,y:PO},{x:870,y:128}]}sim.o.push(m)};
+ /* etapa 1: se elige un reactivo (y su pareja) y se juntan */
+ if(sim.p1.length<2&&sim.m.length+sim.p1.length<9&&Math.random()<p1){
+  const ok=p=>!p.jet&&!p.pr&&!p.back&&p.x>10,a=rnd(sim.q.filter(ok));
+  if(a){const need=E.k||E.o1.some(o=>o>1),b=need?nearest(E.k?sim.k.filter(p=>!p.pr&&p.x>10):sim.q.filter(p=>p!==a&&ok(p)),a.x,a.y):null;
+   if(!need||b){a.pr=1;a.idl=0;if(b){b.pr=1;b.idl=0}
+    sim.p1.push({a,b,x:b?(a.x+b.x)/2:a.x,y:Math.max(rg1.top,Math.min(rg1.bot,b?(a.y+b.y)/2:a.y)),ph:0})}}}
+ /* etapa 2: igual con el intermedio y su coreactivo */
+ if(sim.p2.length<2&&Math.random()<p2){
+  const a=rnd(sim.m.filter(p=>!p.jet&&!p.pr));
+  if(a){const b=hc?nearest(sim.h.filter(p=>p.w&&!p.pr),a.x,a.y):null;
+   if(!hc||b){a.pr=1;a.idl=0;if(b){b.pr=1;b.idl=0}
+    sim.p2.push({a,b,x:b?(a.x+b.x)/2:a.x,y:Math.max(rg2.top,Math.min(rg2.bot,b?(a.y+b.y)/2:a.y)),ph:0})}}}
+ sim.p1.slice().forEach(g=>pairStep(g,G1-69,rg1,sim.p1.indexOf(g),dt,fire1));
+ sim.p2.slice().forEach(g=>pairStep(g,G2-69,rg2,sim.p2.indexOf(g),dt,fire2));
+ if(E.k&&sim.k.length<NK)sim.k.push({x:-70,y:PY,s:E.k});
+ if(!E.rec&&sim.q.length<5)sim.add();
+ idleSet([...sim.q,...sim.k],rg1,dt);idleSet([...sim.m,...sim.h.filter(p=>p.w)],rg2,dt);
+ sim.o.forEach(p=>{if(p.jet){p.tx=p.jx;p.ty=PO}else if(!(p.way&&p.way.length)&&!p.back){p.x+=45*dt;p.tx=p.x;p.ty=PO}});sim.o.forEach(p=>{if(p.back&&!p.jet&&!(p.way&&p.way.length)){p.back=0;p.mv=1;p.x=p.jx=30;p.y=55;p.ty=PY;p.jet=1;p.vy=0;p.rj=1;sim.q.push(p)}});sim.o=sim.o.filter(p=>{if(p.mv){p.mv=0;return false}return true});if(E.rec&&sim.q.length+sim.m.length+sim.o.length<5)sim.add();
+ [...sim.q,...sim.m,...sim.o,...sim.k,...sim.h.filter(p=>p.w)].forEach(p=>moveP(p,dt));
+ sim.b.forEach(p=>{if(!p.ld){p.vy+=320*dt;p.y+=p.vy*dt;if(p.y>=p.ty){p.y=p.ty;p.ld=1}}else{p.lt+=dt;p.x+=p.ax*dt;p.y+=p.ay*dt}});sim.b=sim.b.filter(p=>(!p.ld||p.lt<p.L)&&!(p.fin&&p.x>=835));sim.c.forEach(p=>p.t+=dt);sim.c=sim.c.filter(p=>p.t<1.2);
+ sim.fx.forEach(p=>{p.t+=dt;p.x+=(p.tx-p.x)*Math.min(1,dt*6);p.y+=(p.ty-p.y)*Math.min(1,dt*6)});sim.fx=sim.fx.filter(p=>p.t<.6);
+ if(hc){sim.ht+=dt;if(sim.h.length<NK&&sim.ht>.15){sim.ht=0;sim.h.push(E.co[1]==E.k?{x:G1+38,y:crest(0)+4,vy:0,s:E.co[1],w:0}:{x:476+Math.random()*8-4,y:2,vy:0,s:E.co[1],w:0})}}sim.h.forEach(p=>{if(!p.w){p.vy+=380*dt;p.y+=p.vy*dt;if(p.y>=188-sim.l2)p.w=1}});
+ sim.o=sim.o.filter(p=>p.x<(p.st==2&&!p.back?836:880));sim.ch.forEach(c=>{c.t+=dt;c.y-=dt*30});sim.ch=sim.ch.filter(c=>c.t<1.2);
+ sim.fl=sim.fl.map(f=>Math.max(0,f-dt*4));sim.ev=sim.ev.filter(t=>sim.t-t<3)}
+function pill(x,y,t,c){g.font='700 13px Nunito,system-ui';const w=g.measureText(t).width+16;g.fillStyle=c;g.beginPath();g.roundRect(x-w/2,y-13,w,26,13);g.fill();g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.fillText(t,x,y+1)}
+function fo(p){return p.jet||reduce?0:Math.sin(sim.t*2+(p.ph||(p.ph=Math.random()*6.3)))*2.5}
+function spill(x,y,t,c,a){g.globalAlpha=a;g.font='700 11px Nunito,system-ui';const w=g.measureText(t).width+10;g.fillStyle=c;g.beginPath();g.roundRect(x-w/2,y-9,w,18,9);g.fill();g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.fillText(t,x,y+1);g.globalAlpha=1}
+function draw(){const E=EX[ix],r=rates();g.clearRect(0,0,900,320);g.save();g.translate(0,30);
+ const b0=170,b1=192,b2=214,gy=b2,op=x=>Math.max(0,Math.min(1,(x+1)/5)),H1=130-op(e1)*95,H2=110-op(e2)*95,c1=8+Math.ceil(sim.q.length/2)*30,c2=8+Math.ceil(sim.m.length/3)*30,ov=[c1>H1,c2>H2],lv1=(sim.l1+=(Math.min(c1,H1+4)-sim.l1)*.12),lv2=(sim.l2+=(Math.min(c2,H2+4)-sim.l2)*.12),wv=(x0,x1,lv,b)=>{const A=reduce?0:1,f=x=>b-lv+A*(Math.sin(x*.05+sim.t*2.6)*2.5+Math.sin(x*.12-sim.t*1.7)*1.5);g.beginPath();g.moveTo(x0,b);for(let x=x0;x<=x1;x+=6)g.lineTo(x,f(x));g.lineTo(x1,b);g.fillStyle='rgba(60,140,255,.3)';g.fill();g.beginPath();for(let x=x0;x<=x1;x+=6)x==x0?g.moveTo(x,f(x)):g.lineTo(x,f(x));g.strokeStyle='rgba(120,190,255,.9)';g.lineWidth=2.5;g.stroke()};
+ g.fillStyle=col('--line');g.fillRect(0,b0,G1+14,b2+12-b0);g.fillRect(0,b1,G2+14,b2+12-b1);g.fillRect(0,b2,900,12);
+ wv(0,G1-14,lv1,b0);wv(G1+14,G2-14,lv2,b1);wv(G2+14,886,10,b2);
+ 
+ [[G1,'--slow','Etapa 1','k₁',r.v1<r.v2,0],[G2,'--fast','Etapa 2','k₂',r.v2<=r.v1,1]].forEach(([x,cl,n,k,bn,i])=>{
+  g.save();if(bn){g.shadowColor=col(cl);g.shadowBlur=22}g.fillStyle=col(cl);
+  {const H=i?H2:H1,u=op(i?e2:e1),bw=60+u*60,bh=22+u*20,cy=(i?b1:b0)-H,bb=i?b2:b1;g.fillRect(x-14,cy,28,bb-cy);if(ov[i]||sim.fl[i]>0){g.fillStyle='rgba(60,140,255,.75)';g.fillRect(x+14,cy,6,bb-cy)}g.fillStyle=col(cl);g.beginPath();g.roundRect(x-bw/2,cy-bh,bw,bh,8);g.fill();g.fillStyle='#fff';g.font='800 '+(13+u*6)+'px "Baloo 2",system-ui';g.textAlign='center';g.textBaseline='middle';g.fillText((i?'k₂ = ':'k₁ = ')+fmt(Math.pow(10,i?e2:e1)),x,cy-bh/2+1)}
+  
+  g.restore();
+  g.fillStyle=col('--ink');g.font='800 17px "Baloo 2",system-ui';g.textAlign='center';g.fillText(n+(bn?' 🚧 limitante':''),x,gy+34);0});
+ g.fillStyle=col('--mut');g.font='700 13px Nunito';g.textAlign='center';g.fillText('reactivo',130,gy+34);g.fillText('intermedio',460,gy+34);g.fillText(E.rec?'catalizador recuperado':'producto',795,gy+34);
+ if(E.rec){const T=reduce?0:sim.t;[[30,55],[870,130]].forEach(([px,py])=>{g.save();g.translate(px,py);const gr=g.createRadialGradient(0,0,1,0,0,19);gr.addColorStop(0,'#fff');gr.addColorStop(.35,'#b07bff');gr.addColorStop(1,'rgba(91,91,240,0)');g.fillStyle=gr;g.beginPath();g.ellipse(0,0,19,6,0,0,7);g.fill();g.strokeStyle='#d9b8ff';g.lineWidth=1.5;g.beginPath();g.ellipse(0,0,14,4,0,T*3,T*3+4.5);g.stroke();g.restore()});g.fillStyle=col('--acc');g.font='800 11px "Baloo 2",system-ui';g.textAlign='center';g.fillText('✨ el catalizador se recicla',815,108)}
+ const cl=['--acc','--mid','--prod'];
+ if(showMol)[...sim.q,...sim.m,...sim.o].forEach(p=>{g.globalAlpha=p.back&&!p.jet?Math.max(0,Math.min(1,(p.y-126)/50)):p.rj&&p.y<100?Math.max(0,(p.y-52)/40):p.st==2&&!p.back?Math.max(0,Math.min(1,(835-p.x)/120)):1;pill(p.x,p.y+fo(p),E.lab[p.st],col(cl[p.st]));g.globalAlpha=1});
+ if(E.co[1]&&E.co[1]!=E.lab[1]&&E.co[1]!=E.k){g.fillStyle=col('--mut');g.fillRect(470,-30,12,22);g.beginPath();g.moveTo(466,-8);g.lineTo(486,-8);g.lineTo(480,2);g.lineTo(472,2);g.fill();g.font='700 12px Nunito';g.textAlign='right';g.fillText('se añade '+E.co[1],460,-16)}
+ if(showMol)[...sim.p1,...sim.p2].forEach(q=>{if(q.ph!=1||!q.b)return;g.save();g.strokeStyle=col('--ink');g.globalAlpha=.4;g.lineWidth=2;g.setLineDash([5,4]);g.beginPath();g.roundRect(q.x-62,q.y-20,124,40,20);g.stroke();g.restore()});if(showMol)sim.k.forEach(p=>pill(p.x,p.y+fo(p),p.s,'#d9468f'));if(showMol)sim.fx.forEach(p=>{g.globalAlpha=Math.max(0,1-p.t/.6);pill(p.x,p.y,p.s,p.c||'#d9468f');g.globalAlpha=1});if(showMol)sim.h.forEach(p=>{g.globalAlpha=1;pill(p.x,p.y+fo(p),p.s,'#d9468f')});if(showMol)sim.b.forEach(p=>spill(p.x,p.y,p.s,col('--prod'),p.fin?(p.ld?Math.max(0,Math.min(1,(835-p.x)/120)):1):p.ld?Math.max(0,1-p.lt/p.L):1));
+ g.font='800 16px "Baloo 2",system-ui';sim.ch.forEach(c=>{g.globalAlpha=1-c.t/1.2;g.fillStyle=col('--ink');g.textAlign='center';g.fillText(c.s,c.x,c.y)});g.globalAlpha=1;
+ g.restore()}
+let last=performance.now(),acc=0;
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function loop(n){const dt=Math.min(.05,(n-last)/1000);last=n;if(mode=='lab'){step(dt*.5*spd);draw();acc+=dt;if(acc>.25){acc=0;$('vm').textContent=(sim.ev.length/Math.min(3,Math.max(.5,sim.t))).toFixed(1)}}requestAnimationFrame(loop)}
+
+/* ---------- compatible o descartado ---------- */
+function renderTest(){const E=EX[ix],sp=E.dataSp||E.sp;
+ $('data').innerHTML=`<tr>${sp.map(s=>`<th>[${s}]</th>`).join('')}<th>v exp. (${E.u})</th></tr>`+E.rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('');
+ $('cands').innerHTML=E.cand.map((m,k)=>`<div class="cand" id="cd${k}"><h3>${m.n}</h3><div>${m.s.map(s=>'• '+s).join('<br>')}</div>
+  <p style="margin:8px 0">Ley que predice: <b>v = k·${sp.map((s,j)=>m.o[j]?`[${s}]${sup[m.o[j]]}`:'').join('')}</b></p>
+  <div class="row"><button class="btn cool" data-k="${k}" data-a="1">✅ Compatible</button><button class="btn hot" data-k="${k}" data-a="0">❌ Descartado</button></div><div id="rs${k}"></div></div>`).join('');
+ document.querySelectorAll('#cands .btn').forEach(b=>b.onclick=()=>answer(+b.dataset.k,+b.dataset.a));
+ $('warn').style.display='none';
+ E.cand.forEach((m,k)=>{if(answered[ix+'_'+k]!=null)reveal(k,true)})}
+function answer(k,a){const key=ix+'_'+k;if(answered[key]!=null)return;const m=EX[ix].cand[k];answered[key]=a;
+ if(a==m.ok){pts+=20;score();burst('⭐')}reveal(k)}
+function reveal(k,silent){const E=EX[ix],m=E.cand[k],sp=E.dataSp||E.sp,n=sp.length,key=ix+'_'+k,a=answered[key];
+ const r0=E.rows[0],k0=r0[n]/sp.reduce((p,_,j)=>p*Math.pow(r0[j],m.o[j]),1);
+ const pred=E.rows.map(r=>k0*sp.reduce((p,_,j)=>p*Math.pow(r[j],m.o[j]),1)),max=Math.max(...E.rows.map(r=>r[n]),...pred);
+ const tab=`<table><tr><th>Fila</th><th>Experimental</th><th>Predicho</th><th></th></tr>`+E.rows.map((r,i)=>{const ok=Math.abs(pred[i]-r[n])/r[n]<.1;return`<tr><td>${i+1}</td><td><span class="v" style="width:${r[n]/max*90}px"></span> ${r[n]}</td><td><span class="v" style="width:${pred[i]/max*90}px;background:${ok?col('--fast'):col('--slow')}"></span> ${+pred[i].toPrecision(3)}</td><td>${ok?'✅':'❌'}</td></tr>`}).join('')+'</table>';
+ const good=a==m.ok;
+ $('rs'+k).innerHTML=`<div style="margin-top:10px"><b>${m.ok?'✅ Compatible con los datos':'❌ Descartado por los datos'}</b> · ${good?'¡Bien visto! +20 ⭐':'Esta vez no: mira las filas.'}<p style="margin:6px 0">${m.why}</p>${tab}</div>`;
+ $('cd'+k).className='cand '+(m.ok?'ok':'no');
+ if(E.cand.some((c,j)=>c.ok&&answered[ix+'_'+j]!=null))$('warn').style.display='block'}
+function show(m){mode=m;$('lab').classList.toggle('hide',m!='lab');$('test').classList.toggle('hide',m!='test');$('mLab').setAttribute('aria-pressed',m=='lab');$('mTest').setAttribute('aria-pressed',m=='test')}
+$('mLab').onclick=()=>show('lab');$('mTest').onclick=()=>show('test');
+let drag=-1,off=0,showMol=true;$('tm').onclick=()=>{showMol=!showMol;$('tm').innerHTML=showMol?'🙈<span class="tx"> quitar moléculas</span>':'👁️<span class="tx"> ver moléculas</span>';$('tm').setAttribute('aria-label',showMol?'Quitar moléculas':'Ver moléculas')};cv.style.touchAction='none';
+const pt=ev=>{const b=cv.getBoundingClientRect(),k=900/b.width;return[(ev.clientX-b.left)*k,(ev.clientY-b.top)*k-30]};
+const dI=x=>Math.abs(x-G1)<45?0:Math.abs(x-G2)<45?1:-1;
+cv.onpointerdown=ev=>{const[x,y]=pt(ev),i=dI(x);if(i<0)return;drag=i;ref=rates().v;const u=Math.max(0,Math.min(1,((i?e2:e1)+1)/5));off=y-((i?192:170)-(110+(i?0:20)-u*95));cv.setPointerCapture(ev.pointerId)};
+cv.onpointermove=ev=>{const[x,y]=pt(ev);if(drag<0){cv.style.cursor=dI(x)>=0?'ns-resize':'default';return}const dh=drag?0:20,H=Math.max(15+dh,Math.min(110+dh,(drag?192:170)-(y-off))),v=(110+dh-H)/95*5-1;if(drag)e2=v;else e1=v;$('e1').value=e1;$('e2').value=e2;feed(drag?'f':'s')};
+cv.onpointerup=cv.onpointercancel=()=>{drag=-1};
+let spd=1;const kn=$('kn'),KA=135;
+function setSpd(v){spd=Math.max(1,Math.min(8,v));const a=-KA+Math.log2(spd)/3*2*KA;kn.firstChild.style.transform='rotate('+a+'deg)';kn.setAttribute('aria-valuenow',spd.toFixed(1))}
+kn.onpointerdown=e=>{kn.setPointerCapture(e.pointerId);kn.dr=1;kn.onpointermove(e)};
+kn.onpointermove=e=>{if(!kn.dr)return;const b=kn.getBoundingClientRect();let a=Math.atan2(e.clientX-b.left-b.width/2,-(e.clientY-b.top-b.height/2))*180/Math.PI;a=Math.max(-KA,Math.min(KA,a));setSpd(Math.pow(2,(a+KA)/(2*KA)*3))};
+kn.onpointerup=kn.onpointercancel=()=>{kn.dr=0};
+kn.onkeydown=e=>{if(e.key=='ArrowRight'||e.key=='ArrowUp'){setSpd(spd*1.2);e.preventDefault()}else if(e.key=='ArrowLeft'||e.key=='ArrowDown'){setSpd(spd/1.2);e.preventDefault()}};
+setSpd(1);
+pick(0);requestAnimationFrame(loop);
+</script></body></html>
