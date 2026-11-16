@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Leyes de los gases · Pizarra neón</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap">
+<style>
+:root{color-scheme:dark;--cy:#2ff3ff;--mg:#ff5cc0;--lm:#2bff6e;--ye:#ffe94a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:inherit}
+html,body{margin:0;height:100%;background:#000}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Caveat','Segoe Print','Bradley Hand',cursive}
+svg{width:100%;max-width:1700px;height:auto;max-height:calc(100% - 56px);display:block}
+.c{--k:var(--cy)}.m{--k:var(--mg)}.l{--k:var(--lm)}.y{--k:var(--ye)}
+.s{fill:none;stroke:var(--k);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.f{stroke-width:2.4}
+.t{fill:var(--k);font-size:40px;font-weight:700}
+.sm{font-size:32px}.md{font-size:44px}.lg{font-size:54px}
+.ar{font-family:'Segoe UI Symbol','DejaVu Sans',Arial,sans-serif;font-weight:900}
+.anim .s{stroke-dasharray:1;stroke-dashoffset:1;animation:d 1s ease-out forwards;animation-delay:var(--d)}
+.anim .t{opacity:0;animation:f .6s ease-out forwards;animation-delay:var(--d)}
+@keyframes d{to{stroke-dashoffset:0}}
+@keyframes f{to{opacity:1}}
+.h-pool .bub{animation:rise 2.2s ease-in infinite}
+@keyframes rise{0%{transform:translate(0,0);opacity:1}80%{opacity:1}100%{transform:translate(6px,var(--r));opacity:0}}
+.h-balloon .wv{animation:wv .7s ease-in-out infinite alternate}
+.h-balloon .wvl{animation:wvl .7s ease-in-out infinite alternate}
+@keyframes wv{from{transform:rotate(-70deg)}to{transform:rotate(-120deg)}}
+@keyframes wvl{from{transform:rotate(70deg)}to{transform:rotate(120deg)}}
+.h-snail .ant{animation:wig .5s ease-in-out infinite alternate}
+.h-snail .ant2{animation:wig .5s ease-in-out infinite alternate-reverse}
+@keyframes wig{from{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
+.hrt{opacity:0}
+.h-love .hrt{animation:love 1.8s ease-out infinite}
+@keyframes love{0%{opacity:0;transform:translate(0,0) scale(.5)}20%{opacity:1}100%{opacity:0;transform:translate(var(--x),-100px) scale(1.1)}}
+#pa{transform-box:fill-box;transform-origin:center}
+.h-aitor #pa{animation:fall 4s ease-in-out infinite}
+.h-aitor #pw{animation:surf 4s linear infinite}
+@keyframes fall{0%,8%{transform:none;opacity:1}30%{transform:translate(25px,45px) rotate(40deg);opacity:1}50%{transform:translate(40px,110px) rotate(80deg);opacity:1}75%{transform:translate(18px,320px) rotate(90deg);opacity:1}85%{transform:translate(18px,330px) rotate(90deg);opacity:0}97%{transform:none;opacity:0}100%{transform:none;opacity:1}}
+@keyframes surf{0%,72%{opacity:0}80%,95%{opacity:1}100%{opacity:0}}
+.h-pot .fl{animation:flame .5s ease-in-out infinite alternate}
+@keyframes flame{from{transform:skewX(-12deg) scaleY(.92)}to{transform:skewX(12deg) scaleY(1.12)}}
+.h-pot .stm{animation:steam 1.6s ease-out infinite}
+@keyframes steam{0%{opacity:0;transform:translate(0,8px)}30%{opacity:1}100%{opacity:0;transform:translate(8px,-34px)}}
+button{margin:8px 0 10px;background:none;border:2px solid var(--cy);color:var(--cy);font:700 22px 'Caveat',cursive;padding:4px 22px;border-radius:999px;cursor:pointer;text-shadow:0 0 8px var(--cy);box-shadow:0 0 10px var(--cy),inset 0 0 10px rgba(47,243,255,.3)}
+button:focus-visible{outline:3px solid var(--ye);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.anim .s,.anim .t{animation-duration:.01s;animation-delay:0s!important}}
+</style>
+</head>
+<body>
+<svg id="b" viewBox="0 0 1600 1000" role="img" aria-label="Pizarra con las leyes de Boyle, Charles y Gay-Lussac dibujadas en neón">
+<defs>
+<filter id="neon" x="-20%" y="-20%" width="140%" height="140%">
+<feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="a"/>
+<feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+<feMerge><feMergeNode in="b"/><feMergeNode in="a"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+</defs>
+<g filter="url(#neon)">
+
+<g style="--k:#777">
+<path class="s" d="M570 40 L585 380 L555 385 L550 960"/>
+<path class="s" d="M1100 40 L1085 960"/>
+</g>
+
+<!-- ===== BOYLE (cian) ===== -->
+<g class="c">
+<text class="t lg" x="40" y="68">Ley de Boyle</text>
+<path class="s" d="M30 82 Q160 92 300 80"/>
+<ellipse class="s" cx="390" cy="52" rx="62" ry="32"/>
+<text class="t" x="356" y="66">P y V</text>
+
+<ellipse class="s" cx="265" cy="165" rx="85" ry="32"/>
+<text class="t" x="265" y="178" text-anchor="middle">Boyle!!</text>
+<path class="s" d="M287 197 L309 296"/>
+
+<rect class="s" x="20" y="200" width="135" height="46"/>
+<text class="t sm" x="30" y="233">Salobreña</text>
+<path class="s" d="M60 246 L60 295 M115 246 L115 295"/>
+<text class="t sm" x="170" y="300">Aitor</text>
+<g id="pa"><path class="s" d="M246 355 L253 301 L262 355 M253 301 Q282 290 300 322 M294 313 L320 348 M292 316 L306 354"/></g>
+<path class="s" d="M125 355 L275 355 M132 355 L112 425 M167 355 L150 425 M122 378 L158 378 M117 400 L153 400"/>
+
+<rect class="s" x="190" y="400" width="200" height="330"/>
+<path class="s" d="M390 400 L440 370 L440 700 L390 730 M190 400 L240 370 L440 370"/>
+<path class="s" d="M222 386 q12 -9 24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 M252 376 q12 -9 24 0 t24 0 t24 0 t24 0 t24 0 t24 0"/>
+<g class="bub" style="--r:-70px"><circle class="s" cx="230" cy="490" r="8"/></g>
+<g class="bub" style="--r:-100px;animation-delay:.4s"><circle class="s" cx="305" cy="520" r="6"/></g>
+<g class="bub" style="--r:-165px;animation-delay:.9s"><circle class="s" cx="270" cy="585" r="5"/></g>
+<g class="bub" style="--r:-160px;animation-delay:.2s"><circle class="s" cx="345" cy="580" r="4"/></g>
+<g class="bub" style="--r:-55px;animation-delay:1.1s"><circle class="s" cx="350" cy="465" r="5"/></g>
+<g class="bub" style="--r:-40px;animation-delay:.6s"><circle class="s" cx="275" cy="452" r="3"/></g>
+<g class="bub" style="--r:-130px;animation-delay:1.4s"><circle class="s" cx="250" cy="550" r="4"/></g>
+<g class="bub" style="--r:-270px;animation-delay:.7s"><circle class="s" cx="225" cy="710" r="3"/></g>
+<path class="s" d="M220 490 L150 490 M165 480 L150 490 L165 500"/>
+<text class="t sm" x="14" y="478">Pompita</text><text class="t sm" x="30" y="512">grande</text>
+<path class="s" d="M217 710 L150 710 M165 700 L150 710 L165 720"/>
+<text class="t sm" x="14" y="698">Pompita</text><text class="t sm" x="40" y="732">chica</text>
+<g id="pw"></g>
+<path class="s" d="M462 400 Q480 565 462 725"/>
+<text class="t sm" x="480" y="575">3 m</text>
+
+<rect class="s" x="155" y="815" width="260" height="125" rx="16"/>
+<text class="t" style="font-size:38px" x="285" y="868" text-anchor="middle">P<tspan class="ar" dx="11">↑</tspan><tspan class="ar" dx="15">→</tspan><tspan dx="15">V</tspan><tspan class="ar" dx="11">↓</tspan></text>
+<text class="t" style="font-size:38px" x="285" y="920" text-anchor="middle">P<tspan class="ar" dx="11">↓</tspan><tspan class="ar" dx="15">→</tspan><tspan dx="15">V</tspan><tspan class="ar" dx="11">↑</tspan></text>
+</g>
+<g class="y">
+<rect class="s" x="372" y="100" width="185" height="62"/>
+<text class="t" x="464" y="146" text-anchor="middle">P·V = cte</text>
+</g>
+
+<!-- ===== CHARLES (verde) ===== -->
+<g class="l">
+<text class="t lg" x="610" y="68">Ley de Charles</text>
+<path class="s" d="M600 82 Q760 92 920 80"/>
+<ellipse class="s" cx="985" cy="52" rx="62" ry="32"/>
+<text class="t" x="985" y="66" text-anchor="middle">V y T</text>
+<g id="pc"></g>
+<path class="s" d="M710 340 C650 300 610 260 615 205 C620 140 675 105 740 105 C805 105 860 140 865 205 C870 260 830 300 770 340 Z"/>
+<path class="s" d="M740 105 C700 170 700 270 718 340 M740 105 C780 170 780 270 762 340"/>
+<path class="s" d="M710 340 L770 340"/>
+<path class="s" d="M740 352 C752 372 770 380 766 400 C762 416 718 416 714 400 C710 382 730 374 740 352 Z"/>
+<path class="s" d="M740 385 C746 395 752 398 748 407 C744 412 736 412 733 407 C730 399 737 395 740 385 Z"/>
+<path class="s" d="M710 340 L675 500 M770 340 L805 500"/>
+<path class="s" style="fill:#000" d="M665 500 L815 500 L805 555 L675 555 Z"/>
+<path class="s" d="M672 525 L808 525 M700 500 L704 555 M740 500 L740 555 M780 500 L776 555"/>
+
+<rect class="s" x="885" y="115" width="195" height="118" rx="16"/>
+<text class="t" style="font-size:32px" x="982" y="166" text-anchor="middle">T<tspan class="ar" dx="9">↑</tspan><tspan class="ar" dx="13">→</tspan><tspan dx="13">V</tspan><tspan class="ar" dx="9">↑</tspan></text>
+<text class="t" style="font-size:32px" x="982" y="214" text-anchor="middle">T<tspan class="ar" dx="9">↓</tspan><tspan class="ar" dx="13">→</tspan><tspan dx="13">V</tspan><tspan class="ar" dx="9">↓</tspan></text>
+
+<path class="s" d="M590 745 Q800 722 1070 742"/>
+<path class="s" d="M648 745 L652 665 M676 745 L672 665"/>
+<path class="s" d="M630 668 C600 662 595 622 620 612 C610 572 655 555 670 577 C690 552 735 567 728 602 C755 617 745 657 715 664 C700 674 645 677 630 668 Z"/>
+<g transform="translate(-30 -10)">
+<path class="s" d="M758 750 L952 750 Q982 750 984 724 Q986 698 962 690 Q948 684 942 700 Q930 720 884 722 M826 722 Q770 724 758 750"/>
+<path class="s" d="M778 738 Q860 746 948 738"/>
+<circle class="s" style="fill:#000" cx="855" cy="688" r="44"/>
+<path class="s" d="M855 688 C855 678 867 678 867 688 C867 704 842 706 839 688 C835 666 872 656 884 678 C896 704 868 728 842 722"/>
+<path class="s f" d="M962 712 Q970 720 978 712"/><circle class="s f" cx="966" cy="702" r="1"/>
+<g transform="translate(946 694)"><g class="ant"><path class="s" d="M0 0 L-12 -34"/><circle class="s" cx="-12" cy="-40" r="6"/></g></g>
+<g transform="translate(964 692)"><g class="ant2"><path class="s" d="M0 0 L14 -32"/><circle class="s" cx="14" cy="-38" r="6"/></g></g>
+</g>
+<path class="s" d="M1010 745 Q1016 700 1010 655 M1010 715 Q985 692 975 708 Q990 726 1010 715 M1012 700 Q1036 680 1048 695 Q1034 712 1012 700"/>
+<circle class="s" cx="1010" cy="625" r="11"/>
+<circle class="s" cx="1010" cy="598" r="13"/><circle class="s" cx="1034" cy="612" r="13"/><circle class="s" cx="1034" cy="638" r="13"/><circle class="s" cx="1010" cy="652" r="13"/><circle class="s" cx="986" cy="638" r="13"/><circle class="s" cx="986" cy="612" r="13"/>
+</g>
+<g class="y">
+<rect class="s" x="885" y="308" width="195" height="105"/>
+<text class="t" x="918" y="356">V</text><path class="s" d="M906 368 L948 368"/><text class="t" x="918" y="404">T</text>
+<text class="t" style="font-size:38px" x="962" y="388">= cte</text>
+
+<text class="t md" x="600" y="808">PaVo = RaniTa</text>
+<rect class="s" x="600" y="835" width="270" height="95"/>
+<text class="t" style="font-size:58px" x="735" y="903" text-anchor="middle">PV = RnT</text>
+<path class="s" d="M898 882 L874 882 M886 872 L874 882 L886 892"/>
+<text class="t sm" x="905" y="858">Ecuación de</text><text class="t sm" x="905" y="892">los gases</text><text class="t sm" x="905" y="926">ideales</text>
+</g>
+
+<!-- ===== GAY-LUSSAC (rosa) ===== -->
+<g class="m">
+<text class="t" style="font-size:50px" x="1120" y="68">Ley de Gay-Lussac</text>
+<path class="s" d="M1110 82 Q1280 92 1450 80"/>
+<ellipse class="s" cx="1535" cy="52" rx="58" ry="32"/>
+<text class="t" x="1535" y="66" text-anchor="middle">P y T</text>
+<g transform="translate(90 -28)">
+<path class="s" d="M1160 300 L1160 470 Q1160 495 1185 495 L1335 495 Q1360 495 1360 470 L1360 300"/>
+<path class="s" d="M1145 300 L1375 300 L1375 272 Q1375 256 1359 256 L1161 256 Q1145 256 1145 272 Z"/>
+<path class="s" d="M1145 272 L1100 272 L1100 296 L1145 296 M1375 272 L1412 272 L1412 296 L1375 296"/>
+<path class="s" d="M1245 256 L1245 226 L1275 226 L1275 256 M1235 226 L1285 226"/>
+<path class="s" d="M1312 256 L1312 245 L1324 245 L1324 256 M1309 245 L1327 245"/>
+<g transform="translate(1318 237)"><g class="stm"><path class="s" d="M0 0 Q-10 -15 0 -30 Q10 -45 0 -60"/></g></g>
+<g transform="translate(1334 239)"><g class="stm" style="animation-delay:.5s"><path class="s" d="M0 0 Q-9 -12 0 -24 Q9 -36 0 -48"/></g></g>
+<g transform="translate(1303 239)"><g class="stm" style="animation-delay:1s"><path class="s" d="M0 0 Q-9 -12 0 -24 Q9 -36 0 -48"/></g></g>
+<g transform="translate(1195 565)"><g class="fl"><path class="s" d="M0 0 C-14 -15 -6 -30 0 -53 C6 -30 14 -15 0 0 Z"/></g></g>
+<g transform="translate(1240 565)"><g class="fl" style="animation-delay:.12s"><path class="s" d="M0 0 C-14 -15 -6 -30 0 -53 C6 -30 14 -15 0 0 Z"/></g></g>
+<g transform="translate(1285 565)"><g class="fl" style="animation-delay:.24s"><path class="s" d="M0 0 C-14 -15 -6 -30 0 -53 C6 -30 14 -15 0 0 Z"/></g></g>
+<g transform="translate(1330 565)"><g class="fl" style="animation-delay:.36s"><path class="s" d="M0 0 C-14 -15 -6 -30 0 -53 C6 -30 14 -15 0 0 Z"/></g></g>
+<rect class="s" x="1175" y="325" width="170" height="140" rx="12"/>
+<text class="t" style="font-size:30px" x="1260" y="385" text-anchor="middle">T<tspan class="ar" dx="8">↑</tspan><tspan class="ar" dx="12">→</tspan><tspan dx="12">P</tspan><tspan class="ar" dx="8">↑</tspan></text>
+<text class="t" style="font-size:30px" x="1260" y="440" text-anchor="middle">T<tspan class="ar" dx="8">↓</tspan><tspan class="ar" dx="12">→</tspan><tspan dx="12">P</tspan><tspan class="ar" dx="8">↓</tspan></text>
+</g>
+<g id="pg"></g>
+<g style="--k:#ff3d6b">
+<g transform="translate(1190 585)"><g class="hrt" style="--x:-30px"><path class="s" d="M0 9 C-17 -4 -12 -19 0 -10 C12 -19 17 -4 0 9 Z"/></g></g>
+<g transform="translate(1246 565)"><g class="hrt" style="--x:0px;animation-delay:.6s"><path class="s" d="M0 9 C-17 -4 -12 -19 0 -10 C12 -19 17 -4 0 9 Z"/></g></g>
+<g transform="translate(1300 585)"><g class="hrt" style="--x:30px;animation-delay:1.2s"><path class="s" d="M0 9 C-17 -4 -12 -19 0 -10 C12 -19 17 -4 0 9 Z"/></g></g>
+</g>
+<circle class="s" cx="1246" cy="706" r="5"/>
+</g>
+<g class="y">
+<rect class="s" x="1385" y="640" width="195" height="105"/>
+<text class="t" x="1418" y="688">P</text><path class="s" d="M1406 700 L1448 700"/><text class="t" x="1418" y="736">T</text>
+<text class="t" style="font-size:38px" x="1462" y="720">= cte</text>
+</g>
+
+</g>
+</svg>
+<button id="r" type="button" aria-pressed="false">Dale marcha</button>
+<script>
+(function(){
+  var svg=document.getElementById('b');
+  function P(id,x,y,o){
+    o=o||{};
+    var a=o.a!==undefined?o.a:"M0 38 L-26 66 M0 38 L26 66";
+    var l=o.l!==undefined?o.l:"M0 76 L-16 130 M0 76 L16 130";
+    var eyes=o.x?'<path class="s f" d="M-8 -8 L-2 -2 M-2 -8 L-8 -2 M2 -8 L8 -2 M8 -8 L2 -2"/>':'<circle class="s f" cx="-5" cy="-5" r="1"/><circle class="s f" cx="5" cy="-5" r="1"/>';
+    var h='<g transform="translate('+x+' '+y+') rotate('+(o.r||0)+')">'+
+      '<ellipse class="s" rx="13" ry="18"/>'+eyes+
+      '<path class="s f" d="M0 -1 L-2 6 L2 6"/><path class="s f" d="M-6 10 Q0 15 6 10"/>'+
+      (o.hair?'<path class="s" d="M-10 -14 L-16 -26 M-4 -17 L-6 -31 M3 -17 L5 -31 M10 -14 L17 -26"/>':'')+
+      (o.nb?'':'<path class="s" d="M0 18 L0 76 '+a+' '+l+'"/>')+(o.w?'<g transform="translate(0 38)"><g class="'+(o.w>0?'wv':'wvl')+'"><path class="s" d="M0 0 L'+(22*o.w)+' 22"/></g></g>':'')+'</g>';
+    document.getElementById(id).insertAdjacentHTML('beforeend',h);
+  }
+  P('pa',317,317,{r:75,nb:1});
+  P('pw',350,650,{r:90,x:1,a:"M0 38 L-24 64 M0 38 L24 64",l:"M0 76 L-16 118 M0 76 L16 118"});
+  P('pc',710,440,{w:-1,a:"M0 38 L22 60",l:""});
+  P('pc',770,440,{hair:1,w:1,a:"M0 38 L-22 60",l:""});
+  P('pg',1190,640,{a:"M0 38 L-26 72 M0 38 L56 66"});
+  P('pg',1300,640,{hair:1,a:"M0 38 L-54 66 M0 38 L26 72"});
+  svg.querySelectorAll('.s').forEach(function(e){e.setAttribute('pathLength','1')});
+  function play(){
+    svg.classList.remove('anim');
+    void svg.getBoundingClientRect();
+    var i=0;
+    svg.querySelectorAll('.s,.t').forEach(function(e){
+      e.style.setProperty('--d',Math.min(i*0.04,7).toFixed(2)+'s');i++;
+    });
+    svg.classList.add('anim');
+  }
+  var running=false,names=['pool','balloon','snail','love','aitor','pot'];
+  [['pool',185,365,265,375],['balloon',600,95,280,470],['snail',725,630,235,130],['love',1120,600,250,190],['aitor',215,268,130,97],['pot',1190,120,320,430]].forEach(function(z){
+    var e=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    e.setAttribute('x',z[1]);e.setAttribute('y',z[2]);e.setAttribute('width',z[3]);e.setAttribute('height',z[4]);
+    e.setAttribute('fill','transparent');e.setAttribute('pointer-events','all');
+    e.addEventListener('pointerenter',function(){svg.classList.add('h-'+z[0])});
+    e.addEventListener('pointerleave',function(){if(!running)svg.classList.remove('h-'+z[0])});
+    svg.appendChild(e);
+  });
+  var btn=document.getElementById('r');
+  btn.addEventListener('click',function(){
+    running=!running;
+    names.forEach(function(n){svg.classList.toggle('h-'+n,running)});
+    btn.textContent=running?'Parar':'Dale marcha';
+    btn.setAttribute('aria-pressed',String(running));
+  });
+  play();
+})();
+</script>
+</body>
+</html>
