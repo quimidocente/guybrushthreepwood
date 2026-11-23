@@ -132,6 +132,29 @@ footer{margin-top:14px;text-align:center;color:var(--mu);font-size:13px}
 #bt button:nth-child(4n),#mis .bt button:nth-child(4n),#mis .seg button:nth-child(4n){--l:51%;--s:65%}
 #bt button:hover,#mis .bt button:hover,#mis .seg button:hover{background:hsl(var(--h) calc(var(--s) + 10%) calc(var(--l) + 8%));border-color:hsl(var(--h) 90% 75%)}
 #bt button.on,#mis .bt button.on,#mis .seg button.on{background:hsl(var(--h) calc(var(--s) + 15%) calc(var(--l) + 6%));border-color:#fff;box-shadow:0 0 0 2px hsl(var(--h) 85% 70%),0 0 14px hsl(var(--h) 80% 55%/.55)}
+
+/* ===== Premio final: Andy gigante ===== */
+#andy{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.6vh,16px);padding:calc(env(safe-area-inset-top,0px) + 52px) 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:radial-gradient(ellipse at 50% 38%,#10204a 0%,#060a18 72%);overflow:hidden}
+#andy[hidden]{display:none}
+.axo.big{margin:0;flex:none;height:auto;border:0;border-radius:0;background:none;box-shadow:none;animation:none}
+.axo.big svg{width:min(96vw,calc((100vh - 252px)*1.415));width:min(96vw,calc((100dvh - 252px)*1.415));min-width:200px;height:auto;filter:drop-shadow(0 0 10px #22D3EE) drop-shadow(0 0 34px rgba(34,211,238,.5));transition:opacity 1.6s}
+.axo.big .pl{fill:url(#abF);stroke:url(#abG)}
+.axo.big .pv{stroke:url(#abG)}
+.axo.big.talk svg{animation:atalk .42s ease-in-out infinite alternate}
+@keyframes atalk{to{transform:scale(1.022)}}
+.axo.big.glitch{animation:agl .35s steps(2,end) 5}
+@keyframes agl{0%{transform:translate(0,0);filter:hue-rotate(0)}25%{transform:translate(-8px,3px) skewX(4deg);filter:hue-rotate(70deg) saturate(2)}50%{transform:translate(7px,-3px);opacity:.55}75%{transform:translate(-4px,2px) skewX(-5deg);filter:hue-rotate(-60deg)}100%{transform:translate(0,0);opacity:1}}
+.axo.big.off svg{opacity:.28;filter:grayscale(1) drop-shadow(0 0 6px #5b6b99)}
+#amsg{margin:0;max-width:min(94vw,1200px);min-height:2.5em;text-align:center;font-weight:800;font-size:clamp(20px,4.4vw,42px);line-height:1.15;color:var(--tx);text-shadow:0 0 14px #22d3ee88,0 2px 0 #060a18;text-wrap:balance}
+#andy.typing #amsg::after{content:'\258D';color:#ff4db8;margin-left:2px}
+#afoot{min-height:46px;display:flex;align-items:center;justify-content:center}
+@media(max-width:700px){#amsg{min-height:3.6em}.axo.big svg{width:min(96vw,calc((100vh - 232px)*1.415));width:min(96vw,calc((100dvh - 232px)*1.415))}}
+.abtn{border:2px solid #f59e0b;background:var(--pn);color:var(--tx);border-radius:14px;padding:8px 14px;font:inherit;font-weight:800;cursor:pointer}
+.abtn:hover{background:#f59e0b33}
+.abtn:focus-visible{outline:3px solid #22d3ee;outline-offset:2px}
+#aclose{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px}
+.asr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media(hover:none){.kh{display:none}}
 </style>
 </head>
 <body>
@@ -188,6 +211,13 @@ footer{margin-top:14px;text-align:center;color:var(--mu);font-size:13px}
     <div id="mis"></div>
     <p class="mu" id="note"></p>
   </aside>
+</div>
+<div id="andy" role="dialog" aria-modal="true" aria-label="Premio final: Andy tiene algo que decirte" hidden>
+  <button type="button" id="aclose" class="abtn">✕ Cerrar<span class="kh"> (Esc)</span></button>
+  <div class="axo big" id="abig" aria-hidden="true"></div>
+  <p id="amsg" aria-hidden="true"></p>
+  <p id="asr" class="asr" aria-live="polite"></p>
+  <div id="afoot"><button type="button" id="arep" class="abtn" hidden>↻ Repetir<span class="kh"> (tecla X)</span></button></div>
 </div>
 <div id="tip" role="tooltip" hidden></div>
 <footer>Un modelo es una versión sencilla de la realidad: aquí los átomos y los iones son bolitas y las barras son cualitativas, pero coherentes con los datos de referencia.</footer>
@@ -417,6 +447,7 @@ function star(k) {
     document.body.appendChild(e);
     setTimeout(() => e.remove(), 1500);
   }
+  if (KEYS.size && [...KEYS].every(x => done[x])) setTimeout(andyShow, RM ? 600 : 1700);
   return true;
 }
 
@@ -5210,6 +5241,83 @@ fit();
 addEventListener('resize', fit);
 go(0, 0);
 requestAnimationFrame(loop);
+
+/* ===== Premio final: Andy gigante (todas las estrellas), tecla X y clave secreta ===== */
+const ANDY_LINES = [
+  'La leche!!',
+  'Qué decía Sergio que nadie iba a llegar hasta aquí!!',
+  'Y va Blanca y lo saca en cuatro ratos!!',
+  'Mira que te diga',
+  'No tenemos un duro para gastarlo en premios',
+  'Y yo sólo soy un anfibio sin bolsillos ni cuenta bancaria',
+  'Así que... el premio es...',
+  'El premio es...',
+  'Bueeeeeeeno, la verdad es que...',
+  'Ay, bueno, el premio es un bonito y grande...',
+  'Vaya!! se pierde la conexión!!',
+  'Dale a la tecla x y podrás repetir este mensaje! Ciao!! Me quedo sin cobertura!!'
+];
+const andyEl = $('#andy'), andyMsg = $('#amsg'), andySr = $('#asr'), andyHead = $('#abig'), andyRep = $('#arep'), andyCls = $('#aclose');
+let andyOn = false, andyPlaying = false, andyStarted = false, andyRun = 0, andyBuf = '', andyPrev = null;
+const andySleep = ms => new Promise(r => setTimeout(r, ms));
+function andyOpen() {
+  if (andyOn) return;
+  if (!andyHead.firstChild) andyHead.innerHTML = $('.axo svg').outerHTML.replace(/axG/g, 'abG').replace(/axF/g, 'abF');
+  andyPrev = document.activeElement;
+  [...document.body.children].forEach(el => { if (el !== andyEl && el.tagName !== 'SCRIPT') el.inert = true; });
+  document.documentElement.style.overflow = 'hidden';
+  andyEl.hidden = false; andyOn = true;
+  andyCls.focus({ preventScroll: true });
+}
+function andyClose() {
+  andyRun++; andyPlaying = false;
+  andyEl.hidden = true; andyOn = false;
+  andyEl.classList.remove('typing');
+  andyHead.classList.remove('talk', 'glitch', 'off');
+  [...document.body.children].forEach(el => { if (el !== andyEl) el.inert = false; });
+  document.documentElement.style.overflow = '';
+  if (andyPrev && andyPrev.focus) andyPrev.focus({ preventScroll: true });
+}
+async function andyPlay() {
+  const id = ++andyRun, live = () => id === andyRun;
+  andyPlaying = true; andyStarted = true;
+  andyHead.classList.remove('glitch', 'off', 'talk');
+  andyRep.hidden = true; andyMsg.textContent = ''; andySr.textContent = '';
+  await andySleep(500); if (!live()) return;
+  for (let i = 0; i < ANDY_LINES.length; i++) {
+    const ln = ANDY_LINES[i], last = i === ANDY_LINES.length - 1;
+    if (i === 10) andyHead.classList.add('glitch');
+    if (i === 11) andyHead.classList.remove('glitch');
+    andyMsg.textContent = ''; andySr.textContent = ln;
+    andyEl.classList.add('typing'); andyHead.classList.add('talk');
+    for (let c = 1; c <= ln.length; c++) { andyMsg.textContent = ln.slice(0, c); await andySleep(36); if (!live()) return; }
+    andyEl.classList.remove('typing'); andyHead.classList.remove('talk');
+    if (last) break;
+    await andySleep(Math.max(1500, ln.length * 40) + (ln.endsWith('...') ? 700 : 0)); if (!live()) return;
+  }
+  andyPlaying = false; andyRep.hidden = false;
+  await andySleep(1400); if (!live()) return;
+  andyHead.classList.add('glitch');
+  await andySleep(1800); if (!live()) return;
+  andyHead.classList.remove('glitch'); andyHead.classList.add('off');
+}
+function andyShow() {
+  if (andyPlaying) return;
+  andyOpen(); andyPlay();
+}
+andyCls.onclick = andyClose;
+andyRep.onclick = andyShow;
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'Escape' && andyOn) { andyClose(); return; }
+  const t = e.target;
+  if (t && (t.isContentEditable || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || (t.tagName === 'INPUT' && /^(text|search|email|url|tel|password|number)$/i.test(t.type)))) return;
+  if (!e.key || e.key.length !== 1) return;
+  const k = e.key.toLowerCase();
+  andyBuf = (andyBuf + k).slice(-10);
+  if (andyBuf === 'ipekakuana') { andyBuf = ''; andyShow(); return; }
+  if (k === 'x' && andyStarted && !andyPlaying) andyShow();
+});
 </script>
 </body>
 </html>
