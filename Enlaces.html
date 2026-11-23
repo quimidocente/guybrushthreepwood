@@ -118,6 +118,20 @@ footer{margin-top:14px;text-align:center;color:var(--mu);font-size:13px}
   .main:not(.popen) #ptitle,.main:not(.popen) #bt,.main:not(.popen) #mis>:not(.qpred):not(.qexp){display:none}
 }
 @media(max-width:820px) and (max-height:560px){.stage.pin{position:static}}
+
+/* ===== Color por práctica y tonos para subopciones ===== */
+.pn{--h:265}
+#sel button:not(.pinbtn){border-color:hsl(var(--h) 60% 45%);background:hsl(var(--h) 50% 20%)}
+#sel button:not(.pinbtn):hover{border-color:hsl(var(--h) 85% 65%);background:hsl(var(--h) 50% 27%)}
+#sel button.on:not(.pinbtn){background:linear-gradient(135deg,hsl(var(--h) 75% 46%),hsl(var(--h) 70% 34%));color:#fff;border-color:hsl(var(--h) 90% 72%);box-shadow:0 0 14px hsl(var(--h) 80% 55%/.45)}
+#ptitle{color:hsl(var(--h) 85% 72%);text-decoration-color:hsl(var(--h) 75% 55%);border-top-color:hsl(var(--h) 50% 35%)}
+#bt button,#mis .bt button,#mis .seg button{--l:30%;--s:50%;background:hsl(var(--h) var(--s) var(--l));border-color:hsl(var(--h) 60% calc(var(--l) + 14%));color:#fff}
+#bt button:nth-child(4n+1),#mis .bt button:nth-child(4n+1),#mis .seg button:nth-child(4n+1){--l:24%}
+#bt button:nth-child(4n+2),#mis .bt button:nth-child(4n+2),#mis .seg button:nth-child(4n+2){--l:33%;--s:55%}
+#bt button:nth-child(4n+3),#mis .bt button:nth-child(4n+3),#mis .seg button:nth-child(4n+3){--l:42%;--s:60%}
+#bt button:nth-child(4n),#mis .bt button:nth-child(4n),#mis .seg button:nth-child(4n){--l:51%;--s:65%}
+#bt button:hover,#mis .bt button:hover,#mis .seg button:hover{background:hsl(var(--h) calc(var(--s) + 10%) calc(var(--l) + 8%));border-color:hsl(var(--h) 90% 75%)}
+#bt button.on,#mis .bt button.on,#mis .seg button.on{background:hsl(var(--h) calc(var(--s) + 15%) calc(var(--l) + 6%));border-color:#fff;box-shadow:0 0 0 2px hsl(var(--h) 85% 70%),0 0 14px hsl(var(--h) 80% 55%/.55)}
 </style>
 </head>
 <body>
@@ -1435,7 +1449,7 @@ SC['ionic-4'] = sd => {
   }
 
   function recordRunIfReady(pct) {
-    if (runDone || pct <= 80) return;
+    if (runDone || pct < 50) return;
     runDone = true;
     const tRun = +elapsed.toFixed(1);
     const sameTemp = runs.find(r => Math.abs(r.temp - tempC) < 5);
@@ -1450,7 +1464,7 @@ SC['ionic-4'] = sd => {
     }
     flash(2);
     if (gotDis || gotTemp) sayPool(WIN, 1);
-    else if (!done['ionic-4-temp']) say('¡Más del 80 % separado! Reinicia el vaso y prueba otra temperatura (≥ 15 °C de diferencia) para comparar la rapidez.', 1);
+    else if (!done['ionic-4-temp']) say('¡La mitad de los iones ya está separada e hidratada! Reinicia el vaso y prueba otra temperatura (≥ 15 °C de diferencia) para comparar la rapidez.', 1);
     else say('Más temperatura acelera la disolución, pero rapidez y solubilidad no son lo mismo.', 1);
 
     if (!explained) { explained = true; showExplain(); }
@@ -1475,10 +1489,10 @@ SC['ionic-4'] = sd => {
     const freeCount = ions.filter(i => i.free).length, pct = Math.round(freeCount / ions.length * 100);
     const st = $('#disStat');
     if (st) {
-      const bestLine = runs.length ? runs.map(r => `${r.temp} °C → ${r.time.toFixed(1)} s`).join(' · ') : 'Aún sin completar > 80 %';
+      const bestLine = runs.length ? runs.map(r => `${r.temp} °C → ${r.time.toFixed(1)} s`).join(' · ') : 'Aún sin completar el 50 %';
       st.innerHTML = `<div>🧂 Iones separados del cristal: <b>${freeCount}/${ions.length} (${pct} %)</b> · ⏱️ <b>${elapsed.toFixed(1)} s</b></div>`
         + `<div class="bar"><i style="width:${pct}%"></i></div>`
-        + `<div class="mu">Registro cinético (&gt; 80 %): ${bestLine}</div>`
+        + `<div class="mu">Registro cinético (≥ 50 %): ${bestLine}</div>`
         + `<div class="mu">Nota: aquí se mide <b>rapidez de disolución</b>, no solubilidad de equilibrio (en el NaCl la solubilidad varía muy poco con T).</div>`;
     }
     const inf = $('#ionInfo');
@@ -1509,8 +1523,8 @@ SC['ionic-4'] = sd => {
     $('#vp').onchange = e => { showPoles = e.target.checked; };
     vw.append(hintBtn([
       'Las moléculas de agua golpean primero las esquinas del cristal y rodean cada ion que se desprende.',
-      'Espera a que se separe más del 80 % de los iones (al menos 13 de 16) para ganar la estrella de disolución.',
-      'Pulsa «Reiniciar vaso», cambia la temperatura al menos 15 °C (por ejemplo de 25 °C a 65 °C) y vuelve a superar el 80 %.'
+      'Espera a que se separe y se hidrate la mitad de los iones (al menos 8 de 16) para ganar la estrella de disolución.',
+      'Pulsa «Reiniciar vaso», cambia la temperatura al menos 15 °C (por ejemplo de 25 °C a 65 °C) y vuelve a alcanzar la mitad de los iones (50 %).'
     ]).el);
     updateStatusUI();
     if (explained) showExplain();
@@ -5106,6 +5120,9 @@ function scrollToPanel() {
 }
 
 /* ===== Motor principal de pestañas, escenas y bucle ===== */
+
+const HUES = [38, 330, 268, 168, 95, 12];   // ámbar, rosa, lavanda (los de los recuadros), turquesa, verde lima, coral; sin azul
+function applyHue(i) { $('.pn').style.setProperty('--h', HUES[i % HUES.length]); }
 function go(t, s) {
   if (cur && cur.teardown) cur.teardown();
   clean();
@@ -5119,6 +5136,7 @@ function go(t, s) {
     b.type = 'button'; b.dataset.i = i;
     b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(i === s));
     b.innerHTML = (SHORT[x.id] || 'Práctica ' + (i + 1)) + '<span class="bdg"></span><span class="chev" aria-hidden="true"></span>';
+    b.style.setProperty('--h', HUES[i % HUES.length]);
     if (i === s) b.className = 'on';
     // Pista con el nombre de la práctica: ratón/teclado al pasar o enfocar; en táctil, con una pulsación larga
     b.addEventListener('mouseenter', () => { if (canHover.matches) showTip(b, x.n); });
@@ -5141,6 +5159,7 @@ function go(t, s) {
     };
     sel.append(b);
   });
+  applyHue(s);
   const pb = document.createElement('button');
   pb.type = 'button'; pb.className = 'pinbtn'; pb.textContent = '📌 Fijar escenario';
   pb.setAttribute('aria-pressed', String(pinned));
