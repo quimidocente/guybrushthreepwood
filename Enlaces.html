@@ -85,12 +85,18 @@ footer{margin-top:14px;text-align:center;color:var(--mu);font-size:13px}
 #mis>.qexp{order:30}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
+.pinI{display:none;position:absolute;top:4px;left:4px;right:auto;width:32px;height:32px;padding:0;align-items:center;justify-content:center;border:0;border-radius:50%;background:rgba(6,10,24,.55);cursor:pointer;z-index:2;-webkit-tap-highlight-color:transparent}
+.pinI svg{width:25px;height:25px;overflow:visible;transform-origin:16px 29px;transition:transform .25s ease,opacity .25s ease,filter .25s ease;filter:drop-shadow(0 1px 2px #000a)}
+.pinI .psh{fill:rgba(0,0,0,.55);transition:opacity .2s}
+.pinI[aria-pressed=false] svg{transform:rotate(42deg) translate(1px,-2px);opacity:.6;filter:grayscale(.65) drop-shadow(0 1px 2px #000a)}
+.pinI[aria-pressed=false] .psh{opacity:0}
+.pinI:focus-visible{outline:3px solid #22d3ee;outline-offset:2px}
 /* ===== Prácticas en pestañas ===== */
 #sel{gap:6px;margin-bottom:4px}
 #sel button{position:relative;white-space:nowrap;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #sel button .bdg{display:inline-block;margin-left:5px;font-size:11px;font-weight:800;opacity:.85}
 #sel button .bdg:empty{display:none}
-#sel button .chev,.pinbtn{display:none}
+#sel button .chev{display:none}
 #ptitle{font-weight:800;font-size:19px;line-height:1.25;color:var(--ac2);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px;margin:8px 0 .5cm;padding-top:10px;border-top:1px solid var(--bd)}
 #tip{position:fixed;z-index:60;max-width:240px;padding:6px 10px;border-radius:10px;background:#0a1020;border:1px solid #22d3ee;color:var(--tx);font-size:13px;font-weight:600;line-height:1.3;pointer-events:none;box-shadow:0 4px 18px #000a}
 #tip[hidden]{display:none}
@@ -103,8 +109,7 @@ footer{margin-top:14px;text-align:center;color:var(--mu);font-size:13px}
   #sel button .chev{display:inline;margin-left:4px}
   .main:not(.popen) #sel button.on .chev::before{content:'▸'}
   .main.popen #sel button.on .chev::before{content:'▾'}
-  .pinbtn{display:inline-flex;align-items:center;justify-content:center;border-style:dashed!important}
-  .pinbtn[aria-pressed=true]{background:#0891b2!important;color:#fff;border-color:#22d3ee!important;border-style:solid!important}
+  .pinI{display:inline-flex}
   #ptitle{order:3;margin:0;padding:12px 12px .5cm;background:var(--pn);border:2px solid var(--bd);border-bottom:0;border-radius:16px 16px 0 0}
   #bt{order:4;margin:0;padding:4px 12px;background:var(--pn);border:2px solid var(--bd);border-top:0;border-bottom:0;border-radius:0}
   .bt:empty{display:none}
@@ -147,6 +152,14 @@ footer{margin-top:14px;text-align:center;color:var(--mu);font-size:13px}
 .axo.big.off svg{opacity:.28;filter:grayscale(1) drop-shadow(0 0 6px #5b6b99)}
 #amsg{margin:0;max-width:min(94vw,1200px);min-height:2.5em;text-align:center;font-weight:800;font-size:clamp(20px,4.4vw,42px);line-height:1.15;color:var(--tx);text-shadow:0 0 14px #22d3ee88,0 2px 0 #060a18;text-wrap:balance}
 #andy.typing #amsg::after{content:'\258D';color:#ff4db8;margin-left:2px}
+#cake{display:none;margin:0;flex:none}
+#cake.show{display:block}
+#cake svg{width:min(96vw,calc((100vh - 252px)*1.415));width:min(96vw,calc((100dvh - 252px)*1.415));min-width:200px;height:auto;filter:drop-shadow(0 0 16px rgba(245,158,11,.4));animation:cpop .9s cubic-bezier(.2,1.4,.4,1) both}
+#cake .ckl{animation:cfade .8s ease .7s both}
+@keyframes cpop{0%{transform:scale(.2) rotate(-6deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes cfade{from{opacity:0}to{opacity:1}}
+.axo.big.gone{display:none}
+@media(prefers-reduced-motion:reduce){#cake svg,#cake .ckl{animation:none}}
 #afoot{min-height:46px;display:flex;align-items:center;justify-content:center}
 @media(max-width:700px){#amsg{min-height:3.6em}.axo.big svg{width:min(96vw,calc((100vh - 232px)*1.415));width:min(96vw,calc((100dvh - 232px)*1.415))}}
 .abtn{border:2px solid #f59e0b;background:var(--pn);color:var(--tx);border-radius:14px;padding:8px 14px;font:inherit;font-weight:800;cursor:pointer}
@@ -166,7 +179,7 @@ footer{margin-top:14px;text-align:center;color:var(--mu);font-size:13px}
 <nav id="tabs" aria-label="Tipos de enlace"></nav>
 <div class="main">
   <div>
-    <div class="stage"><canvas id="cv" role="img" aria-label="Escena de la simulación"></canvas></div>
+    <div class="stage"><canvas id="cv" role="img" aria-label="Escena de la simulación"></canvas><button type="button" id="pinI" class="pinI" aria-pressed="true" aria-label="Fijar el escenario arriba al desplazar la página" title="Escenario fijo (pulsa para soltarlo)"><svg viewBox="0 0 32 32" aria-hidden="true"><ellipse class="psh" cx="16" cy="29.4" rx="5" ry="1.7"/><g class="pg"><line x1="16" y1="17" x2="16" y2="29" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/><path d="M10.5 6.5L21.5 6.5L19 15.2L13 15.2Z" fill="#ff4fa3" stroke="#ffd0e6" stroke-width="1.2" stroke-linejoin="round"/><ellipse cx="16" cy="6" rx="8.4" ry="3.1" fill="#ff7ab8" stroke="#ffd0e6" stroke-width="1.2"/><rect x="11" y="15" width="10" height="2.6" rx="1.2" fill="#f59e0b" stroke="#ffe3a3" stroke-width="1"/><path d="M13 8.6L14.2 14" stroke="#fff" stroke-opacity=".6" stroke-width="1.4" stroke-linecap="round"/></g></svg></button></div>
     <div id="moli">
     <div class="axo" role="img" aria-label="Andy, el ajolote">
         <svg viewBox="34 52 232 164" xmlns="http://www.w3.org/2000/svg">
@@ -215,6 +228,28 @@ footer{margin-top:14px;text-align:center;color:var(--mu);font-size:13px}
 <div id="andy" role="dialog" aria-modal="true" aria-label="Premio final: Andy tiene algo que decirte" hidden>
   <button type="button" id="aclose" class="abtn">✕ Cerrar<span class="kh"> (Esc)</span></button>
   <div class="axo big" id="abig" aria-hidden="true"></div>
+  <div id="cake" aria-hidden="true"><svg viewBox="0 0 600 424" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Un bonito y grande bizcocho de chocolate negro con trocitos de naranja confitada">
+<defs>
+<linearGradient id="ckS" x1="0" x2="1"><stop offset="0" stop-color="#2b1309"/><stop offset=".3" stop-color="#4d2614"/><stop offset=".7" stop-color="#341a0d"/><stop offset="1" stop-color="#1a0b05"/></linearGradient>
+<radialGradient id="ckG" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#7d4026"/><stop offset=".45" stop-color="#3e1b0e"/><stop offset="1" stop-color="#1b0a04"/></radialGradient>
+<linearGradient id="ckO" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc552"/><stop offset=".55" stop-color="#ff9a1f"/><stop offset="1" stop-color="#e3650c"/></linearGradient>
+<linearGradient id="ckF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a2314"/><stop offset="1" stop-color="#2b1309"/></linearGradient>
+<filter id="ckBl" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>
+<linearGradient id="ckE" x1="0" x2="1"><stop offset="0" stop-color="#8d9bba"/><stop offset=".5" stop-color="#c7d1e6"/><stop offset="1" stop-color="#7f8eb0"/></linearGradient>
+<radialGradient id="ckR" cx=".42" cy=".3" r=".85"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#e3e9f5"/><stop offset="1" stop-color="#bcc8df"/></radialGradient>
+<linearGradient id="ckW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9c5de"/><stop offset=".35" stop-color="#dfe6f3"/><stop offset="1" stop-color="#f7f9fd"/></linearGradient>
+<radialGradient id="ckP" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#b8c4dc"/></radialGradient>
+<g id="ckB"><rect x="-9" y="-5.5" width="18" height="11" rx="3.2" fill="url(#ckO)" stroke="#c4500a" stroke-width="1"/><path d="M-6 -2.6 L3 -2.8" stroke="#fff3c4" stroke-width="1.8" stroke-linecap="round" opacity=".85"/><circle cx="5" cy="1.8" r="1" fill="#ffe9a8"/><circle cx="-4" cy="2.4" r=".8" fill="#fff"/></g>
+<marker id="ckA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#fde68a"/></marker>
+</defs>
+<ellipse cx="306" cy="352" rx="292" ry="58" fill="#000" opacity=".4" filter="url(#ckBl)"/>
+<ellipse cx="300" cy="334" rx="282" ry="60" fill="url(#ckE)"/>
+<ellipse cx="300" cy="322" rx="282" ry="60" fill="url(#ckR)" stroke="#8fa0c4" stroke-width="1.5"/>
+<ellipse cx="300" cy="322" rx="268" ry="55" fill="none" stroke="#d9b45a" stroke-width="2.2" opacity=".9"/>
+<ellipse cx="300" cy="322" rx="262" ry="52" fill="none" stroke="#f6e3a8" stroke-width=".8" opacity=".8"/>
+<path d="M44 300 Q120 262 300 262 Q420 262 520 282" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".75"/>
+<ellipse cx="300" cy="324" rx="226" ry="45" fill="url(#ckW)" stroke="#a9b8d6" stroke-width="1.5"/>
+<path d="M92 340 Q300 392 508 340" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".7"/><ellipse cx="243" cy="291" rx="147" ry="50" fill="#000" opacity=".28"/><path d="M100 190 L100 285 A135 44 0 0 0 370 285 L370 190 Z" fill="url(#ckS)"/><circle cx="273.9" cy="255.3" r="1.2" fill="#6b3a22" opacity=".7"/><circle cx="161.4" cy="251.0" r="1.1" fill="#170804" opacity=".7"/><circle cx="319.3" cy="251.1" r="0.9" fill="#5a2e1a" opacity=".7"/><circle cx="257.1" cy="254.9" r="0.9" fill="#5a2e1a" opacity=".7"/><circle cx="143.2" cy="248.6" r="1.0" fill="#5a2e1a" opacity=".7"/><circle cx="270.8" cy="276.9" r="1.2" fill="#170804" opacity=".7"/><circle cx="234.1" cy="289.8" r="1.5" fill="#6b3a22" opacity=".7"/><circle cx="183.3" cy="305.1" r="1.4" fill="#170804" opacity=".7"/><circle cx="233.7" cy="276.4" r="1.1" fill="#5a2e1a" opacity=".7"/><circle cx="213.9" cy="305.2" r="0.9" fill="#6b3a22" opacity=".7"/><circle cx="126.0" cy="273.6" r="1.5" fill="#6b3a22" opacity=".7"/><circle cx="234.1" cy="308.6" r="0.8" fill="#170804" opacity=".7"/><circle cx="277.4" cy="254.1" r="1.4" fill="#5a2e1a" opacity=".7"/><circle cx="221.0" cy="302.6" r="1.6" fill="#6b3a22" opacity=".7"/><circle cx="149.4" cy="250.3" r="0.8" fill="#6b3a22" opacity=".7"/><circle cx="206.9" cy="312.9" r="0.8" fill="#6b3a22" opacity=".7"/><circle cx="141.3" cy="270.3" r="1.3" fill="#5a2e1a" opacity=".7"/><circle cx="334.1" cy="305.9" r="0.9" fill="#170804" opacity=".7"/><circle cx="109.1" cy="282.9" r="0.9" fill="#6b3a22" opacity=".7"/><circle cx="201.3" cy="290.8" r="1.7" fill="#5a2e1a" opacity=".7"/><circle cx="275.0" cy="302.6" r="1.2" fill="#5a2e1a" opacity=".7"/><circle cx="208.9" cy="258.5" r="1.3" fill="#170804" opacity=".7"/><circle cx="219.7" cy="259.5" r="1.3" fill="#170804" opacity=".7"/><circle cx="132.2" cy="262.3" r="0.7" fill="#170804" opacity=".7"/><circle cx="171.1" cy="271.4" r="1.1" fill="#170804" opacity=".7"/><circle cx="358.3" cy="260.0" r="1.0" fill="#170804" opacity=".7"/><circle cx="174.3" cy="306.2" r="0.9" fill="#170804" opacity=".7"/><circle cx="199.3" cy="299.4" r="1.6" fill="#5a2e1a" opacity=".7"/><circle cx="129.5" cy="295.5" r="1.2" fill="#170804" opacity=".7"/><circle cx="245.7" cy="287.6" r="1.3" fill="#5a2e1a" opacity=".7"/><circle cx="326.0" cy="297.7" r="1.5" fill="#5a2e1a" opacity=".7"/><circle cx="233.1" cy="303.9" r="1.7" fill="#6b3a22" opacity=".7"/><circle cx="262.1" cy="275.5" r="1.5" fill="#5a2e1a" opacity=".7"/><circle cx="200.1" cy="266.2" r="0.9" fill="#170804" opacity=".7"/><circle cx="360.2" cy="267.8" r="0.7" fill="#5a2e1a" opacity=".7"/><circle cx="321.3" cy="250.3" r="1.1" fill="#5a2e1a" opacity=".7"/><circle cx="152.1" cy="298.7" r="1.0" fill="#5a2e1a" opacity=".7"/><circle cx="350.3" cy="282.4" r="0.9" fill="#170804" opacity=".7"/><circle cx="226.1" cy="298.5" r="1.3" fill="#5a2e1a" opacity=".7"/><circle cx="196.4" cy="289.1" r="0.8" fill="#170804" opacity=".7"/><circle cx="132.5" cy="289.9" r="0.8" fill="#170804" opacity=".7"/><circle cx="171.0" cy="267.5" r="0.9" fill="#5a2e1a" opacity=".7"/><circle cx="321.2" cy="246.2" r="1.4" fill="#6b3a22" opacity=".7"/><circle cx="239.3" cy="310.7" r="1.6" fill="#170804" opacity=".7"/><circle cx="110.8" cy="256.5" r="0.9" fill="#170804" opacity=".7"/><circle cx="142.5" cy="284.0" r="0.8" fill="#170804" opacity=".7"/><circle cx="249.3" cy="307.4" r="0.8" fill="#5a2e1a" opacity=".7"/><circle cx="116.9" cy="236.2" r="1.2" fill="#170804" opacity=".7"/><circle cx="220.4" cy="295.2" r="1.2" fill="#5a2e1a" opacity=".7"/><circle cx="237.1" cy="309.3" r="1.2" fill="#170804" opacity=".7"/><circle cx="349.1" cy="250.0" r="1.3" fill="#170804" opacity=".7"/><circle cx="137.4" cy="269.8" r="0.8" fill="#170804" opacity=".7"/><circle cx="184.1" cy="257.4" r="1.5" fill="#5a2e1a" opacity=".7"/><circle cx="171.3" cy="256.5" r="1.2" fill="#5a2e1a" opacity=".7"/><circle cx="231.7" cy="322.3" r="1.5" fill="#170804" opacity=".7"/><circle cx="210.2" cy="281.2" r="1.1" fill="#170804" opacity=".7"/><circle cx="248.9" cy="283.0" r="0.7" fill="#6b3a22" opacity=".7"/><circle cx="353.9" cy="236.9" r="1.6" fill="#170804" opacity=".7"/><circle cx="174.5" cy="250.1" r="1.5" fill="#6b3a22" opacity=".7"/><circle cx="325.2" cy="288.7" r="1.6" fill="#6b3a22" opacity=".7"/><g transform="translate(130 262) rotate(-15) scale(1.1)"><use href="#ckB"/></g><g transform="translate(185 282) rotate(12) scale(1.1)"><use href="#ckB"/></g><g transform="translate(268 276) rotate(-8) scale(1.1)"><use href="#ckB"/></g><g transform="translate(330 262) rotate(20) scale(1.1)"><use href="#ckB"/></g><g transform="translate(355 288) rotate(-25) scale(1.1)"><use href="#ckB"/></g><g transform="translate(215 238) rotate(10) scale(1.1)"><use href="#ckB"/></g><path d="M100 190 L100 206 A135 44 0 0 0 370 206 L370 190 A135 44 0 0 1 100 190 Z" fill="#1f0b05"/><path d="M113.8 225.2 L113.8 256.7 A6.5 6.5 0 0 0 126.8 256.7 L126.8 225.2 Z" fill="#1f0b05"/><path d="M117.0 229.2 L117.0 254.7" stroke="#7a4730" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M145.8 236.5 L145.8 255.0 A5.5 5.5 0 0 0 156.8 255.0 L156.8 236.5 Z" fill="#1f0b05"/><path d="M148.6 240.5 L148.6 253.0" stroke="#7a4730" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M174.0 242.3 L174.0 285.3 A7.0 7.0 0 0 0 188.0 285.3 L188.0 242.3 Z" fill="#1f0b05"/><path d="M177.5 246.3 L177.5 283.3" stroke="#7a4730" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M212.8 245.7 L212.8 269.7 A6.0 6.0 0 0 0 224.8 269.7 L224.8 245.7 Z" fill="#1f0b05"/><path d="M215.8 249.7 L215.8 267.7" stroke="#7a4730" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M243.7 245.7 L243.7 294.2 A7.5 7.5 0 0 0 258.7 294.2 L258.7 245.7 Z" fill="#1f0b05"/><path d="M247.4 249.7 L247.4 292.2" stroke="#7a4730" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M280.8 242.7 L280.8 265.2 A5.5 5.5 0 0 0 291.8 265.2 L291.8 242.7 Z" fill="#1f0b05"/><path d="M283.6 246.7 L283.6 263.2" stroke="#7a4730" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M309.5 237.2 L309.5 274.7 A6.5 6.5 0 0 0 322.5 274.7 L322.5 237.2 Z" fill="#1f0b05"/><path d="M312.8 241.2 L312.8 272.7" stroke="#7a4730" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M342.1 226.5 L342.1 247.5 A5.0 5.0 0 0 0 352.1 247.5 L352.1 226.5 Z" fill="#1f0b05"/><path d="M344.6 230.5 L344.6 245.5" stroke="#7a4730" stroke-width="2" stroke-linecap="round" opacity=".55"/><ellipse cx="235" cy="190" rx="135" ry="44" fill="url(#ckG)" stroke="#120502" stroke-width="1.5"/><ellipse cx="235" cy="190" rx="121" ry="35" fill="none" stroke="#7a4730" stroke-width="1.5" opacity=".35"/><path d="M140 178 Q195 160 255 164" stroke="#a96b48" stroke-width="3.5" stroke-linecap="round" fill="none" opacity=".5"/><g transform="translate(150 185 ) rotate(-20) scale(1.4)"><use href="#ckB"/></g><g transform="translate(190 206 ) rotate(15) scale(1.4)"><use href="#ckB"/></g><g transform="translate(235 172 ) rotate(-5) scale(1.4)"><use href="#ckB"/></g><g transform="translate(290 204 ) rotate(30) scale(1.4)"><use href="#ckB"/></g><g transform="translate(322 184 ) rotate(-15) scale(1.4)"><use href="#ckB"/></g><g transform="translate(262 222 ) rotate(8) scale(1.4)"><use href="#ckB"/></g><g transform="translate(200 172 ) rotate(25) scale(1.4)"><use href="#ckB"/></g><g transform="translate(170 200 ) rotate(-30) scale(1.4)"><use href="#ckB"/></g><g transform="translate(255 190 ) rotate(50) scale(1.4)"><use href="#ckB"/></g><path d="M220 191 L221.3 194.7 L225 196 L221.3 197.3 L220 201 L218.7 197.3 L215 196 L218.7 194.7 Z" fill="#fff" opacity=".9"/><path d="M310 195 L311.3 198.7 L315 200 L311.3 201.3 L310 205 L308.7 201.3 L305 200 L308.7 198.7 Z" fill="#fff" opacity=".9"/><path d="M168 173 L169.3 176.7 L173 178 L169.3 179.3 L168 183 L166.7 179.3 L163 178 L166.7 176.7 Z" fill="#fff" opacity=".9"/><path d="M275 171 L276.3 174.7 L280 176 L276.3 177.3 L275 181 L273.7 177.3 L270 176 L273.7 174.7 Z" fill="#fff" opacity=".9"/><ellipse cx="457.0" cy="352" rx="75.0" ry="12" fill="#000" opacity=".25"/><path d="M496 276 L518 260 L518 332 L496 348 Z" fill="#241006"/><rect x="398" y="276" width="98" height="72" rx="3" fill="url(#ckF)"/><circle cx="415.4" cy="339.6" r="1.4" fill="#7a4128" opacity=".75"/><circle cx="410.1" cy="293.1" r="1.6" fill="#1f0c06" opacity=".75"/><circle cx="482.6" cy="304.5" r="0.7" fill="#170804" opacity=".75"/><circle cx="474.1" cy="294.5" r="1.8" fill="#170804" opacity=".75"/><circle cx="425.8" cy="296.6" r="0.7" fill="#1f0c06" opacity=".75"/><circle cx="485.4" cy="304.5" r="0.9" fill="#6b3a22" opacity=".75"/><circle cx="486.4" cy="342.3" r="1.0" fill="#6b3a22" opacity=".75"/><circle cx="420.2" cy="306.8" r="1.1" fill="#6b3a22" opacity=".75"/><circle cx="428.1" cy="317.0" r="0.9" fill="#7a4128" opacity=".75"/><circle cx="474.3" cy="343.7" r="0.7" fill="#170804" opacity=".75"/><circle cx="468.0" cy="319.8" r="0.9" fill="#1f0c06" opacity=".75"/><circle cx="424.1" cy="314.1" r="1.6" fill="#1f0c06" opacity=".75"/><circle cx="461.1" cy="319.5" r="1.9" fill="#7a4128" opacity=".75"/><circle cx="463.9" cy="343.1" r="1.1" fill="#6b3a22" opacity=".75"/><circle cx="438.4" cy="308.8" r="0.8" fill="#6b3a22" opacity=".75"/><circle cx="403.3" cy="323.8" r="1.8" fill="#1f0c06" opacity=".75"/><circle cx="416.7" cy="294.6" r="1.8" fill="#7a4128" opacity=".75"/><circle cx="455.9" cy="327.4" r="0.8" fill="#6b3a22" opacity=".75"/><circle cx="416.2" cy="314.1" r="1.0" fill="#7a4128" opacity=".75"/><circle cx="489.5" cy="319.5" r="1.0" fill="#7a4128" opacity=".75"/><circle cx="421.6" cy="299.9" r="1.1" fill="#170804" opacity=".75"/><circle cx="444.7" cy="317.1" r="1.0" fill="#170804" opacity=".75"/><circle cx="410.2" cy="334.1" r="0.9" fill="#170804" opacity=".75"/><circle cx="437.5" cy="306.2" r="1.5" fill="#170804" opacity=".75"/><circle cx="454.7" cy="318.6" r="1.7" fill="#1f0c06" opacity=".75"/><circle cx="470.8" cy="328.9" r="1.3" fill="#7a4128" opacity=".75"/><circle cx="467.2" cy="324.7" r="0.8" fill="#1f0c06" opacity=".75"/><circle cx="468.0" cy="333.9" r="0.9" fill="#170804" opacity=".75"/><circle cx="476.4" cy="321.5" r="1.9" fill="#6b3a22" opacity=".75"/><circle cx="409.7" cy="292.3" r="1.5" fill="#170804" opacity=".75"/><circle cx="435.9" cy="314.4" r="0.8" fill="#170804" opacity=".75"/><circle cx="458.4" cy="326.8" r="1.3" fill="#170804" opacity=".75"/><circle cx="443.1" cy="293.8" r="1.9" fill="#170804" opacity=".75"/><circle cx="461.3" cy="293.6" r="1.7" fill="#7a4128" opacity=".75"/><circle cx="474.8" cy="335.7" r="1.0" fill="#6b3a22" opacity=".75"/><circle cx="422.8" cy="325.1" r="1.3" fill="#1f0c06" opacity=".75"/><circle cx="408.9" cy="339.2" r="1.1" fill="#170804" opacity=".75"/><circle cx="457.5" cy="324.7" r="0.8" fill="#6b3a22" opacity=".75"/><circle cx="431.9" cy="325.2" r="1.6" fill="#6b3a22" opacity=".75"/><circle cx="403.1" cy="293.3" r="1.0" fill="#170804" opacity=".75"/><circle cx="464.3" cy="326.5" r="1.1" fill="#7a4128" opacity=".75"/><circle cx="443.8" cy="315.2" r="0.9" fill="#6b3a22" opacity=".75"/><circle cx="430.1" cy="294.6" r="1.3" fill="#7a4128" opacity=".75"/><circle cx="443.3" cy="334.3" r="2.0" fill="#1f0c06" opacity=".75"/><circle cx="491.5" cy="310.9" r="1.9" fill="#6b3a22" opacity=".75"/><circle cx="408.7" cy="294.9" r="1.7" fill="#7a4128" opacity=".75"/><circle cx="487.7" cy="297.2" r="1.8" fill="#7a4128" opacity=".75"/><circle cx="481.8" cy="328.0" r="1.0" fill="#1f0c06" opacity=".75"/><circle cx="437.5" cy="298.6" r="1.9" fill="#1f0c06" opacity=".75"/><circle cx="438.5" cy="329.3" r="1.2" fill="#1f0c06" opacity=".75"/><circle cx="430.4" cy="335.4" r="0.7" fill="#7a4128" opacity=".75"/><circle cx="477.5" cy="296.5" r="1.9" fill="#170804" opacity=".75"/><circle cx="483.1" cy="305.7" r="1.2" fill="#1f0c06" opacity=".75"/><circle cx="437.1" cy="337.0" r="0.8" fill="#1f0c06" opacity=".75"/><circle cx="470.0" cy="336.1" r="1.1" fill="#170804" opacity=".75"/><circle cx="477.1" cy="305.4" r="1.9" fill="#6b3a22" opacity=".75"/><circle cx="489.4" cy="313.6" r="1.1" fill="#7a4128" opacity=".75"/><circle cx="472.7" cy="313.1" r="0.7" fill="#1f0c06" opacity=".75"/><circle cx="484.2" cy="340.8" r="1.4" fill="#170804" opacity=".75"/><circle cx="406.5" cy="329.5" r="1.3" fill="#6b3a22" opacity=".75"/><circle cx="460.0" cy="305.5" r="0.8" fill="#6b3a22" opacity=".75"/><circle cx="417.4" cy="312.4" r="1.1" fill="#7a4128" opacity=".75"/><circle cx="468.5" cy="342.7" r="1.0" fill="#6b3a22" opacity=".75"/><circle cx="429.1" cy="320.1" r="1.2" fill="#6b3a22" opacity=".75"/><circle cx="459.9" cy="294.1" r="1.4" fill="#1f0c06" opacity=".75"/><circle cx="451.5" cy="314.5" r="1.1" fill="#1f0c06" opacity=".75"/><circle cx="440.5" cy="319.6" r="1.0" fill="#6b3a22" opacity=".75"/><circle cx="432.8" cy="294.9" r="1.0" fill="#7a4128" opacity=".75"/><circle cx="474.8" cy="300.9" r="0.7" fill="#1f0c06" opacity=".75"/><circle cx="436.5" cy="330.3" r="1.0" fill="#7a4128" opacity=".75"/><circle cx="432.4" cy="293.4" r="1.1" fill="#7a4128" opacity=".75"/><circle cx="413.3" cy="317.2" r="1.5" fill="#6b3a22" opacity=".75"/><circle cx="410.3" cy="338.4" r="1.2" fill="#1f0c06" opacity=".75"/><circle cx="440.9" cy="306.8" r="1.8" fill="#170804" opacity=".75"/><circle cx="413.5" cy="313.0" r="1.7" fill="#1f0c06" opacity=".75"/><circle cx="489.1" cy="316.5" r="0.8" fill="#1f0c06" opacity=".75"/><circle cx="489.5" cy="303.4" r="0.8" fill="#6b3a22" opacity=".75"/><circle cx="415.7" cy="342.5" r="0.8" fill="#1f0c06" opacity=".75"/><circle cx="409.7" cy="332.0" r="0.7" fill="#6b3a22" opacity=".75"/><circle cx="422.9" cy="339.7" r="1.5" fill="#7a4128" opacity=".75"/><circle cx="488.6" cy="323.8" r="1.4" fill="#1f0c06" opacity=".75"/><circle cx="464.9" cy="296.1" r="0.8" fill="#6b3a22" opacity=".75"/><circle cx="436.9" cy="302.1" r="1.5" fill="#170804" opacity=".75"/><circle cx="450.4" cy="343.8" r="1.1" fill="#7a4128" opacity=".75"/><circle cx="460.0" cy="337.7" r="1.3" fill="#6b3a22" opacity=".75"/><circle cx="451.2" cy="291.6" r="1.2" fill="#7a4128" opacity=".75"/><circle cx="407.0" cy="300.5" r="1.9" fill="#1f0c06" opacity=".75"/><circle cx="409.3" cy="302.3" r="1.3" fill="#7a4128" opacity=".75"/><circle cx="422.4" cy="291.8" r="1.1" fill="#1f0c06" opacity=".75"/><circle cx="434.6" cy="311.4" r="0.7" fill="#7a4128" opacity=".75"/><circle cx="468.5" cy="317.3" r="1.0" fill="#6b3a22" opacity=".75"/><circle cx="430.1" cy="334.3" r="1.0" fill="#6b3a22" opacity=".75"/><circle cx="425.9" cy="338.0" r="0.8" fill="#1f0c06" opacity=".75"/><circle cx="456.9" cy="338.4" r="1.3" fill="#170804" opacity=".75"/><circle cx="487.4" cy="297.9" r="1.2" fill="#6b3a22" opacity=".75"/><circle cx="404.1" cy="322.2" r="1.2" fill="#170804" opacity=".75"/><circle cx="418.6" cy="314.3" r="1.6" fill="#7a4128" opacity=".75"/><circle cx="467.9" cy="343.9" r="1.9" fill="#7a4128" opacity=".75"/><circle cx="419.2" cy="325.2" r="1.4" fill="#1f0c06" opacity=".75"/><circle cx="404.9" cy="325.9" r="1.2" fill="#7a4128" opacity=".75"/><circle cx="490.6" cy="313.9" r="0.8" fill="#170804" opacity=".75"/><circle cx="427.2" cy="309.0" r="1.9" fill="#170804" opacity=".75"/><circle cx="452.5" cy="331.0" r="1.2" fill="#7a4128" opacity=".75"/><circle cx="476.0" cy="313.4" r="0.8" fill="#1f0c06" opacity=".75"/><circle cx="419.6" cy="319.2" r="1.3" fill="#7a4128" opacity=".75"/><circle cx="434.8" cy="338.4" r="0.7" fill="#1f0c06" opacity=".75"/><circle cx="424.3" cy="323.8" r="1.2" fill="#1f0c06" opacity=".75"/><circle cx="405.1" cy="293.4" r="1.9" fill="#7a4128" opacity=".75"/><circle cx="419.5" cy="293.4" r="1.5" fill="#7a4128" opacity=".75"/><circle cx="426.5" cy="341.7" r="1.5" fill="#7a4128" opacity=".75"/><g transform="translate(420 306) rotate(-12) scale(1.15)"><use href="#ckB"/></g><g transform="translate(458 322) rotate(15) scale(1.15)"><use href="#ckB"/></g><g transform="translate(474 298) rotate(-25) scale(1.15)"><use href="#ckB"/></g><g transform="translate(436 334) rotate(8) scale(1.15)"><use href="#ckB"/></g><path d="M398 276 L420 260 L518 260 L496 276 Z" fill="url(#ckG)" stroke="#120502" stroke-width="1"/><path d="M397 275 L497 275 L497 285 Q486 298 476 285 Q466 292 456 284 Q444 302 432 284 Q420 290 408 283 L397 283 Z" fill="#1f0b05"/><path d="M412 267 L490 266" stroke="#a96b48" stroke-width="2.5" stroke-linecap="round" opacity=".5"/><g transform="translate(442 268) rotate(-8) scale(.8)"><use href="#ckB"/></g><g transform="translate(476 270) rotate(20) scale(.7)"><use href="#ckB"/></g><g class="ckl"><text x="14" y="34" font-family="Trebuchet MS,system-ui,sans-serif" font-weight="800" font-size="23" fill="#fde68a" stroke="#060a18" stroke-width="5" paint-order="stroke" stroke-linejoin="round">un bonito y grande bizcocho</text><text x="14" y="62" font-family="Trebuchet MS,system-ui,sans-serif" font-weight="800" font-size="23" fill="#fde68a" stroke="#060a18" stroke-width="5" paint-order="stroke" stroke-linejoin="round">de chocolate y naranja</text><path d="M70 72 C40 120 52 190 98 228" fill="none" stroke="#fde68a" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ckA)"/></g><g class="ckl"><text x="586" y="108" text-anchor="end" font-family="Trebuchet MS,system-ui,sans-serif" font-weight="800" font-size="23" fill="#fde68a" stroke="#060a18" stroke-width="5" paint-order="stroke" stroke-linejoin="round">trocitos de naranja</text><text x="586" y="136" text-anchor="end" font-family="Trebuchet MS,system-ui,sans-serif" font-weight="800" font-size="23" fill="#fde68a" stroke="#060a18" stroke-width="5" paint-order="stroke" stroke-linejoin="round">confitada</text><path d="M470 120 C420 112 360 130 326 176" fill="none" stroke="#fde68a" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ckA)"/><path d="M572 146 C586 210 540 260 478 300" fill="none" stroke="#fde68a" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ckA)"/></g></svg></div>
   <p id="amsg" aria-hidden="true"></p>
   <p id="asr" class="asr" aria-live="polite"></p>
   <div id="afoot"><button type="button" id="arep" class="abtn" hidden>↻ Repetir<span class="kh"> (tecla X)</span></button></div>
@@ -227,7 +262,7 @@ footer{margin-top:14px;text-align:center;color:var(--mu);font-size:13px}
 const $ = s => document.querySelector(s), cv = $('#cv'), cx = cv.getContext('2d'), W = 700, H = 420, rnd = Math.random;
 const RM = matchMedia('(prefers-reduced-motion:reduce)').matches;
 const T = (id, n, s, i, k) => ({ id, n, s, i: i.split('|'), k: k || [] });
-const SHORT = { 'ionic-1': 'Enlace', 'ionic-2': 'Cristales', 'ionic-3': 'Fragilidad', 'ionic-4': 'Disolución', 'ionic-5': 'Conductividad', 'cov-1': 'Enlace', 'cov-2': 'Polaridad', 'cov-3': 'Alótropos', 'met-1': 'Enlace', 'met-2': 'Maleabilidad', 'met-3': 'Aleaciones', 'met-4': 'Valencia', 'im-2': 'Van der Waals', 'im-3': 'Puentes de H', 'im-1': 'Hidruros', 'im-4': 'Mezclas', 'im-5': 'Salamanquesa' };
+const SHORT = { 'ionic-1': 'Enlace', 'ionic-2': 'Cristales', 'ionic-3': 'Fragilidad', 'ionic-4': 'Disolución', 'ionic-5': 'Conductividad', 'cov-1': 'Enlace', 'cov-2': 'Polaridad', 'cov-3': 'Alótropos', 'met-1': 'Enlace', 'met-2': 'Maleabilidad', 'met-3': 'Aleaciones', 'met-4': 'Valencia', 'met-5': 'Bandas', 'im-2': 'Van der Waals', 'im-3': 'Puentes de H', 'im-1': 'Hidruros', 'im-4': 'Mezclas', 'im-5': 'Salamanquesa' };
 const TABS = [
   { n: '⚡ Iónico', note: 'Se modeliza: transferencia de electrones, atracción y red de iones de forma esquemática. Se omite: energía reticular exacta, defectos del cristal y reacciones en los electrodos.', sc: [
     T('ionic-1', 'Atracción, carga y radio', 'Aquí un Na cederá un electrón al Cl: cargas opuestas, ¡atracción!', 'Los iones se forman al transferir electrones|F ∝ q₊q₋/r² · U ∝ q₊q₋/r|Más carga y menos distancia = más atracción|Un sólido iónico es una red, no moléculas sueltas', ['ionic-1-predict', 'ionic-1-transfer', 'ionic-1-best']),
@@ -239,11 +274,12 @@ const TABS = [
     T('cov-1', 'Pozo de energía', 'Dos átomos de H: ¿a qué distancia se llevan mejor?', 'Lejos: casi sin interacción|Distancia de equilibrio: energía mínima|Muy cerca: la repulsión sube la energía|Más enlaces: enlace más corto y fuerte', ['cov-1-predict', 'cov-1-well', 'cov-1-order']),
     T('cov-2', 'Polaridad y tipo de enlace (Van Arkel–Ketelaar)', 'Tira y afloja con la nube de electrones.', 'ΔEN desplaza la nube compartida|δ+ y δ− forman un dipolo|La polaridad es un continuo|HF: covalente muy polar', ['cov-2-predict', 'cov-2-dipole', 'cov-2-vak']),
     T('cov-3', 'Diamante frente a grafito', 'Mismo carbono, dos personalidades.', 'Diamante: 4 enlaces por carbono|Grafito: capas y electrones deslocalizados|Dureza y deslizamiento difieren|Grafito conduce en el plano de las capas', ['cov-3-predict', 'cov-3-compare', 'cov-3-conduct'])] },
-  { n: '🔩 Metálico', note: 'Se modeliza: mar de electrones y capas de cationes. Se omite: dislocaciones, teoría de bandas y la deriva real (aquí se exagera).', sc: [
+  { n: '🔩 Metálico', note: 'Se modeliza: mar de electrones, capas de cationes y un esquema cualitativo de bandas. Se omite: dislocaciones, la estructura de bandas real (densidad de estados, espacio de momentos) y la deriva real (aquí se exagera).', sc: [
     T('met-1', 'Mar de electrones', 'Cationes quietecitos y electrones de paseo.', 'Electrones deslocalizados|Sin pila: movimiento al azar|Con pila: deriva neta|Más temperatura, más resistencia', ['met-1-predict', 'met-1-drift', 'met-1-temp']),
     T('met-2', 'Martillazo metálico', 'Ahora el mazo golpea un metal. ¿Se romperá?', 'Las capas de cationes se deslizan|El mar de electrones mantiene la cohesión|Maleable y dúctil|El metal se deforma; la sal se fractura', ['met-2-predict', 'met-2-malleable', 'met-2-compare']),
     T('met-3', 'Aleaciones', 'Un intruso en la red: ¿ayuda o molesta?', 'Átomos de otro tamaño distorsionan la red|Pueden dificultar el deslizamiento|Acero, latón y bronce|No hay una receta universal', ['met-3-predict', 'met-3-alloy', 'met-3-types']),
-    T('met-4', 'Na → Mg → Al', 'Uno, dos, tres electrones: ¿más cohesión?', 'Na: 1 · Mg: 2 · Al: 3 electrones de valencia|Más carga y menor radio|Mg y Al funden casi igual|La tendencia no es lineal', ['met-4-predict', 'met-4-series', 'met-4-nonlinear'])] },
+    T('met-4', 'Na → Mg → Al', 'Uno, dos, tres electrones: ¿más cohesión?', 'Na: 1 · Mg: 2 · Al: 3 electrones de valencia|Más carga y menor radio|Mg y Al funden casi igual|La tendencia no es lineal', ['met-4-predict', 'met-4-series', 'met-4-nonlinear']),
+    T('met-5', 'Teoría de bandas: conductores, semiconductores y aislantes', '¿Hay niveles libres al lado de los electrones, o un gap que no se puede saltar?', 'Banda: conjunto de niveles de energía muy juntos (los de todos los átomos a la vez) que los electrones pueden ocupar|Banda de valencia: la más alta ocupada por electrones|Banda de conducción: la de los electrones que se mueven|Metal: banda semillena (Na) o solapada con otra vacía (Mg)|Gap pequeño: semiconductor · gap grande: aislante', ['met-5-predict', 'met-5-metals', 'met-5-gap', 'met-5-semi', 'met-5-explain'])] },
   { n: '🧲 Fuerzas intermoleculares', note: 'Se modeliza: dipolos y enlaces de hidrógeno en 2D. Se omite: dinámica 3D real y curvas de calentamiento completas.', sc: [
     T('im-2', 'Fuerzas de van der Waals', 'Aunque no haya puentes de hidrógeno, las moléculas siguen atrayéndose.', 'Dipolos permanentes: entre moléculas polares|Dipolo permanente - dipolo inducido: polar deforma apolar|Dispersión de London: dipolos instantáneos|Más electrones, mayor polarizabilidad', ['im-2-predict', 'im-2-induce', 'im-2-size']),
     T('im-3', 'Puentes de hidrógeno: agua e hielo', 'Entre molécula y molécula hay manos… de hidrógeno (O···H).', 'Líquido: puentes O···H que se hacen y deshacen|Hielo: red abierta con huecos|Hasta 4 puentes por molécula|El hielo flota', ['im-3-predict', 'im-3-ice', 'im-3-float']),
@@ -255,7 +291,7 @@ const TABS = [
 ];
 /* ===== Niveles académicos: ESO / Bachillerato ===== */
 let LV = 'bach';
-const ESO_OUT = new Set(['cov-2', 'met-4', 'im-1']);   // escenas que no se muestran en ESO
+const ESO_OUT = new Set(['cov-2', 'met-4', 'met-5', 'im-1']);   // escenas que no se muestran en ESO
 const ESO_NOTE = [
   'Se modeliza: los átomos se convierten en iones y se atraen formando una red. Se omite: la energía exacta y los fallos del cristal.',
   'Se modeliza: cómo se juntan los átomos al compartir electrones y cómo son el diamante y el grafito. Se omite: el cálculo exacto de los electrones.',
@@ -410,11 +446,19 @@ function fit() {
   cv.height = Math.round(w * H / W * d);
   sc = cv.width / W;
 }
+const titleX = () => innerWidth <= 820 ? 52 : 18;   // en móvil la chincheta ocupa la esquina superior izquierda
+function boldKW(t, all) {
+  let h = String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  h = h.replace(/^Banda(?=:)/, '<b>Banda</b>');
+  h = h.replace(/(banda de conducción|banda de valencia|bandas de conducción|bandas de valencia)/gi, '<b>$1</b>');
+  h = all ? h.replace(/\b(semiconductor|aislante)\b/gi, '<b>$1</b>') : h.replace(/^(Semiconductor|Aislante)(?=:)/, '<b>$1</b>');
+  return h;
+}
 function say(t, f) {
   const n = Date.now();
   if (!f && n - lastSay < 2400) return;
   lastSay = n; lastTxt = t;
-  $('#say').textContent = E(t);
+  $('#say').innerHTML = boldKW(E(t));
 }
 function sayPool(a, f) {
   const b = a.filter(x => x !== lastTxt);
@@ -423,7 +467,8 @@ function sayPool(a, f) {
 function setIdeas(a) {
   ft.forEach(clearTimeout); ft = [];
   const p = $('#post'); p.innerHTML = '';
-  a.forEach(t => { const d = document.createElement('div'); d.textContent = E(t); p.append(d); });
+  const bandas = a.some(t => /Banda de valencia/.test(t));
+  a.forEach(t => { const d = document.createElement('div'); if (/^Banda:|banda de (valencia|conducción)/i.test(t)) d.innerHTML = boldKW(E(t), bandas); else d.textContent = E(t); p.append(d); });
 }
 function flash(i) {
   const e = $('#post').children[i];
@@ -1277,7 +1322,7 @@ SC['ionic-2'] = sd => {
       }
     }
     const a = count(1), c = count(-1), n = so ? cnt(so.i, so.j, so.k, so.s) : 0, mx = so ? maxN(so.s) : 0;
-    cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`; cx.fillText(`Iones: ${ions.size} · ${nm(1)}: ${a} · ${nm(-1)}: ${c}`, 18, 26);
+    cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`; cx.fillText(`Iones: ${ions.size} · ${nm(1)}: ${a} · ${nm(-1)}: ${c}`, titleX(), 26);
     cx.font = `13px ${FN}`; cx.fillStyle = '#9fb0d8';
     cx.fillText(so ? `${nm(so.s)} seleccionado: ${n}/${mx} vecinos de carga opuesta${n === mx ? ' → coordinación ' + (caf ? '8:4' : '6:6') : ''}` : ions.size ? 'Toca un ion para ver sus vecinos (discontinuo = sitio vacío)' : `Pulsa «+ ${nm(1)}» o «+ ${nm(-1)}» para empezar`, 18, 46);
     if (glow) { cx.fillStyle = '#c4b5fd'; cx.font = `12px ${FN}`; cx.fillText('Luz UV: la fluorita natural brilla azul-violeta por impurezas (p. ej. Eu²⁺); de ella viene la palabra «fluorescencia».', 18, 66, 664); cx.fillStyle = '#9fb0d8'; }
@@ -1405,7 +1450,7 @@ SC['ionic-3'] = sd => {
       bg();
       block.draw(cx, { showQ });
       cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-      cx.fillText(`Red iónica 2D (10 × 7) · Fuerza: ${force} % (${forceZone(force)})`, 18, 26);
+      cx.fillText(`Red iónica 2D (10 × 7) · Fuerza: ${force} % (${forceZone(force)})`, titleX(), 26);
       cx.fillStyle = '#9fb0d8'; cx.font = `12px ${FN}`;
       cx.fillText(predicted ? 'Pulsa «Dar martillazo» o toca una columna del cristal para golpear' : 'Responde la predicción para usar el mazo', 18, 46);
       cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
@@ -1564,7 +1609,7 @@ SC['ionic-4'] = sd => {
   function update(dt) {
     if (!predicted || paused) return;
     elapsed += dt;
-    const tFactor = Math.sqrt((tempC + 273.15) / 298.15), kinRate = 0.145 * Math.pow(1.033, tempC - 20), maxV = 58 * tFactor;
+    const hotK = tempC > 60 ? (tempC - 60) / 20 : 0, tFactor = 0.7 + 0.5 * ((tempC - 10) / 70) + 1.1 * Math.pow(hotK, 1.6), kinRate = 0.145 * Math.pow(1.033, tempC - 20) * (1 + 1.5 * hotK), maxV = 58 * tFactor;   // movilidad progresiva, que se dispara por encima de 60 °C
     for (const ion of ions) {
       if (ion.free) continue;
       const nb = activeNeighbors(ion);
@@ -1786,7 +1831,7 @@ SC['ionic-4'] = sd => {
 
     const freeCount = ions.filter(i => i.free).length, pct = Math.round(freeCount / ions.length * 100);
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Disolución de NaCl · T = ${tempC} °C · Separados: ${freeCount}/${ions.length} (${pct} %)`, 18, 26);
+    cx.fillText(`Disolución de NaCl · T = ${tempC} °C · Separados: ${freeCount}/${ions.length} (${pct} %)`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `12px ${FN}`;
     cx.fillText(predicted ? (paused ? 'Simulación en pausa' : 'Haz clic sobre un ion Na⁺ o Cl⁻ para inspeccionarlo') : 'Responde la predicción para iniciar la disolución', 18, 46);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
@@ -1987,7 +2032,7 @@ SC['ionic-5'] = sd => {
     }
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Muestra: ${mObj().n}`, 18, 26);
+    cx.fillText(`Muestra: ${mObj().n}`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('Modelo esquemático de migración iónica: se omiten las reacciones químicas en los electrodos (electrólisis).', 18, 405, 666);
   }
@@ -2365,7 +2410,7 @@ SC['cov-2'] = sd => {
     cx.beginPath(); cx.arc(curX, curY, 7, 0, 6.283); cx.fill(); cx.stroke();
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Polaridad de enlace · ΔEN = ${dEN().toFixed(2)}`, 18, 26);
+    cx.fillText(`Polaridad de enlace · ΔEN = ${dEN().toFixed(2)}`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('Triángulo de tipos de enlace (Van Arkel–Ketelaar): la polaridad es un continuo entre enlaces ideales.', 18, 405, 666);
   }
@@ -2686,7 +2731,7 @@ SC['cov-3'] = sd => {
     if (!isG) drawDiamond(); else drawGraphite(conducts);
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Alótropos del carbono · ${isG ? 'Grafito' : 'Diamante'}`, 18, 26);
+    cx.fillText(`Alótropos del carbono · ${isG ? 'Grafito' : 'Diamante'}`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText(isG ? 'Esquema: distancias entre capas exageradas; la conductividad es alta en el plano y baja perpendicularmente. Arrástralo para girarlo.' : 'Esquema: un C, sus 4 vecinos y los vecinos de estos (gira sola; arrástralo para girarlo tú). Los rabillos discontinuos indican que la red continúa.', 18, 405, 666);
   }
@@ -2865,7 +2910,7 @@ SC['met-1'] = sd => {
       cx.fillStyle = '#9fb0d8'; cx.fillText('Interruptor abierto: púlsalo para cerrar el circuito y medir la resistencia', 350, 386, 660);
     }
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Modelo del mar de electrones · T = ${tempK} K`, 18, 26);
+    cx.fillText(`Modelo del mar de electrones · T = ${tempK} K`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('Modelo esquemático: cationes en posiciones de red y electrones de valencia deslocalizados (deriva exagerada).', 18, 405, 666);
   }
@@ -2972,7 +3017,7 @@ SC['met-2'] = sd => {
     if (mode === 'ionic') {
       ionicComp.draw(cx, { showQ: true });
       cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-      cx.fillText('Comparación: Cristal iónico (NaCl) frente al golpe', 18, 26);
+      cx.fillText('Comparación: Cristal iónico (NaCl) frente al golpe', titleX(), 26);
       return;
     }
 
@@ -3008,7 +3053,7 @@ SC['met-2'] = sd => {
     if (hammerAnim > 0) drawHammer(hitX, hitY, hammerAnim);
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Bloque metálico · Desplazamiento: ${targetStep} escalón(es)`, 18, 26);
+    cx.fillText(`Bloque metálico · Desplazamiento: ${targetStep} escalón(es)`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('El mar de electrones se adapta a la nueva geometría sin romper la unión metálica.', 18, 405, 666);
   }
@@ -3145,7 +3190,7 @@ SC['met-3'] = sd => {
     cx.fillText(`Esfuerzo: ${stress} %`, 68, oy - 6);
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Estructura: ${kObj().n} · Resistencia al deslizamiento: ${kObj().crit} %`, 18, 26);
+    cx.fillText(`Estructura: ${kObj().n} · Resistencia al deslizamiento: ${kObj().crit} %`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('Modelo esquemático de dislocaciones/planos: las aleaciones suelen ser más duras y algo menos dúctiles que el metal puro.', 18, 405, 666);
   }
@@ -3280,7 +3325,7 @@ SC['met-4'] = sd => {
     });
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Serie metálica del periodo 3: Na → Mg → Al (${m.name})`, 18, 26);
+    cx.fillText(`Serie metálica del periodo 3: Na → Mg → Al (${m.name})`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('Datos experimentales orientativos: la fusión refleja la diferencia de energía entre sólido y líquido, no solo la red.', 18, 405, 666);
   }
@@ -3299,6 +3344,401 @@ SC['met-4'] = sd => {
       buildControls();
     },
     update() {}, draw, teardown() {}
+  };
+};
+
+/* ===== Metálico 5: teoría de bandas (solo Bachillerato) ===== */
+SC['met-5'] = sd => {
+  const FN = '"Trebuchet MS",system-ui,sans-serif';
+  const OKSH = ['¡Libre!!', '¡Yupiii!!', '¡Vivaaa!!', '¡Ahí vooooy!'], NOSH = ['¡Mosquis!!', '¡Aich!!', '¡Cáspita!', '¡Lechuguitas!'], pickSh = a => a[Math.floor(rnd() * a.length)];
+  let cshout = 1;
+  const PXE = 28, ROW = 24, COLS = 6, VTOP = 292, VBOT = 365, AMB = '#f59e0b', CYA = '#22d3ee', YEL = '#fde047';   // 28 px ≈ 1 eV (solo el gap está a escala)
+  const fm = (n, d = 1) => n.toFixed(d).replace('.', ',');
+  const ease = p => p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+  const mkBand = (n, x0, x1, y0, y1, fill, role, lab, pos) => {
+    const b = { n, x0, x1, y0, y1, fill, role, lab, pos };
+    b.rows = Math.max(1, Math.floor((y1 - y0) / ROW));
+    b.nf = Math.round(b.rows * fill);
+    b.ft = fill >= 1 ? y0 : y1 - b.nf * ROW;
+    return b;
+  };
+  const gy = g => VTOP - g * PXE;   // fondo de la banda de conducción
+  const MATS = [
+    { id: 'na', btn: 'Na (3s¹)', name: 'Sodio (Na)', cfg: 'Configuración [Ne] 3s¹', gap: 0, kind: 'm',
+      res: 'Metal: conduce, no hay gap', val: 'Banda 3s, semillena (solo la mitad de los niveles está ocupada)', con: 'La misma banda 3s: justo encima de los electrones hay niveles vacíos', gp: 'Sin gap',
+      bands: [mkBand('3s', 92, 330, 150, 330, .5, 'both', 'Banda 3s: valencia y conducción a la vez', 'below')] },
+    { id: 'mg', btn: 'Mg (3s²)', name: 'Magnesio (Mg)', cfg: 'Configuración [Ne] 3s²', gap: 0, kind: 'm',
+      res: 'Metal: conduce porque las bandas se solapan', val: 'Banda 3s, llena (3s² completa el orbital)', con: 'Banda 3p, vacía, pero solapada en energía con la 3s', gp: 'Sin gap (solapamiento)',
+      bands: [mkBand('3s', 90, 238, 215, 345, 1, 'valence', 'Banda 3s · valencia (llena)', 'below'), mkBand('3p', 248, 396, 110, 262, 0, 'cond', 'Banda 3p · conducción (vacía)', 'above')] },
+    { id: 'si', btn: 'Si', name: 'Silicio (Si)', cfg: 'Semiconductor', gap: 1.1, kind: 's',
+      res: 'Semiconductor: conduce si E ≥ 1,1 eV', val: 'Llena: orbitales enlazantes (híbridos sp³ de los enlaces Si–Si)', con: 'Vacía: orbitales antienlazantes (sp³*), 1,1 eV por encima', gp: '1,1 eV: pequeño',
+      bands: [mkBand('V', 92, 330, VTOP, VBOT, 1, 'valence', 'Banda de valencia (llena)', 'below'), mkBand('C', 92, 330, gy(1.1) - 66, gy(1.1), 0, 'cond', 'Banda de conducción (vacía)', 'above')] },
+    { id: 'c', btn: 'Diamante', name: 'Diamante (C)', cfg: 'Aislante', gap: 5.5, kind: 'i',
+      res: 'Aislante: no hay electrones que se muevan', val: 'Llena: orbitales enlazantes (híbridos sp³ de los enlaces C–C)', con: 'Vacía: orbitales antienlazantes (sp³*), 5,5 eV por encima', gp: '5,5 eV: enorme',
+      bands: [mkBand('V', 92, 330, VTOP, VBOT, 1, 'valence', 'Banda de valencia (llena)', 'below'), mkBand('C', 92, 330, gy(5.5) - 66, gy(5.5), 0, 'cond', 'Banda de conducción (vacía)', 'above')] }
+  ];
+  MATS[0].ef = MATS[0].bands[0].ft; MATS[1].ef = 238;
+
+  let mi = 0, eV = 0.8, volt = false, clk = 0, auto = 0, gen = 0, gl = 0, phot = null, explained = false, gapOk = false, gapFail = false;
+  const seen = new Set(), vw = document.createElement('div');
+  let els = [], rings = [], shouts = [];
+  const curM = () => MATS[mi];
+  const slot = (b, c, r) => ({ x: b.x0 + 22 + c * (b.x1 - b.x0 - 44) / (COLS - 1), y: b.y1 - 12 - r * ROW });
+
+  function build() {
+    els = []; rings = []; shouts = []; phot = null;
+    curM().bands.forEach((b, bi) => {
+      for (let r = 0; r < b.nf; r++) for (let c = 0; c < COLS; c++) {
+        const p = slot(b, c, r);
+        els.push({ b: bi, r, c, hx: p.x, hy: p.y, x: p.x, y: p.y, ph: rnd() * 6.283, st: 0, t: 0, dur: 1, fx: p.x, fy: p.y, tx: p.x, ty: p.y, life: 0, bounce: false });
+      }
+    });
+  }
+  const freeTop = () => { const nf = curM().bands[0].nf; return els.filter(e => e.b === 0 && e.r === nf - 1 && e.st === 0); };
+  const cond = () => curM().gap === 0 ? 1 : Math.min(1, els.filter(e => e.st === 2).length / 4);
+
+  function target(e, k, ev) {
+    const m = curM();
+    if (m.id === 'na') {
+      const b = m.bands[0], up = Math.max(1, Math.min(b.rows - b.nf, Math.round(ev * PXE / ROW)));
+      return slot(b, e.c, b.nf - 1 + up);
+    }
+    if (m.id === 'mg') {
+      const b = m.bands[1], p = slot(b, e.c, 0), up = Math.max(0, Math.min(ev * 14, e.hy - b.y0 - 12));
+      return { x: p.x, y: e.hy - up };   // misma energía: salta en horizontal de la banda 3s a la 3p
+    }
+    return slot(m.bands[1], e.c, k % 2);
+  }
+  function hop(e, tg, dur, life) {
+    e.fx = e.x; e.fy = e.y; e.tx = tg.x; e.ty = tg.y; e.t = 0; e.dur = RM ? .05 : dur; e.st = 1; e.life = life;
+  }
+
+  function checkSemi() {
+    if (curM().id === 'si' && volt && els.some(e => e.st === 2)) {
+      if (star('met-5-semi')) { flash(3); sayPool(WIN, 1); }
+    }
+  }
+  function maybeExplain() {
+    if (explained || !done['met-5-metals'] || !done['met-5-gap']) return;
+    explained = true;
+    ask({
+      into: vw, ph: 'Explica:', q: 'El magnesio tiene el orbital 3s lleno (3s²). Entonces, ¿por qué es un buen conductor?',
+      o: ['Porque su banda 3s, llena, se solapa en energía con la banda 3p vacía: hay niveles libres justo encima de sus electrones', 'Porque el orbital 3s lleno deja electrones sueltos fuera de cualquier banda', 'Porque tiene un gap enorme, pero lo salta fácilmente con el calor ambiente'],
+      ok: 0, key: 'met-5-explain',
+      good: '¡Exacto! 🎉 Una banda llena sola no conduce, pero si se solapa con una vacía los electrones tienen adónde ir. Por eso Mg, con 3s², es metal.',
+      bad: 'Piensa en la zona donde las bandas 3s y 3p se solapan: ¿qué hay allí, justo encima de los electrones?'
+    });
+  }
+
+  function push() {
+    const m = curM(), my = gen, ok = m.gap === 0 || eV >= m.gap - 1e-9;
+    const picks = freeTop().sort(() => rnd() - .5).slice(0, 4);
+    if (!picks.length) { say('Los electrones aún están arriba: espera un momento a que vuelvan a su banda.', 1); return; }
+    phot = { t: 0 };
+    later(() => {
+      if (my !== gen) return;
+      if (ok) {
+        picks.forEach((e, k) => { e.shout = k === 0 || rnd() < .35; later(() => { if (my === gen) hop(e, target(e, k, eV), .9, 4 + rnd() * 3); }, RM ? 0 : k * 110); });
+        if (m.id === 'na') { flash(2); say('Sin gap: los electrones suben a niveles vacíos de la misma banda 3s. ¡Por eso el sodio conduce!', 1); }
+        else if (m.id === 'mg') { flash(2); say('Los electrones pasan de la banda 3s (llena) a la 3p (vacía): al solaparse, no cuesta energía. ¡Metal!', 1); }
+        else { flash(0); flash(1); say(`¡${fm(eV)} eV ≥ ${fm(m.gap)} eV! Los electrones saltan a la banda de conducción y dejan huecos en la de valencia.`, 1); }
+        if (m.kind === 'm') {
+          seen.add(m.id);
+          if (seen.has('na') && seen.has('mg') && star('met-5-metals')) sayPool(WIN, 1);
+        }
+        if (m.id === 'c') { gapOk = true; flash(3); if (gapOk && gapFail && star('met-5-gap')) sayPool(WIN, 1); }
+        checkSemi(); maybeExplain();
+      } else {
+        const e = picks[0], b = m.bands[1];
+        e.bounce = true;
+        hop(e, { x: e.x, y: Math.max(e.y - Math.max(eV, .25) * PXE, b.y1 + 8) }, .7, .08);
+        flash(3);
+        say(`Con ${fm(eV)} eV no basta: faltan ${fm(m.gap - eV)} eV para llegar a la banda de conducción. El electrón vuelve a caer.`, 1);
+        if (m.id === 'c') { gapFail = true; if (gapOk && gapFail && star('met-5-gap')) sayPool(WIN, 1); maybeExplain(); }
+      }
+      syncUI();
+    }, RM ? 0 : 450);
+  }
+
+  function selectMat(i) {
+    mi = i; gen++; auto = 0;
+    build();
+    const m = curM();
+    $('#m5Sel').querySelectorAll('button').forEach((x, j) => x.classList.toggle('on', j === i));
+    say(`${m.name}: ${m.res}.`, 1);
+    flash(m.kind === 'm' ? 2 : 3);
+    syncUI();
+  }
+
+  function buildControls() {
+    vw.innerHTML = '<p><b>Prueba:</b> elige un material, ajusta la energía y pulsa «Dar energía». Después conecta el voltaje y mira la bombilla.</p>'
+      + `<div class="seg" id="m5Sel">${MATS.map((m, i) => `<button type="button" data-i="${i}" class="${i === mi ? 'on' : ''}">${m.btn}</button>`).join('')}</div>`
+      + `<label>Energía aportada (luz o calor) <b id="v5E">${fm(eV)} eV</b><input type="range" id="e5" min="0" max="6" step="0.1" value="${eV}" aria-label="Energía aportada en electronvoltios"></label>`
+      + '<button type="button" class="go" id="b5P">⚡ Dar energía</button> <button type="button" class="go" id="b5V" aria-pressed="false">🔌 Voltaje: apagado</button>'
+      + '<div class="mt" id="m5Stat"></div>';
+    $('#m5Sel').onclick = e => { const b = e.target.closest('button'); if (b) selectMat(+b.dataset.i); };
+    $('#e5').oninput = e => { eV = +e.target.value; $('#v5E').textContent = fm(eV) + ' eV'; syncUI(); };
+    $('#b5P').onclick = push;
+    $('#b5V').onclick = () => {
+      volt = !volt;
+      const b = $('#b5V'); b.textContent = volt ? '🔌 Voltaje: encendido' : '🔌 Voltaje: apagado'; b.setAttribute('aria-pressed', String(volt));
+      const m = curM();
+      if (!volt) say('Voltaje apagado: no hay corriente por el circuito.', 1);
+      else if (m.gap === 0) say('Con voltaje, los electrones que tienen niveles libres justo encima se aceleran: ¡hay corriente y la bombilla luce!', 1);
+      else if (cond() > 0) say('Hay electrones en la banda de conducción: con voltaje se mueven y pasa corriente.', 1);
+      else say('La banda de conducción está vacía: no hay electrones que puedan moverse, así que no hay corriente.', 1);
+      checkSemi();
+    };
+    vw.append(hintBtn([
+      'Fíjate en la flecha de energía de la izquierda: ¿llega hasta la banda de conducción?',
+      'Metales: o bien la banda está a medias (Na), o bien se solapa con otra vacía (Mg). Los electrones siempre tienen niveles libres al lado.',
+      'Aislante y semiconductor: banda de valencia llena y un gap. Prueba con el diamante por debajo y por encima de 5,5 eV, y con el silicio y el voltaje encendido.'
+    ]).el);
+    syncUI();
+  }
+  function syncUI() {
+    const st = $('#m5Stat'); if (!st) return;
+    const m = curM();
+    st.innerHTML = `<div><b>${m.name}</b> · ${m.cfg.replace('Configuración ', '')}</div>`
+      + `<div>Gap: <b>${m.gap ? fm(m.gap) + ' eV' : 'sin gap'}</b> · Energía aportada: <b>${fm(eV)} eV</b>${m.gap ? (eV >= m.gap - 1e-9 ? ' ✅ suficiente' : ' ⛔ insuficiente') : ''}</div>`;
+  }
+
+  function update(dt) {
+    clk += dt;
+    const m = curM();
+    els.forEach(e => {
+      if (e.st === 1 || e.st === 3) {
+        e.t += dt;
+        const p = Math.min(1, e.t / e.dur), q = ease(p);
+        e.x = e.fx + (e.tx - e.fx) * q; e.y = e.fy + (e.ty - e.fy) * q;
+        if (p >= 1) {
+          if (e.st === 1) {
+            e.st = 2;
+            rings.push({ x: e.x, y: e.y, t: 0, col: e.bounce ? '#fb7185' : YEL, txt: e.bounce ? '✗' : '' });
+            if (e.bounce) { shouts.push({ x: e.x, y: e.y, t: 0, col: '#fb7185', txt: pickSh(NOSH) }); e.bounce = false; }
+            else if (e.shout) { shouts.push({ x: e.x, y: e.y, t: 0, col: '#38bdf8', txt: pickSh(OKSH) }); e.shout = false; }
+            checkSemi();
+          } else { e.st = 0; e.x = e.hx; e.y = e.hy; }
+        }
+      } else if (e.st === 2) {
+        e.life -= dt;
+        if (e.life <= 0) { e.st = 3; e.fx = e.x; e.fy = e.y; e.tx = e.hx; e.ty = e.hy; e.t = 0; e.dur = RM ? .05 : .8; }
+      }
+    });
+    rings = rings.filter(r => (r.t += dt) < .6);
+    shouts = shouts.filter(r => (r.t += dt) < 1.5);
+    // al conducir electricidad, algún electrón de la banda de conducción también grita
+    if (volt && cond() > .05) {
+      cshout -= dt;
+      if (cshout <= 0) {
+        cshout = .9 + rnd() * .8;
+        const up = els.filter(e => e.st === 2);
+        if (up.length) { const e = up[Math.floor(rnd() * up.length)]; shouts.push({ x: e.x, y: e.y, t: 0, col: '#38bdf8', txt: pickSh(OKSH) }); }
+      }
+    } else cshout = .6;
+    if (phot) { phot.t += dt; if (phot.t > .5) phot = null; }
+    if (volt && m.gap === 0) {
+      auto -= dt;
+      if (auto <= 0) {
+        auto = .5;
+        const f = freeTop();
+        if (f.length) { const e = f[Math.floor(rnd() * f.length)]; hop(e, target(e, 0, .8), .7, 1); }
+      }
+    }
+    gl += ((volt ? cond() : 0) - gl) * Math.min(1, dt * 6);
+  }
+
+  function wrap(txt, x, y, mw, lh) {
+    let line = '';
+    txt.split(' ').forEach(w => {
+      const t = line ? line + ' ' + w : w;
+      if (cx.measureText(t).width > mw && line) { cx.fillText(line, x, y); y += lh; line = w; } else line = t;
+    });
+    cx.fillText(line, x, y);
+    return y + lh;
+  }
+  function bulb(x, y, g) {
+    if (g > .02) {
+      const r = 24 + 32 * g, gr = cx.createRadialGradient(x, y, 4, x, y, r);
+      gr.addColorStop(0, `rgba(253,224,71,${.85 * g})`); gr.addColorStop(1, 'rgba(253,224,71,0)');
+      cx.fillStyle = gr; cx.beginPath(); cx.arc(x, y, r, 0, 6.283); cx.fill();
+    }
+    cx.fillStyle = `rgba(253,224,71,${.1 + .65 * g})`; cx.strokeStyle = '#cbd5e1'; cx.lineWidth = 2.5;
+    cx.beginPath(); cx.arc(x, y, 20, 0, 6.283); cx.fill(); cx.stroke();
+    cx.strokeStyle = g > .1 ? '#fff7cc' : '#64748b'; cx.lineWidth = 2;
+    cx.beginPath(); cx.moveTo(x - 7, y + 12); cx.lineTo(x - 5, y - 2); cx.lineTo(x - 2, y + 3); cx.lineTo(x + 2, y - 3); cx.lineTo(x + 5, y + 2); cx.lineTo(x + 7, y + 12); cx.stroke();
+    cx.fillStyle = '#475569'; cx.fillRect(x - 9, y + 20, 18, 9);
+  }
+  function drawBand(b) {
+    const w = b.x1 - b.x0, h = b.y1 - b.y0;
+    cx.save();
+    cx.beginPath(); cx.roundRect(b.x0, b.y0, w, h, 10); cx.clip();
+    cx.fillStyle = 'rgba(34,211,238,.10)'; cx.fillRect(b.x0, b.y0, w, h);
+    if (b.nf) {
+      const g = cx.createLinearGradient(0, b.ft, 0, b.y1);
+      g.addColorStop(0, 'rgba(245,158,11,.32)'); g.addColorStop(1, 'rgba(245,158,11,.14)');
+      cx.fillStyle = g; cx.fillRect(b.x0, b.ft, w, b.y1 - b.ft);
+    }
+    cx.restore();
+    cx.lineWidth = 2.2;
+    cx.strokeStyle = b.role === 'valence' ? AMB : b.role === 'cond' ? CYA : '#e8eeff';
+    cx.setLineDash(b.role === 'cond' ? [7, 5] : []);
+    cx.beginPath(); cx.roundRect(b.x0, b.y0, w, h, 10); cx.stroke();
+    cx.setLineDash([]);
+    cx.font = `bold 12px ${FN}`; cx.textAlign = 'center';
+    cx.fillStyle = b.role === 'valence' ? AMB : b.role === 'cond' ? CYA : '#e8eeff';
+    cx.fillText(b.lab, (b.x0 + b.x1) / 2, b.pos === 'below' ? b.y1 + 17 : b.y0 - 8);
+  }
+
+  function draw() {
+    bg();
+    const m = curM(), nm = m.kind !== 'm';
+    cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
+    cx.fillText('Teoría de bandas: ¿hay niveles libres para moverse?', titleX(), 26);
+    cx.fillStyle = 'rgba(6,10,24,.72)'; cx.strokeStyle = '#24305a'; cx.lineWidth = 1.5;
+    cx.beginPath(); cx.roundRect(20, 44, 484, 354, 14); cx.fill(); cx.stroke();
+    cx.beginPath(); cx.roundRect(512, 44, 168, 354, 14); cx.fill(); cx.stroke();
+
+    // eje de energía
+    cx.strokeStyle = '#9fb0d8'; cx.fillStyle = '#9fb0d8'; cx.lineWidth = 2;
+    cx.beginPath(); cx.moveTo(52, 384); cx.lineTo(52, 60); cx.stroke();
+    cx.beginPath(); cx.moveTo(52, 54); cx.lineTo(47, 64); cx.lineTo(57, 64); cx.closePath(); cx.fill();
+    cx.save(); cx.translate(38, 220); cx.rotate(-Math.PI / 2); cx.textAlign = 'center'; cx.font = `bold 12px ${FN}`; cx.fillText('Energía', 0, 0); cx.restore();
+
+    // solapamiento (Mg) y banda prohibida (Si, diamante)
+    if (m.id === 'mg') {
+      cx.fillStyle = 'rgba(253,224,71,.10)'; cx.fillRect(90, 215, 306, 47);
+      cx.strokeStyle = 'rgba(253,224,71,.45)'; cx.lineWidth = 1; cx.setLineDash([4, 4]);
+      cx.beginPath(); cx.moveTo(90, 215); cx.lineTo(396, 215); cx.moveTo(90, 262); cx.lineTo(396, 262); cx.stroke(); cx.setLineDash([]);
+      cx.textAlign = 'left'; cx.font = `11px ${FN}`; cx.fillStyle = YEL; cx.fillText('solapamiento', 402, 258);
+    }
+    if (nm) {
+      const g0 = m.bands[1].y1, g1 = m.bands[0].y0, gh = g1 - g0;
+      cx.save(); cx.beginPath(); cx.rect(92, g0, 238, gh); cx.clip();
+      cx.fillStyle = 'rgba(148,163,184,.08)'; cx.fillRect(92, g0, 238, gh);
+      cx.strokeStyle = 'rgba(148,163,184,.22)'; cx.lineWidth = 1;
+      for (let x = 60; x < 340; x += 14) { cx.beginPath(); cx.moveTo(x, g1); cx.lineTo(x + gh, g0); cx.stroke(); }
+      cx.restore();
+      cx.textAlign = 'center'; cx.font = `11px ${FN}`; cx.fillStyle = '#94a3b8'; cx.fillText('banda prohibida', 211, (g0 + g1) / 2 + 4);
+      cx.strokeStyle = AMB; cx.lineWidth = 2;
+      cx.beginPath(); cx.moveTo(344, g0); cx.lineTo(344, g1); cx.moveTo(339, g0); cx.lineTo(349, g0); cx.moveTo(339, g1); cx.lineTo(349, g1); cx.stroke();
+      cx.textAlign = 'left'; cx.font = `bold 13px ${FN}`; cx.fillStyle = AMB;
+      if (m.id === 'si') { cx.fillText('Brecha energética', 356, (g0 + g1) / 2 - 2); cx.fillText('o gap = ' + fm(m.gap) + ' eV', 356, (g0 + g1) / 2 + 13); }
+      else cx.fillText('Gap = ' + fm(m.gap) + ' eV', 356, (g0 + g1) / 2 + 5);
+    }
+
+    m.bands.forEach(drawBand);
+
+    // nivel de Fermi y rótulos de metales
+    if (m.kind === 'm') {
+      const x1 = m.id === 'na' ? 330 : 396;
+      cx.strokeStyle = 'rgba(232,238,255,.65)'; cx.lineWidth = 1.5; cx.setLineDash([6, 4]);
+      cx.beginPath(); cx.moveTo(m.id === 'na' ? 92 : 90, m.ef); cx.lineTo(x1, m.ef); cx.stroke(); cx.setLineDash([]);
+      cx.textAlign = 'left'; cx.font = `11px ${FN}`; cx.fillStyle = '#e8eeff'; cx.fillText(m.id === 'na' ? 'nivel de Fermi:' : 'nivel de Fermi', x1 + 6, m.ef + (m.id === 'na' ? 4 : -4));
+      if (m.id === 'na') { cx.font = `10px ${FN}`; cx.fillStyle = '#9fb0d8'; cx.fillText('energía del último', x1 + 6, m.ef + 17); cx.fillText('nivel ocupado', x1 + 6, m.ef + 29); }
+      if (m.id === 'na') { cx.textAlign = 'center'; cx.fillStyle = CYA; cx.fillText('niveles vacíos', 211, 190); }
+    }
+
+    // flecha de energía aportada
+    const yref = m.kind === 'm' ? m.ef : VTOP, ytip = Math.max(66, yref - eV * PXE), okE = m.gap === 0 || eV >= m.gap - 1e-9, ac = okE ? '#34d399' : AMB;
+    if (eV > .05) {
+      cx.strokeStyle = ac; cx.fillStyle = ac; cx.lineWidth = 4;
+      cx.beginPath(); cx.moveTo(74, yref); cx.lineTo(74, ytip + 6); cx.stroke();
+      cx.beginPath(); cx.moveTo(74, ytip); cx.lineTo(68, ytip + 10); cx.lineTo(80, ytip + 10); cx.closePath(); cx.fill();
+      cx.globalAlpha = .4; cx.lineWidth = 1.5; cx.setLineDash([3, 5]);
+      cx.beginPath(); cx.moveTo(74, ytip); cx.lineTo(m.bands[0].x1 + (m.id === 'mg' ? 66 : 0), ytip); cx.stroke(); cx.setLineDash([]); cx.globalAlpha = 1;
+    }
+    cx.textAlign = 'center'; cx.font = `bold 12px ${FN}`; cx.fillStyle = ac; cx.fillText(fm(eV) + ' eV', 74, Math.max(58, ytip - 8));
+
+    // fotón de energía
+    if (phot && !RM) {
+      const px = 56 + phot.t / .5 * 34;
+      cx.strokeStyle = YEL; cx.lineWidth = 2.5; cx.beginPath();
+      for (let k = 0; k <= 24; k++) { const xx = px - 30 + k * 1.25, yy = yref + Math.sin(k * .9 - phot.t * 40) * 5; k ? cx.lineTo(xx, yy) : cx.moveTo(xx, yy); }
+      cx.stroke();
+    }
+
+    // huecos y electrones
+    cx.setLineDash([2.5, 2.5]); cx.strokeStyle = '#9fb0d8'; cx.lineWidth = 1.5;
+    if (nm) els.forEach(e => { if (e.st) { cx.beginPath(); cx.roundRect(e.hx - 7, e.hy - 5.2, 14, 10.4, 4); cx.stroke(); } });
+    cx.setLineDash([]);
+    els.forEach(e => {
+      if (e.st === 1 || e.st === 3) {
+        const p = Math.min(1, e.t / e.dur), q2 = ease(Math.max(0, p - .2)), tx = e.fx + (e.tx - e.fx) * q2, ty = e.fy + (e.ty - e.fy) * q2;
+        cx.strokeStyle = 'rgba(253,224,71,.5)'; cx.lineWidth = 3; cx.lineCap = 'round';
+        cx.beginPath(); cx.moveTo(tx, ty); cx.lineTo(e.x, e.y); cx.stroke(); cx.lineCap = 'butt';
+      }
+      const j = e.st === 0 || e.st === 2, x = e.x + (j ? Math.sin(clk * 2.1 + e.ph) * 1.4 : 0), y = e.y + (j ? Math.cos(clk * 1.7 + e.ph) * 1.4 : 0);
+      cx.fillStyle = e.st === 2 ? 'rgba(253,224,71,.28)' : 'rgba(253,224,71,.16)'; cx.beginPath(); cx.arc(x, y, 8, 0, 6.283); cx.fill();
+      cx.fillStyle = YEL; cx.beginPath(); cx.arc(x, y, 4.3, 0, 6.283); cx.fill();
+    });
+    rings.forEach(r => {
+      cx.globalAlpha = 1 - r.t / .6; cx.strokeStyle = r.col; cx.lineWidth = 2;
+      cx.beginPath(); cx.arc(r.x, r.y, 5 + r.t * 28, 0, 6.283); cx.stroke();
+      if (r.txt) { cx.fillStyle = r.col; cx.font = `bold 16px ${FN}`; cx.textAlign = 'left'; cx.fillText(r.txt, r.x + 10, r.y - 8 - r.t * 14); }
+      cx.globalAlpha = 1;
+    });
+
+    // gritos de los electrones
+    shouts.forEach(r => {
+      const a = r.t < 1.1 ? 1 : 1 - (r.t - 1.1) / .4, off = RM ? 0 : r.t * 16;
+      cx.globalAlpha = Math.max(0, a); cx.font = `bold 16px ${FN}`; cx.textAlign = 'left'; cx.lineJoin = 'round';
+      const tx = Math.min(r.x + 12, 500 - cx.measureText(r.txt).width), ty = r.y - 10 - off;
+      cx.lineWidth = 4; cx.strokeStyle = '#06101f'; cx.strokeText(r.txt, tx, ty);
+      cx.fillStyle = r.col; cx.fillText(r.txt, tx, ty); cx.globalAlpha = 1;
+    });
+
+    // tarjeta derecha: circuito y datos
+    const live = gl > .05;
+    cx.strokeStyle = '#cbd5e1'; cx.lineWidth = 2; cx.fillStyle = '#0a1020';
+    cx.beginPath(); cx.roundRect(522, 74, 30, 20, 3); cx.fill(); cx.stroke();
+    cx.fillStyle = '#cbd5e1'; cx.fillRect(552, 80, 4, 8);
+    cx.font = `bold 12px ${FN}`; cx.textAlign = 'center'; cx.fillStyle = volt ? '#34d399' : '#64748b'; cx.fillText('−  +', 537, 89);
+    cx.strokeStyle = live ? YEL : '#64748b'; cx.lineWidth = 2.5; cx.setLineDash(live ? [6, 5] : []); cx.lineDashOffset = -clk * 40;
+    cx.beginPath(); cx.moveTo(556, 84); cx.lineTo(606, 84); cx.moveTo(537, 94); cx.lineTo(537, 122); cx.lineTo(626, 122); cx.lineTo(626, 112); cx.stroke();
+    cx.setLineDash([]); cx.lineDashOffset = 0;
+    bulb(626, 84, gl);
+    cx.textAlign = 'center'; cx.font = `bold 11px ${FN}`; cx.fillStyle = live ? YEL : '#9fb0d8';
+    cx.fillText(!volt ? 'Voltaje apagado' : live ? '¡Pasa corriente!' : 'Hay voltaje, pero no pasa corriente', 596, 142, 150);
+
+    let y = 166; const X = 524, MW = 146;
+    cx.textAlign = 'left'; cx.font = `bold 13px ${FN}`; cx.fillStyle = '#e8eeff'; y = wrap(m.name, X, y, MW, 15);
+    cx.font = m.kind === 'm' ? `11px ${FN}` : `bold 11px ${FN}`; cx.fillStyle = '#9fb0d8'; y = wrap(m.cfg, X, y, MW, 14) + 2;
+    cx.font = `bold 11px ${FN}`; cx.fillStyle = m.kind === 'm' ? '#34d399' : m.kind === 's' ? AMB : '#fb7185'; y = wrap(m.res, X, y, MW, 14) + 4;
+    cx.font = `bold 11px ${FN}`; cx.fillStyle = AMB; cx.fillText('Banda de valencia', X, y); y += 13;
+    cx.font = `11px ${FN}`; cx.fillStyle = '#e8eeff'; y = wrap(m.val, X, y, MW, 13) + 3;
+    cx.font = `bold 11px ${FN}`; cx.fillStyle = CYA; cx.fillText('Banda de conducción', X, y); y += 13;
+    cx.font = `11px ${FN}`; cx.fillStyle = '#e8eeff'; y = wrap(m.con, X, y, MW, 13) + 3;
+    cx.font = `bold 11px ${FN}`; cx.fillStyle = '#e8eeff'; cx.fillText('Gap: ' + m.gp, X, y);
+
+    // leyenda
+    cx.fillStyle = 'rgba(245,158,11,.4)'; cx.strokeStyle = AMB; cx.lineWidth = 1.5; cx.fillRect(524, 366, 10, 10); cx.strokeRect(524, 366, 10, 10);
+    cx.fillStyle = 'rgba(34,211,238,.25)'; cx.strokeStyle = CYA; cx.fillRect(594, 366, 10, 10); cx.strokeRect(594, 366, 10, 10);
+    cx.fillStyle = YEL; cx.beginPath(); cx.arc(529, 387, 4, 0, 6.283); cx.fill();
+    cx.strokeStyle = '#9fb0d8'; cx.lineWidth = 1.5; cx.setLineDash([2.5, 2.5]); cx.beginPath(); cx.roundRect(592, 381.8, 14, 10.4, 4); cx.stroke(); cx.setLineDash([]);
+    cx.font = `10px ${FN}`; cx.fillStyle = '#9fb0d8'; cx.textAlign = 'left';
+    cx.fillText('llena', 538, 375); cx.fillText('vacía', 608, 375); cx.fillText('electrón', 538, 391); cx.fillText('hueco', 611, 391);
+
+    cx.textAlign = 'left'; cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
+    cx.fillText('Esquema cualitativo: solo el gap está a escala (28 px ≈ 1 eV); el ancho de las bandas es ilustrativo.', 18, 414, 666);
+  }
+
+  return {
+    mount() {
+      build();
+      ask({
+        ph: 'Predice:', q: 'El sodio tiene un solo electrón de valencia (3s¹), así que su banda 3s está a medias. ¿Qué implica eso para la conducción?',
+        o: ['Hay niveles vacíos justo encima de los electrones, así que conduce muy bien', 'Como la banda no está llena, el sodio es un aislante', 'Hay un gap grande que los electrones deben saltar para conducir'],
+        ok: 0, key: 'met-5-predict',
+        good: '¡Bien! Con la banda a medias, los electrones pueden subir a niveles libres con muy poca energía: eso es un metal.',
+        bad: 'Casi… 🤔 Piensa si hay niveles libres cerca de los electrones o si hay que cruzar un gap.'
+      });
+      $('#mis').append(vw);
+      buildControls();
+      maybeExplain();
+      say('Una banda es un conjunto de niveles de energía casi pegados, formados al juntar muchos átomos. Los electrones los van ocupando de abajo arriba.', 1);
+    },
+    update, draw, teardown() { gen++; }
   };
 };
 
@@ -3484,7 +3924,7 @@ SC['im-1'] = sd => {
     });
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Carrera de ebullición · T actual = ${Math.round(temp)} °C`, 18, 26);
+    cx.fillText(`Carrera de ebullición · T actual = ${Math.round(temp)} °C`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('Gráfica: Teb de cada compuesto, en el mismo orden que los matraces (masa molar debajo). El enlace de hidrógeno rompe la tendencia por masa.', 18, 408, 666);
   }
@@ -3888,7 +4328,7 @@ SC['im-2'] = sd => {
     cx.fillText('✋ Arrastra las moléculas para acercarlas o alejarlas', 682, 108);
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Fuerzas de van der Waals · Separación = ${Math.round(sep)} px`, 18, 26);
+    cx.fillText(`Fuerzas de van der Waals · Separación = ${Math.round(sep)} px`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('Agrupadas bajo «Fuerzas de van der Waals»: 1) dipolos permanentes, 2) dipolo permanente - dipolo inducido y 3) dispersión de London.', 18, 405, 666);
   }
@@ -4188,7 +4628,7 @@ SC['im-3'] = sd => {
     cx.fillText('directamente un H (blanco) con un O (rojo).', 432, 363);
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Puentes de hidrógeno (O···H) · ${phase === 'ice' ? 'Hielo' : 'Agua líquida'} (enlaces visibles: ${hbCount})`, 18, 26);
+    cx.fillText(`Puentes de hidrógeno (O···H) · ${phase === 'ice' ? 'Hielo' : 'Agua líquida'} (enlaces visibles: ${hbCount})`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('En el agua real cada molécula forma hasta 4 puentes de hidrógeno O···H en disposición tetraédrica 3D.', 18, 405, 666);
   }
@@ -4543,7 +4983,7 @@ SC['im-4'] = sd => {
     }
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Mezclas con agua · Muestra: ${sObj().n}`, 18, 26);
+    cx.fillText(`Mezclas con agua · Muestra: ${sObj().n}`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('El agua maximiza sus enlaces de hidrógeno O···H; las sustancias capaces de integrarse en esa red se disuelven.', 18, 405, 666);
   }
@@ -4668,7 +5108,7 @@ SC['im-5'] = sd => {
     const SK = '#d9c3d1', SK2 = '#b99aae', SD = '#6b5266', DK = '#2d2230';
     cx.fillStyle = '#05060d'; cx.fillRect(0, 0, W, H);
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText('Otra visión · del gecko a los pliegues del dedo', 18, 26);
+    cx.fillText('Otra visión · del gecko a los pliegues del dedo', titleX(), 26);
 
     const dashRing = (x, y, r, col) => { cx.save(); cx.setLineDash([4, 4]); cx.lineDashOffset = RM ? 0 : -t * 12; cx.strokeStyle = col; cx.lineWidth = 1.8; cx.beginPath(); cx.arc(x, y, r, 0, TAU); cx.stroke(); cx.restore(); };
     const dashLine = (x1, y1, x2, y2, col) => { cx.save(); cx.setLineDash([4, 4]); cx.lineDashOffset = RM ? 0 : -t * 12; cx.strokeStyle = col; cx.lineWidth = 1.3; cx.beginPath(); cx.moveTo(x1, y1); cx.lineTo(x2, y2); cx.stroke(); cx.restore(); };
@@ -4767,7 +5207,7 @@ SC['im-5'] = sd => {
 
     // título y paso
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText(`Pata del gecko · ángulo de despegue ${Math.round(peelAngle)}°`, 18, 26);
+    cx.fillText(`Pata del gecko · ángulo de despegue ${Math.round(peelAngle)}°`, titleX(), 26);
     cx.fillStyle = '#fde047'; cx.font = `bold 12px ${FN}`;
     cx.fillText(peelAngle <= 20 ? 'Pata apoyada: casi todas las espátulas tocan el techo' : peelAngle < 45 ? 'Se despega desde la punta, fila a fila' : 'Despegada: casi no queda contacto', 18, 44);
 
@@ -5090,7 +5530,7 @@ SC['lab-1'] = sd => {
     });
 
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
-    cx.fillText('Laboratorio de identificación · Cruza varias pruebas antes de concluir', 18, 26);
+    cx.fillText('Laboratorio de identificación · Cruza varias pruebas antes de concluir', titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('Tabla cerrada de 10 sustancias ideales: en la realidad existen compuestos intermedios e impurezas.', 18, 405, 666);
   }
@@ -5117,6 +5557,8 @@ const mq = matchMedia('(max-width:820px)'), canHover = matchMedia('(hover:hover)
 let popen = false, pinned = true, tipTimer = 0, noClick = false;   // escenario fijo activo por defecto (solo afecta a móvil)
 const tipEl = $('#tip');
 $('.stage').classList.toggle('pin', pinned);
+const pinI = $('#pinI');
+pinI.onclick = () => { pinned = !pinned; $('.stage').classList.toggle('pin', pinned); pinI.setAttribute('aria-pressed', String(pinned)); };
 function setPop(v) {
   popen = !!v;
   $('.main').classList.toggle('popen', popen);
@@ -5191,11 +5633,6 @@ function go(t, s) {
     sel.append(b);
   });
   applyHue(s);
-  const pb = document.createElement('button');
-  pb.type = 'button'; pb.className = 'pinbtn'; pb.textContent = '📌 Fijar escenario';
-  pb.setAttribute('aria-pressed', String(pinned));
-  pb.onclick = () => { pinned = !pinned; $('.stage').classList.toggle('pin', pinned); pb.setAttribute('aria-pressed', String(pinned)); };
-  sel.append(pb);
   $('#ptitle').textContent = sd.n;
   setPop(tb.sc.length === 1 ? true : popen); refreshBadges();   // con una sola práctica el panel va siempre abierto (no hay pestaña que lo despliegue)
   $('#note').textContent = 'Qué se modeliza y qué se omite: ' + tb.note;
@@ -5215,12 +5652,18 @@ function loop(ts) {
   requestAnimationFrame(loop);
 }
 
+let ionPress = 0;   // clave secreta: 5 pulsaciones en Iónico y luego Covalente
 function buildTabs() {
   const nav = $('#tabs'); nav.innerHTML = '';
   V.forEach((t, i) => {
     const b = document.createElement('button');
     b.textContent = t.n;
-    b.onclick = () => { setPop(false); go(i, 0); };
+    b.onclick = () => {
+      const kind = /^ionic/.test(t.sc[0].id) ? 'ion' : /^cov/.test(t.sc[0].id) ? 'cov' : '';
+      if (kind === 'ion') ionPress++;
+      else { if (kind === 'cov' && ionPress >= 5) { ionPress = 0; andyShow(); return; } ionPress = 0; }
+      setPop(false); go(i, 0);
+    };
     nav.append(b);
   });
 }
@@ -5246,7 +5689,7 @@ requestAnimationFrame(loop);
 const ANDY_LINES = [
   'La leche!!',
   'Qué decía Sergio que nadie iba a llegar hasta aquí!!',
-  'Y va Blanca y lo saca en cuatro ratos!!',
+  'Y tú vas y lo sacas en cuatro ratos!!',
   'Mira que te diga',
   'No tenemos un duro para gastarlo en premios',
   'Y yo sólo soy un anfibio sin bolsillos ni cuenta bancaria',
@@ -5257,6 +5700,7 @@ const ANDY_LINES = [
   'Vaya!! se pierde la conexión!!',
   'Dale a la tecla x y podrás repetir este mensaje! Ciao!! Me quedo sin cobertura!!'
 ];
+const andyCake = $('#cake');
 const andyEl = $('#andy'), andyMsg = $('#amsg'), andySr = $('#asr'), andyHead = $('#abig'), andyRep = $('#arep'), andyCls = $('#aclose');
 let andyOn = false, andyPlaying = false, andyStarted = false, andyRun = 0, andyBuf = '', andyPrev = null;
 const andySleep = ms => new Promise(r => setTimeout(r, ms));
@@ -5273,7 +5717,7 @@ function andyClose() {
   andyRun++; andyPlaying = false;
   andyEl.hidden = true; andyOn = false;
   andyEl.classList.remove('typing');
-  andyHead.classList.remove('talk', 'glitch', 'off');
+  andyHead.classList.remove('talk', 'glitch', 'off', 'gone'); andyCake.classList.remove('show');
   [...document.body.children].forEach(el => { if (el !== andyEl) el.inert = false; });
   document.documentElement.style.overflow = '';
   if (andyPrev && andyPrev.focus) andyPrev.focus({ preventScroll: true });
@@ -5281,7 +5725,7 @@ function andyClose() {
 async function andyPlay() {
   const id = ++andyRun, live = () => id === andyRun;
   andyPlaying = true; andyStarted = true;
-  andyHead.classList.remove('glitch', 'off', 'talk');
+  andyHead.classList.remove('glitch', 'off', 'talk', 'gone'); andyCake.classList.remove('show');
   andyRep.hidden = true; andyMsg.textContent = ''; andySr.textContent = '';
   await andySleep(500); if (!live()) return;
   for (let i = 0; i < ANDY_LINES.length; i++) {
@@ -5299,7 +5743,16 @@ async function andyPlay() {
   await andySleep(1400); if (!live()) return;
   andyHead.classList.add('glitch');
   await andySleep(1800); if (!live()) return;
-  andyHead.classList.remove('glitch'); andyHead.classList.add('off');
+  andyHead.classList.remove('glitch');
+  // Andy se queda sin cobertura... ¡y llega la cobertura de chocolate!
+  const fin = 'Cobertura de chocolate!! Tachaaaaaaan!!';
+  andyMsg.textContent = ''; andySr.textContent = fin + ' Un bonito y grande bizcocho de chocolate y naranja, con trocitos de naranja confitada.';
+  andyRep.hidden = true; andyEl.classList.add('typing'); andyHead.classList.add('talk');
+  for (let c = 1; c <= fin.length; c++) { andyMsg.textContent = fin.slice(0, c); await andySleep(40); if (!live()) return; }
+  andyEl.classList.remove('typing'); andyHead.classList.remove('talk');
+  await andySleep(500); if (!live()) return;
+  andyHead.classList.add('gone'); andyCake.classList.add('show');
+  andyRep.hidden = false;
 }
 function andyShow() {
   if (andyPlaying) return;
