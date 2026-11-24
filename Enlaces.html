@@ -85,8 +85,8 @@ footer{margin-top:14px;text-align:center;color:var(--mu);font-size:13px}
 #mis>.qexp{order:30}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-.pinI{display:none;position:absolute;top:4px;left:4px;right:auto;width:32px;height:32px;padding:0;align-items:center;justify-content:center;border:0;border-radius:50%;background:rgba(6,10,24,.55);cursor:pointer;z-index:2;-webkit-tap-highlight-color:transparent}
-.pinI svg{width:25px;height:25px;overflow:visible;transform-origin:16px 29px;transition:transform .25s ease,opacity .25s ease,filter .25s ease;filter:drop-shadow(0 1px 2px #000a)}
+.pinI{display:none;position:absolute;top:6px;right:6px;left:auto;width:40px;height:40px;padding:0;align-items:center;justify-content:center;border:0;border-radius:50%;background:rgba(6,10,24,.55);cursor:pointer;z-index:2;-webkit-tap-highlight-color:transparent}
+.pinI svg{width:30px;height:30px;overflow:visible;transform-origin:16px 29px;transition:transform .25s ease,opacity .25s ease,filter .25s ease;filter:drop-shadow(0 1px 2px #000a)}
 .pinI .psh{fill:rgba(0,0,0,.55);transition:opacity .2s}
 .pinI[aria-pressed=false] svg{transform:rotate(42deg) translate(1px,-2px);opacity:.6;filter:grayscale(.65) drop-shadow(0 1px 2px #000a)}
 .pinI[aria-pressed=false] .psh{opacity:0}
@@ -446,7 +446,7 @@ function fit() {
   cv.height = Math.round(w * H / W * d);
   sc = cv.width / W;
 }
-const titleX = () => innerWidth <= 820 ? 52 : 18;   // en móvil la chincheta ocupa la esquina superior izquierda
+const titleX = () => 18;
 function boldKW(t, all) {
   let h = String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   h = h.replace(/^Banda(?=:)/, '<b>Banda</b>');
@@ -3515,7 +3515,7 @@ SC['met-5'] = sd => {
           if (e.st === 1) {
             e.st = 2;
             rings.push({ x: e.x, y: e.y, t: 0, col: e.bounce ? '#fb7185' : YEL, txt: e.bounce ? '✗' : '' });
-            if (e.bounce) { shouts.push({ x: e.x, y: e.y, t: 0, col: '#fb7185', txt: pickSh(NOSH) }); e.bounce = false; }
+            if (e.bounce) { shouts.push({ x: e.x, y: e.y, t: 0, col: '#38bdf8', txt: pickSh(NOSH) }); e.bounce = false; }
             else if (e.shout) { shouts.push({ x: e.x, y: e.y, t: 0, col: '#38bdf8', txt: pickSh(OKSH) }); e.shout = false; }
             checkSemi();
           } else { e.st = 0; e.x = e.hx; e.y = e.hy; }
@@ -3682,10 +3682,11 @@ SC['met-5'] = sd => {
     // gritos de los electrones
     shouts.forEach(r => {
       const a = r.t < 1.1 ? 1 : 1 - (r.t - 1.1) / .4, off = RM ? 0 : r.t * 16;
-      cx.globalAlpha = Math.max(0, a); cx.font = `bold 16px ${FN}`; cx.textAlign = 'left'; cx.lineJoin = 'round';
+      cx.globalAlpha = Math.max(0, a); cx.font = `800 17px ${FN}`; cx.textAlign = 'left';
       const tx = Math.min(r.x + 12, 500 - cx.measureText(r.txt).width), ty = r.y - 10 - off;
-      cx.lineWidth = 4; cx.strokeStyle = '#06101f'; cx.strokeText(r.txt, tx, ty);
-      cx.fillStyle = r.col; cx.fillText(r.txt, tx, ty); cx.globalAlpha = 1;
+      cx.shadowColor = 'rgba(56,189,248,.55)'; cx.shadowBlur = 8;
+      cx.fillStyle = '#38bdf8'; cx.fillText(r.txt, tx, ty);
+      cx.shadowBlur = 0; cx.shadowColor = 'transparent'; cx.globalAlpha = 1;
     });
 
     // tarjeta derecha: circuito y datos
