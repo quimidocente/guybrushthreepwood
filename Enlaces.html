@@ -1460,6 +1460,36 @@ SC['ionic-3'] = sd => {
   };
 };
 
+/* ===== Inclinación del móvil (sensor): dirección del "suelo" en pantalla ===== */
+const ENL_TILT = { x: 0, y: 1, tx: 0, ty: 1, on: false, asked: false };
+function enlTiltFromOrientation(e) {
+  if (e.beta == null || e.gamma == null) return;
+  const b = e.beta * Math.PI / 180, g = e.gamma * Math.PI / 180;
+  const dx = Math.sin(g) * Math.cos(b), dy = Math.sin(b);
+  const ang = ((screen.orientation && screen.orientation.angle) || window.orientation || 0) * Math.PI / 180,
+        c = Math.cos(ang), s = Math.sin(ang);
+  let sx = dx * c + dy * s, sy = -dx * s + dy * c;
+  const m = Math.hypot(sx, sy), k = Math.max(0, 1 - m / 0.35);   // móvil casi plano: se mezcla con "abajo"
+  sx = sx * (1 - k); sy = sy * (1 - k) + k;
+  const n = Math.hypot(sx, sy) || 1;
+  ENL_TILT.tx = sx / n; ENL_TILT.ty = sy / n; ENL_TILT.on = true;
+}
+function enlEnableTilt() {
+  if (ENL_TILT.asked) return;
+  ENL_TILT.asked = true;
+  window.addEventListener('deviceorientation', enlTiltFromOrientation, true);
+}
+(function () {
+  if (typeof window.DeviceOrientationEvent === 'undefined') return;
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {   // iOS: permiso tras un toque
+    const ask = () => {
+      document.removeEventListener('pointerup', ask, true);
+      DeviceOrientationEvent.requestPermission().then(r => { if (r === 'granted') enlEnableTilt(); }).catch(() => {});
+    };
+    document.addEventListener('pointerup', ask, true);
+  } else enlEnableTilt();
+})();
+
 /* ===== Iónico 4: disolución de NaCl en agua ===== */
 SC['ionic-4'] = sd => {
   const FN = '"Trebuchet MS",system-ui,sans-serif', CAT = '#a78bfa', ANI = '#34d399';
@@ -1469,12 +1499,14 @@ SC['ionic-4'] = sd => {
   let predicted = true, tempC = 25, paused = false, showPoles = false;
   let elapsed = 0, runDone = false, explained = false, selectedIon = null, shellSaid = false;
   const runs = [], ions = [], waters = [], vw = document.createElement('div');
+  const cry = { ox: 0, oy: 0, vx: 0, vy: 0, drag: null, tx: 0, ty: 0 };   // desplazamiento y velocidad del cristal sin disolver (se mueve libremente por el agua)
 
   const normAng = a => Math.atan2(Math.sin(a), Math.cos(a));
   const lerpAng = (a, b, k) => a + normAng(b - a) * k;
 
   function initBeaker() {
     ions.length = 0; waters.length = 0;
+    cry.ox = 0; cry.oy = 0; cry.vx = 0; cry.vy = 0; cry.drag = null;
     elapsed = 0; runDone = false; selectedIon = null;
     const cx0 = (BX0 + BX1) / 2 - (COLS - 1) * SP / 2;
     const cy0 = BY1 - 14 - (ROWS - 1) * SP;
@@ -1585,7 +1617,7 @@ SC['ionic-4'] = sd => {
   }
 
   function buildControls() {
-    vw.innerHTML = '<p><b>Prueba:</b> observa cómo el agua hidrata y separa los iones. Luego reinicia el vaso y compara dos temperaturas distintas.</p>'
+    vw.innerHTML = '<p><b>Prueba:</b> observa cómo el agua hidrata y separa los iones. Puedes <b>arrastrar el cristal</b> por el agua con el dedo o el ratón (o inclinar el móvil). Luego reinicia el vaso y compara dos temperaturas distintas.</p>'
       + `<label>Temperatura del agua <b id="vt4">${tempC} °C</b><input type="range" id="T4" min="10" max="80" step="5" value="${tempC}" aria-label="Temperatura del agua"></label>`
       + '<div class="bt"><button id="pBtn">⏸ Pausar</button><button class="go" id="rBtn">↺ Reiniciar vaso</button><button id="iBtn">🔍 Inspeccionar ion</button></div>'
       + `<label class="lk"><input type="checkbox" id="vp" ${showPoles ? 'checked' : ''}> Ver polos (δ− en O, δ+ en H)</label>`
@@ -1610,6 +1642,32 @@ SC['ionic-4'] = sd => {
     if (!predicted || paused) return;
     elapsed += dt;
     const hotK = tempC > 60 ? (tempC - 60) / 20 : 0, tFactor = 0.7 + 0.5 * ((tempC - 10) / 70) + 1.1 * Math.pow(hotK, 1.6), kinRate = 0.145 * Math.pow(1.033, tempC - 20) * (1 + 1.5 * hotK), maxV = 58 * tFactor;   // movilidad progresiva, que se dispara por encima de 60 °C
+    // El cristal sin disolver es un bloque rígido que se mueve libremente por el seno del agua:
+    // se hunde por gravedad (o hacia donde incline el móvil), se puede arrastrar y rebota suavemente contra las paredes
+    if (ENL_TILT.on) { const kT = 1 - Math.exp(-6 * dt); ENL_TILT.x += (ENL_TILT.tx - ENL_TILT.x) * kT; ENL_TILT.y += (ENL_TILT.ty - ENL_TILT.y) * kT; }
+    const solid = ions.filter(o => !o.free);
+    if (solid.length) {
+      let mnX = 1e9, mxX = -1e9, mnY = 1e9, mxY = -1e9;
+      for (const o of solid) { mnX = Math.min(mnX, o.hx); mxX = Math.max(mxX, o.hx); mnY = Math.min(mnY, o.hy); mxY = Math.max(mxY, o.hy); }
+      const X0 = BX0 + 14 - mnX, X1 = Math.max(X0, BX1 - 14 - mxX), YB = BY1 - 14 - mxY, YT = Math.min(YB, WY0 + 30 - mnY);   // el borde del cristal toca la pared; arriba queda bajo la superficie
+      const cl = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+      if (cry.drag) {
+        // Arrastre: el cristal sigue al puntero (suavizado) y conserva algo de inercia al soltarlo
+        const gx = cl(cry.tx, X0, X1), gy = cl(cry.ty, YT, YB), kD = 1 - Math.exp(-20 * dt);
+        const nx = cry.ox + (gx - cry.ox) * kD, ny = cry.oy + (gy - cry.oy) * kD;
+        cry.vx += ((nx - cry.ox) / dt - cry.vx) * 0.4; cry.vy += ((ny - cry.oy) / dt - cry.vy) * 0.4;
+        cry.ox = nx; cry.oy = ny;
+      } else {
+        const gxv = ENL_TILT.on ? ENL_TILT.x : 0, gyv = ENL_TILT.on ? ENL_TILT.y : 1, damp = Math.pow(0.06, dt);   // agua: rozamiento fuerte, velocidad límite moderada
+        cry.vx = (cry.vx + 260 * gxv * dt) * damp; cry.vy = (cry.vy + 260 * gyv * dt) * damp;
+        const vm = Math.hypot(cry.vx, cry.vy); if (vm > 170) { cry.vx *= 170 / vm; cry.vy *= 170 / vm; }
+        cry.ox += cry.vx * dt; cry.oy += cry.vy * dt;
+      }
+      if (cry.ox < X0) { cry.ox = X0; cry.vx = Math.max(0, cry.vx) * (cry.drag ? 1 : 0.2); }
+      if (cry.ox > X1) { cry.ox = X1; cry.vx = Math.min(0, cry.vx) * (cry.drag ? 1 : 0.2); }
+      if (cry.oy < YT) { cry.oy = YT; cry.vy = Math.max(0, cry.vy) * (cry.drag ? 1 : 0.2); }
+      if (cry.oy > YB) { cry.oy = YB; cry.vy = Math.min(0, cry.vy) * (cry.drag ? 1 : 0.2); }
+    }
     for (const ion of ions) {
       if (ion.free) continue;
       const nb = activeNeighbors(ion);
@@ -1617,8 +1675,8 @@ SC['ionic-4'] = sd => {
       for (const w of waters) if (!w.shellOf && Math.hypot(w.x - ion.x, w.y - ion.y) < 40) nearW++;   // solo cuentan aguas libres cercanas: el ion se separa cuando ya tiene agua a mano
       if (nearW >= 2) ion.hp -= kinRate * Math.max(0.35, (4.4 - nb) * 0.45) * Math.min(3, nearW) * 0.55 * dt;
       const vib = RM ? 0 : 0.7 * tFactor;
-      ion.x = ion.hx + vib * Math.sin(elapsed * 14 + ion.ph);
-      ion.y = ion.hy + vib * Math.cos(elapsed * 12 + ion.ph * 1.3);
+      ion.x = ion.hx + cry.ox + vib * Math.sin(elapsed * 14 + ion.ph);
+      ion.y = ion.hy + cry.oy + vib * Math.cos(elapsed * 12 + ion.ph * 1.3);
       if (ion.hp <= 0) {
         ion.free = true; ion.vy = -14 - rnd() * 12; ion.vx = (ion.c - 1.5) * 9 + (rnd() - 0.5) * 10;
         if (!shellSaid) { shellSaid = true; say('El agua rodea a los iones: forma sus capas de hidratación.', 1); flash(1); }
@@ -1833,7 +1891,7 @@ SC['ionic-4'] = sd => {
     cx.textAlign = 'left'; cx.fillStyle = '#e8eeff'; cx.font = `bold 14px ${FN}`;
     cx.fillText(`Disolución de NaCl · T = ${tempC} °C · Separados: ${freeCount}/${ions.length} (${pct} %)`, titleX(), 26);
     cx.fillStyle = '#9fb0d8'; cx.font = `12px ${FN}`;
-    cx.fillText(predicted ? (paused ? 'Simulación en pausa' : 'Haz clic sobre un ion Na⁺ o Cl⁻ para inspeccionarlo') : 'Responde la predicción para iniciar la disolución', 18, 46);
+    cx.fillText(predicted ? (paused ? 'Simulación en pausa' : 'Arrastra el cristal por el agua · clic en un ion Na⁺ o Cl⁻ para inspeccionarlo') : 'Responde la predicción para iniciar la disolución', 18, 46);
     cx.fillStyle = '#9fb0d8'; cx.font = `11px ${FN}`;
     cx.fillText('Modelo 2D (92 H₂O y 16 iones): la temperatura acelera la cinética, pero rapidez y solubilidad de equilibrio no son lo mismo.', 18, 404, 666);
   }
@@ -1850,10 +1908,28 @@ SC['ionic-4'] = sd => {
       });
       $('#mis').append(vw);
       buildControls();
+      const hitIon = p => ions.find(ion => Math.hypot(ion.x - p.x, ion.y - p.y) <= (ion.s > 0 ? 11.5 : 14.5) + 8);
       on(cv, 'pointerdown', e => {
-        const p = lc(e), hit = ions.find(ion => Math.hypot(ion.x - p.x, ion.y - p.y) <= 20);
-        if (hit) inspectIon(hit);
+        const p = lc(e), hit = hitIon(p);
+        if (!hit) return;
+        inspectIon(hit);
+        if (!hit.free && predicted && !paused) {   // un ion del cristal: se agarra todo el bloque
+          cry.drag = { id: e.pointerId }; cry.tx = cry.ox; cry.ty = cry.oy; cry.gx = cry.ox - p.x; cry.gy = cry.oy - p.y;
+          cry.tx = p.x + cry.gx; cry.ty = p.y + cry.gy;
+          cv.setPointerCapture(e.pointerId); cv.style.cursor = 'grabbing'; e.preventDefault();
+        }
       });
+      on(cv, 'pointermove', e => {
+        const p = lc(e);
+        if (cry.drag) { cry.tx = p.x + cry.gx; cry.ty = p.y + cry.gy; return; }
+        const h = hitIon(p); cv.style.cursor = h ? (h.free ? 'pointer' : 'grab') : 'default';
+      });
+      const release = () => {
+        if (!cry.drag) return;
+        cry.drag = null; cv.style.cursor = 'grab';
+        const vm = Math.hypot(cry.vx, cry.vy); if (vm > 160) { cry.vx *= 160 / vm; cry.vy *= 160 / vm; }
+      };
+      on(cv, 'pointerup', release); on(cv, 'pointercancel', release);
     },
     update, draw, teardown() {}
   };
