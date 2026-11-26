@@ -113,30 +113,35 @@ o:[['📜','Lista de errores','Los errores más frecuentes de cinética química
 q:[{t:'¿Cuál es correcta sobre los órdenes de reacción?',o:['Se determinan experimentalmente y solo coinciden con los coeficientes en reacciones elementales','Son siempre los coeficientes de la ecuación ajustada','El orden total es la suma de coeficientes de los productos','Un reactivo nunca puede tener orden cero'],e:'Solo en una reacción elemental coinciden con los coeficientes.'},
 {t:'¿Cuál es correcta sobre velocidad y espontaneidad?',o:['Una reacción espontánea puede ser muy lenta, como el diamante que pasa a grafito','Si es espontánea, es rápida','Un catalizador hace espontánea una reacción que no lo es','Una reacción lenta nunca es espontánea'],e:'La espontaneidad no dice nada sobre la rapidez; el catalizador solo cambia la velocidad.'}]}];
 const S=['qpppccccccccpppq','..pccwkccwkccp..','qppcckkcckkccppq','..pcbccccccbcp..','qppcccmccmcccppq','....cccmmccc....','....ccllllcc....','...cccllllccc...','...cc.llll.cc...','...ddd....ddd...'],PAL={c:'#7dd3fc',d:'#38a8e0',l:'#d4f1ff',p:'#ff5fae',q:'#ffc2e0',k:'#0b1020',w:'#ffffff',b:'#ff9ccc',m:'#5a1236'};
-let cur=0,O=[],ax=3,ay=3.5,fl=0,wk=0,sel=null,hov=null,asked=0,pc=0,er=0,hn=0,won=false,t0=Date.now(),last=0,ex=0,boom=0,fr=[],bm=0,started=0,tr=null,DR=null,ENT=null,aa=1,dis=0,FN=null,fw=0,MOL={x:3.6,y:.9,pose:0,ph:0,h:[]};
+let cur=0,O=[],ax=3,ay=3.5,fl=0,wk=0,sel=null,hov=null,asked=0,pc=0,er=0,hn=0,won=false,t0=Date.now(),last=0,ex=0,boom=0,fr=[],bm=0,started=0,tr=null,DR=null,ENT=null,aa=1,dis=0,FN=null,fw=0,MOL={x:4,y:.05,pose:0,ph:0,h:[],on:0};
 const open=()=>!O.some(o=>o.q&&!o.s),dist=o=>Math.hypot(Math.max(o.x-ax,0,ax-o.x-o.w),Math.max(o.y-ay,0,ay-o.y-o.h));
 const free=(x,y)=>x>.35&&y>.35&&x<N-.35&&y<N-.35&&O.every(o=>!(x>o.x-.3&&x<o.x+o.w+.3&&y>o.y-.3&&y<o.y+o.h+.3));
-const near=()=>tr?0:O.filter(o=>!o.dec&&(!o.door||o.p>=1)&&dist(o)<1.4).sort((a,b)=>dist(a)-dist(b))[0];
+const near=()=>tr?0:O.filter(o=>!o.dec&&(!o.door||o.p>=1&&cur<7)&&dist(o)<1.4).sort((a,b)=>dist(a)-dist(b))[0];
 function hud(){$('rn').textContent='Sala '+(cur+1)+'/8 · '+R[cur].n;$('keys').innerHTML=[0,1,2,3].map(i=>'<span class="'+(i<pc?'on':'')+'">🗝</span>').join('');$('er').textContent=er}
 function load(i){cur=i;const r=R[i];const[lo,ld,lk,lw,ls]=LAY[i];O=r.o.map((d,k)=>({x:lo[k][0],y:lo[k][1],w:lo[k][2],h:lo[k][3],i:d[0],n:d[1],d:d[2],col:d[3],z:d[4],q:r.q[k],s:0,info:k==2}));
- lk.forEach(k=>{const t=DEC[k[0]];O.push({x:k[1],y:k[2],w:k[3],h:k[4],i:'',n:t[0],d:t[1],col:t[2],z:t[3],f:t[4],dec:1})});{const wl=ld[0]?1:0,u=(wl?ld[0]:ld[1])+.2;O.push({x:wl?u:0,y:wl?0:u,w:wl?1.6:0,h:wl?0:1.6,i:'🚪',n:'Puerta',d:'La salida de esta sala. Aparece en la pared cuando se resuelven todos los enigmas.',z:0,door:1,wl,u,p:0,ao:0});DR=O[O.length-1]}fw=0;if(i==7){MOL={x:3.6,y:.9,pose:0,ph:0,h:[]};O.push({x:3.2,y:.5,w:.8,h:.8,dec:1,inv:1,z:0,col:'#fff',i:'',n:'',d:''})}ax=ls[0];ay=ls[1];closeP();$('msg').textContent=r.m;hud()}
+ lk.forEach(k=>{const t=DEC[k[0]];O.push({x:k[1],y:k[2],w:k[3],h:k[4],i:'',n:t[0],d:t[1],col:t[2],z:t[3],f:t[4],dec:1})});{const wl=ld[0]?1:0,u=(wl?ld[0]:ld[1])+.2;O.push({x:wl?u:0,y:wl?0:u,w:wl?1.6:0,h:wl?0:1.6,i:'🚪',n:'Puerta',d:'La salida de esta sala. Aparece en la pared cuando se resuelven todos los enigmas.',z:0,door:1,wl,u,p:0,ao:0});DR=O[O.length-1]}fw=0;if(i==7){MOL={x:4,y:.05,pose:0,ph:0,h:[],on:0};O.push({x:3.2,y:.5,w:.8,h:.8,dec:1,inv:1,z:0,col:'#fff',i:'',n:'',d:''})}ax=ls[0];ay=ls[1];closeP();$('msg').textContent=r.m;hud()}
 function closeP(){sel=null;asked=0;$('pt').textContent='Laboratorio';$('pd').textContent='Mueve a Andy con las flechas o WASD. Pulsa sobre un objeto para ver de qué se trata y acércate para resolver su reto. Espacio actúa sobre el objeto más cercano.';$('pq').innerHTML='';$('pf').textContent='';$('pa').hidden=true}
 const say=(t,ok)=>{$('pf').textContent=t;$('pf').className=ok?'ok':'bad'};
 function ask(o){asked=1;$('pq').innerHTML=(o.q.v||'')+'<p class="qt">'+o.q.t+'</p><p class="qw">⚠ Doctor Mol: '+(o.nf?'¡ÚLTIMA OPORTUNIDAD! Otro fallo y Andy muere.':'dos fallos en este enigma y Andy muere.')+'</p>'+o.q.o.map((t,i)=>[t,i==0]).sort(()=>Math.random()-.5).map(x=>'<button class="op" data-c="'+(+x[1])+'">'+x[0]+'</button>').join('')}
-function openP(o){if(ex>0||boom||tr||FN||!started)return;sel=o;asked=0;$('pt').textContent=o.i+' '+o.n;$('pd').textContent=o.d;$('pq').innerHTML='';$('pf').textContent='';$('pa').hidden=true;
+function openP(o){if(ex>0||boom||tr||FN||!started||me())return;sel=o;asked=0;$('pt').textContent=o.i+' '+o.n;$('pd').textContent=o.d;$('pq').innerHTML='';$('pf').textContent='';$('pa').hidden=true;
  if(o.info&&!o.seen){o.seen=1;hn++}
  if(o.q){if(o.s)say('Reto resuelto. '+o.q.e,1);else if(dist(o)<1.4)ask(o);else say('Estás lejos: acércate con las flechas y el reto se abrirá solo.',0)}
  if(o.door){const n=O.filter(x=>x.q&&!x.s).length;if(n)say('Puerta cerrada: te faltan '+n+' reto'+(n>1?'s':'')+' en esta sala.',0);else if(dist(o)<1.4){asked=1;say('¡La puerta está abierta!',1);$('pa').hidden=false;$('pa').textContent=cur==7?'Salir del laboratorio':'Pasar a la siguiente sala'}else say('La puerta está abierta: acércate para cruzarla.',1)}}
 $('pq').onclick=e=>{if(e.target.id==='retry'){boom=0;return load(cur)}if(e.target.id==='again')return reset();if(ex>0||boom)return;const b=e.target.closest('.op');if(!b||b.disabled||!sel||sel.s)return;const o=sel;
  if(b.dataset.c==='1'){o.s=1;b.classList.add('good');$('pq').querySelectorAll('.op').forEach(x=>x.disabled=true);let t='¡Correcto! '+o.q.e;
-  if(open()){if(PIECE.includes(cur)){pc++;t+=' Sala completada: tienes un trozo de llave nuevo. ¡Una puerta empieza a aparecer en la pared!'}else t+=' Sala completada: ¡una puerta empieza a aparecer en la pared!';$('msg').textContent='Andy: ¡Se oye un crujido! Algo aparece en la pared…'}if(cur==7){t=t.replace(/¡[Uu]na puerta empieza a aparecer en la pared!/,'Se oye una risa detrás de ti…');$('msg').textContent='Andy: ¿Qué es esa risa…?'}say(t,1);hud()}
+  if(open()){if(PIECE.includes(cur)){pc++;t+=' Sala completada: tienes un trozo de llave nuevo. ¡Una puerta empieza a aparecer en la pared!'}else t+=' Sala completada: ¡una puerta empieza a aparecer en la pared!';$('msg').textContent='Andy: ¡Se oye un crujido! Algo aparece en la pared…'}if(cur==7){t=t.replace(/¡[Uu]na puerta empieza a aparecer en la pared!/,'Una puerta empieza a aparecer en la pared…');$('msg').textContent='Andy: ¿Se oye algo al otro lado de la pared…?'}say(t,1);hud()}
  else{er++;b.disabled=true;b.classList.add('no');o.nf=(o.nf||0)+1;if(o.nf>=2){explode();return}say('Esa no es. ¡Cuidado!: un fallo más en este enigma y Andy morirá (lo diseñó el Doctor Mol).',0);$('msg').textContent='Andy: ¡Glups! Una más y no lo cuento…';hud()}};
 $('pa').onclick=go;$('px').onclick=()=>{if(!boom)closeP()};
 function win(){won=true;sel=null;const st=er<=3&&hn<=3?3:er<=8&&hn<=6?2:1;$('pt').textContent='¡Andy ha escapado!';$('pa').hidden=true;$('pf').textContent='';
  $('pd').textContent='Has tardado '+fmt(Math.floor((Date.now()-t0)/1000))+', con '+er+' fallos, '+hn+' pistas leídas y '+bm+' muertes. '+'★★★'.slice(0,st)+'☆☆☆'.slice(st);$('pq').innerHTML='<button class="op" id="again">Jugar otra vez</button>';$('msg').textContent='Andy: ¡Libre! Gracias por ayudarme a salir.'}
 function reset(){FN=null;$('dlg').hidden=$('skip').hidden=true;$('stg').classList.remove('fn');tr=null;ENT=null;pc=0;er=0;hn=0;bm=0;ex=0;boom=0;won=false;t0=Date.now();load(0)}
 const D={ArrowUp:[-1,-1],ArrowDown:[1,1],ArrowLeft:[-1,1],ArrowRight:[1,-1],w:[-1,-1],s:[1,1],a:[-1,1],d:[1,-1]},K={},kk=e=>D[e.key]?e.key:e.key.toLowerCase();
-addEventListener('keydown',e=>{if(!started)return;if(FN){if(e.key===' '||e.key==='Enter'){e.preventDefault();fAdv()}return}const k=kk(e);if(!e.repeat)cz(k);if(D[k]){K[k]=1;e.preventDefault()}else if(e.key===' '||k==='e'){e.preventDefault();const n=near();if(n)openP(n)}else if(e.key==='Escape'&&!boom&&ex<=0)closeP()});
+let vs='';
+function goRoom(n){FN=null;$('dlg').hidden=$('skip').hidden=true;$('stg').classList.remove('fn');tr=null;ENT=null;ex=0;boom=0;won=false;aa=1;dis=0;wk=0;for(const k in K)delete K[k];pc=PIECE.filter(q=>q<n).length;load(n)}
+addEventListener('keydown',e=>{
+ if(e.key&&e.key.length==1&&!e.ctrlKey&&!e.metaKey&&!e.altKey){vs=(vs+e.key.toLowerCase()).slice(-10);const m=/voyasala([1-8])$/.exec(vs);if(m){vs='';e.preventDefault();if(!started){started=1;$('intro').hidden=true;t0=Date.now()}goRoom(+m[1]-1);return}}
+ if(!started)return;
+ if(FN){if(e.key===' '||e.key==='Enter'){e.preventDefault();fAdv()}return}const k=kk(e);if(!e.repeat)cz(k);if(D[k]){K[k]=1;e.preventDefault()}else if(e.key===' '||k==='e'){e.preventDefault();const n=near();if(n)openP(n)}else if(e.key==='Escape'&&!boom&&ex<=0)closeP()});
 addEventListener('keyup',e=>{delete K[kk(e)]});
 document.querySelectorAll('.pad button').forEach(b=>{b.onpointerdown=()=>{K[b.dataset.k]=1;cz(b.dataset.k)};['onpointerup','onpointerleave','onpointercancel'].forEach(h=>b[h]=()=>delete K[b.dataset.k])});
 function hit(e){const r=$('cv').getBoundingClientRect(),x=(e.clientX-r.left)*320/r.width,y=(e.clientY-r.top)*200/r.height;let b=null;
@@ -155,16 +160,16 @@ function shelf(s){const[wl,u,z]=s,q=(a,b,zz)=>wl?P(a,b,zz):P(b,a,zz);poly([q(u,0
 function explode(){ex=2.4;boom=0;bm++;const a=P(ax,ay,10);fr=Array.from({length:44},()=>({x:a[0],y:a[1],vx:(Math.random()-.5)*260,vy:-Math.random()*160-20,c:['#fcd34d','#ff8a3d','#ef4444','#e5f2ff','#ff5fae'][Math.random()*5|0]}));closeP();$('msg').textContent='Andy: ¡Ay, ay, ay! ¡El laboratorio ha explotado!'}
 function showBoom(){boom=1;$('pt').textContent='☠ Andy ha muerto';$('pd').textContent='Has fallado dos veces el mismo enigma y el laboratorio ha explotado: así lo diseñó el Doctor Mol. Andy ha muerto… pero se reconstruye la sala para que vuelva a intentarlo.';$('pq').innerHTML='<button class="op" id="retry">Reconstruir la sala y reintentar</button>'}
 function boomFx(dt){c.setTransform(1,0,0,1,0,0);if(ex>0){const p=1-ex/2.4,a=P(ax,ay,10);c.fillStyle='rgba(255,'+(250-p*150|0)+','+(200-p*180|0)+','+Math.max(0,.95-p*.9)+')';c.beginPath();c.arc(a[0],a[1],p*230,0,7);c.fill();for(const q of fr){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy+=200*dt;c.fillStyle=q.c;c.fillRect(q.x,q.y,3,3)}}else if(boom){c.fillStyle='rgba(10,10,20,.7)';c.fillRect(0,0,320,200);c.fillStyle='#fcd34d';c.font='24px "Press Start 2P"';c.textAlign='center';c.fillText('BOOM',160,105)}}
-function frame(ts){const dt=Math.min(.05,(ts-last)/1000);last=ts;let vx=0,vy=0;for(const k in K){vx+=D[k][0];vy+=D[k][1]}const m=Math.hypot(vx,vy);wk=m&&started&&!tr&&!FN&&!won&&ex<=0&&!boom;if(ex>0){ex-=dt;if(ex<=0)showBoom()}const sk=ex>0?(Math.random()-.5)*7*ex/2.4:0;c.setTransform(1,0,0,1,sk,sk);
- trStep(dt);if(cur==7&&started&&!FN&&!won&&open()&&!boom&&ex<=0&&(fw+=dt)>1.6)fStart();if(started&&DR&&cur<7&&DR.p<1&&open()&&!tr&&!boom&&ex<=0){DR.p=rm?1:Math.min(1,DR.p+dt/2.4);if(DR.p>=1)$('msg').textContent='Andy: ¡Una puerta! Acércate para cruzarla.'}
+function frame(ts){const dt=Math.min(.05,(ts-last)/1000);last=ts;let vx=0,vy=0;for(const k in K){vx+=D[k][0];vy+=D[k][1]}const m=Math.hypot(vx,vy);wk=m&&started&&!tr&&!FN&&!won&&ex<=0&&!boom&&!me();if(ex>0){ex-=dt;if(ex<=0)showBoom()}const sk=ex>0?(Math.random()-.5)*7*ex/2.4:0;c.setTransform(1,0,0,1,sk,sk);
+ trStep(dt);if(me()){fw+=dt;mEnter(rm?fw*4:fw)}if(started&&DR&&cur<7&&DR.p<1&&open()&&!tr&&!boom&&ex<=0){DR.p=rm?1:Math.min(1,DR.p+dt/2.4);if(DR.p>=1)$('msg').textContent='Andy: ¡Una puerta! Acércate para cruzarla.'}
  if(wk&&!tr){vx/=m;vy/=m;const nx=ax+vx*3*dt,ny=ay+vy*3*dt;if(free(nx,ay))ax=nx;if(free(ax,ny))ay=ny;if(vx-vy)fl=vx-vy<0?1:0}
  if(sel&&!asked&&dist(sel)<1.4&&(sel.q&&!sel.s||sel.door&&open()))openP(sel);
  const r=R[cur],[f1,f2,wc]=r.p,nr=near();c.fillStyle='#0b1020';c.fillRect(0,0,320,200);
  poly([P(0,0,WH),P(0,N,WH),P(0,N),P(0,0)],sh(wc,.8));poly([P(0,0,WH),P(N,0,WH),P(N,0),P(0,0)],sh(wc,1));
  c.strokeStyle='rgba(0,0,0,.22)';c.lineWidth=1;for(let z=11;z<WH;z+=11){c.beginPath();c.moveTo(...P(0,N,z));c.lineTo(...P(0,0,z));c.lineTo(...P(N,0,z));c.stroke()}
  for(let i=0;i<N;i++)for(let j=0;j<N;j++)poly([P(i,j),P(i+1,j),P(i+1,j+1),P(i,j+1)],(i+j)&1?f1:f2);
- LAY[cur][3].forEach(shelf);SH[cur].forEach(sheet);if(DR&&DR.p>0)door(DR.wl,DR.u,DR.ao,DR.p,(DR===sel||DR===hov||DR===nr)&&DR.p>=1);if(ENT)door(ENT.wl,ENT.u,ENT.ao,1,0,ENT.al);const L2=O.map(o=>({d:o.x+o.y+o.w+o.h-1,o})).concat([{d:ax+ay+.3}],cur==7?[{d:MOL.x+MOL.y+.3,mol:1}]:[]).sort((a,b)=>a.d-b.d);
- for(const it of L2){const o=it.o;if(!o){if(it.mol)molS(ts/1000);else{c.globalAlpha=aa;andy(ts/1000);c.globalAlpha=1}continue}if(o.door||o.inv)continue;
+ LAY[cur][3].forEach(shelf);SH[cur].forEach(sheet);if(DR&&DR.p>0)door(DR.wl,DR.u,DR.ao,DR.p,(DR===sel||DR===hov||DR===nr)&&DR.p>=1);if(ENT)door(ENT.wl,ENT.u,ENT.ao,1,0,ENT.al);const L2=O.map(o=>({d:o.x+o.y+o.w+o.h-1,o})).concat([{d:ax+ay+.3}],cur==7&&MOL.on?[{d:MOL.x+MOL.y+.3,mol:1}]:[]).sort((a,b)=>a.d-b.d);
+ for(const it of L2){const o=it.o;if(!o){if(it.mol){molS(ts/1000);if(MOL.say){const f=P(MOL.x,MOL.y);bub(f[0],f[1]-52,MOL.say)}}else{c.globalAlpha=aa;andy(ts/1000);c.globalAlpha=1}continue}if(o.door||o.inv)continue;
   box(o,o.door&&open()?'#2e9d57':o.col);if(o.f)flasks(o);if(o===sel||o===hov)ring(o,'#fcd34d');else if(o===nr)ring(o,'#ffffff');
   if(o.dec)continue;const tp=o.door?(o.x?P(o.x+o.w/2,o.y+o.h,o.z*.5):P(o.x+o.w,o.y+o.h/2,o.z*.5)):P(o.x+o.w/2,o.y+o.h/2,o.z);c.font='13px serif';c.textAlign='center';c.fillText(o.door&&open()?'🔓':o.s?'✅':o.i,tp[0],tp[1]+4)}
  if(FN)fDraw(ts/1000,dt);if(dis>0)dissolve(dis);boomFx(dt);requestAnimationFrame(frame)}
@@ -187,6 +192,13 @@ const dpts=()=>{const{wl,u}=DR,q=(s,z)=>wl?P(u+s,0,z):P(0,u+s,z);return[q(0,0),q
 function dissolve(a){c.fillStyle='#0b1020';for(let i=0;i<40;i++)for(let j=0;j<25;j++)if(((i*73856093^j*19349663)>>>0)%1000/1000<a)c.fillRect(i*8,j*8,8,8)}
 const mv=(x,y)=>{const dx=x-ax,dy=y-ay;if(Math.abs(dx-dy)>1e-4)fl=dx-dy<0?1:0;ax=x;ay=y};
 function pickEntry(){const wl=1-DR.wl;let best=null;for(const u of[.3,1.6,2.9,4.2,5.5,6.2]){const sx=wl?u+.8:.5,sy=wl?.5:u+.8,ex=wl?u+.8:1.6,ey=wl?1.6:u+.8,bad=LAY[cur][3].some(s=>s[0]==wl&&s[1]<u+1.6&&s[1]+3>u)||SH[cur].some(s=>s[0]==wl&&s[1]<u+1.6&&s[1]+s[4]>u),r={wl,u,sx,sy,ex,ey};if(!best)best=r;if(!bad&&free(sx,sy)&&free(ex,ey)&&free((sx+ex)/2,(sy+ey)/2))return r}return best}
+const me=()=>cur==7&&started&&!FN&&!won&&open()&&!boom&&ex<=0;
+function mEnter(T){const E=x=>x*x*(3-2*x);
+ DR.p=rm?1:cl(T/2.4);if(T>=2.4&&!DR.m1){DR.m1=1;$('msg').textContent='Andy: ¡Una puerta! Y se oye una risa al otro lado…'}
+ DR.ao=rm?1:cl((T-2.4)/.5);
+ if(T>=3){if(!MOL.on){MOL.on=1;$('msg').textContent='Andy: ¡Ese hombre de la bata! ¿Qué hace aquí?'}const k=rm?1:E(cl((T-3)/1.4));MOL.x=4+(3.6-4)*k;MOL.y=.05+.85*k}
+ if(T>=4.4&&T<7)MOL.say='¡Hola, holita!';
+ if(T>=7)fStart()}
 function go(){if(tr||!DR||DR.p<1)return;const last=cur==7,u=DR.u+.8,d=last?.95:.15;closeP();$('msg').textContent=last?'Andy: ¡La luz de fuera! ¡Salgo!':'Andy: ¡Adelante! Sin mirar atrás…';tr={t:0,ph:1,last,sx:ax,sy:ay,ex:DR.wl?u:d,ey:DR.wl?d:u}}
 function trStep(dt){aa=1;dis=0;
  if(ENT){ENT.t+=dt;ENT.ao=ENT.t<1.3?1:Math.max(0,1-(ENT.t-1.3)/.5);ENT.al=1-cl((ENT.t-1.8)/.5);if(ENT.t>2.4)ENT=null}
@@ -215,12 +227,12 @@ const IT='Andy es un ajolote curioso que se ha colado en el laboratorio del Doct
  if(rm)fin();else setTimeout(()=>{tm=setInterval(()=>{st.textContent=IT.slice(0,++i);if(i>=IT.length)fin()},28)},900);
  $('sc').onclick=()=>{if(i<IT.length)fin()};
  b.onclick=()=>{started=1;$('intro').hidden=true;reset()};$('si').onclick=()=>b.click()})();
-R[7].m='Andy: ¡Ese hombre de la bata se ríe de mí! Veamos qué esconde la cerradura…';
+R[7].m='Andy: La última sala. Una lista, una cerradura y un aviso… ¡Veamos qué esconde!';
 let cs='';const CM={ArrowUp:'U',w:'U',ArrowDown:'D',s:'D',ArrowLeft:'L',a:'L',ArrowRight:'R',d:'R'};
 function cz(k){const m=CM[k];if(!m)return;cs=(cs+m).slice(-12);if(cs=='UUUDDDLLLRRR'&&started&&!FN&&!tr&&!won&&ex<=0&&!boom){cs='';load(7);fStart()}}
 // ===== FINAL =====
 const FS=[{k:'cu',w:'mol',L:['Hola Andy, he estado divirtiéndome contigo, pero como habrás supuesto no puedo dejarte escapar vivo.','Para vencerte voy a meterme entre pecho y espalda ese matraz humeante con mi supermezcla de catalizadores,','así aceleraré todas las reacciones de mi cuerpo y me convertiré en el ser humano más rápido de Cogollos City!!','¡Jajajajaaaa!!']},{k:'cu',w:'andy',L:['¡Vale!']},{k:'sc'},{k:'cu',w:'andy',L:['Si es que no se pue ser más tooooooontooooo. Ya te lo decían todos de chiquitillo, eh?','A ver... que te has mirado el tema de Cinética, vale, muy bien.','Pero después del de Cinética viene el de Equilibrio Químico.','Y una cosa básica es que, si aceleras mucho una reacción, se llega antes al mismo equilibrio,','DONDE NO SE APRECIAN CAMBIOS A SIMPLE VISTA Y TODO PARECE PARALIZADO aunque las reacciones continúen.','Por cierto, te cojo el coche para volverme a casita.']},{k:'fe'}];
-function fStart(){FN={i:-1,t:0,n:0,j:0};closeP();$('skip').hidden=false;$('stg').classList.add('fn');$('msg').textContent='';fNext()}
+function fStart(){MOL.say='';FN={i:-1,t:0,n:0,j:0};closeP();$('skip').hidden=false;$('stg').classList.add('fn');$('msg').textContent='';fNext()}
 function fNext(){const F=FN;F.i++;F.j=0;F.t=0;F.n=0;const s=FS[F.i];if(!s){fEnd();return}$('dlg').hidden=s.k!='cu';if(s.k=='cu')$('dn').textContent=s.w=='mol'?'Doctor Mol':'Andy';if(s.k=='sc'){MOL.pose=1;MOL.ph=0;MOL.h=[]}}
 function fAdv(){const F=FN;if(!F||F.end)return;const s=FS[F.i];if(!s||s.k!='cu')return;const L=s.L[F.j];if(F.n<L.length){F.n=L.length;return}if(F.j<s.L.length-1){F.j++;F.n=0}else fNext()}
 function fEnd(){FN.end=1;$('dlg').hidden=true;$('skip').hidden=true;$('stg').classList.remove('fn');win()}
