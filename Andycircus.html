@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Andy’s Circus · TCM</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito+Sans:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#dfe8f5;--pn:#fff;--ink:#14213d;--mut:#4d6280;--ln:#b9c8de;--acc:#0b78b0;--pk:#d6338a;--ok:#14803c;--bad:#c2412d;--on:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0a1020;--pn:#131f3a;--ink:#e8f1ff;--mut:#9fb2d0;--ln:#2a3d66;--acc:#7dd3fc;--pk:#ff5fae;--ok:#4ade80;--bad:#ff8a7a;--on:#06101f}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0a1020;--pn:#131f3a;--ink:#e8f1ff;--mut:#9fb2d0;--ln:#2a3d66;--acc:#7dd3fc;--pk:#ff5fae;--ok:#4ade80;--bad:#ff8a7a;--on:#06101f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Nunito Sans",system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:10px 20px;justify-content:space-between;align-items:center;margin-bottom:12px}
+h1{font:clamp(.95rem,3vw,1.35rem)/1.3 "Press Start 2P",monospace;margin:0;color:var(--acc)}
+.hud{display:flex;flex-wrap:wrap;gap:6px 16px;font:.62rem/1.4 "Press Start 2P",monospace;color:var(--mut)}.hud b{color:var(--ink)}
+#keys span{opacity:.25;filter:grayscale(1)}#keys span.on{opacity:1;filter:none}
+.game{display:grid;gap:14px}@media(min-width:900px){.game{grid-template-columns:1fr 340px;align-items:start}}
+canvas{width:100%;aspect-ratio:8/5;display:block;image-rendering:pixelated;border:4px solid var(--ln);border-radius:6px;background:#0b1020;touch-action:pan-y;cursor:default}
+#msg{margin:8px 0 0;color:var(--mut);min-height:1.5em}
+.pad{display:grid;grid-template-columns:repeat(3,56px);gap:6px;justify-content:center;margin-top:10px}
+.pad button{height:48px;border:2px solid var(--ln);border-radius:8px;background:var(--pn);color:var(--ink);font-size:1.3rem;touch-action:none}
+#dlg{position:absolute;left:8px;right:8px;bottom:8px;min-height:64px;padding:12px 14px 10px;background:#f4eed6;color:#14213d;border:4px solid #14213d;box-shadow:4px 4px 0 rgba(0,0,0,.5);cursor:pointer}
+#dlg p{margin:0;font:1.25rem/1.05 VT323,monospace}
+#dn{position:absolute;top:-17px;left:8px;padding:3px 6px;background:#14213d;color:#fcd34d;font:.5rem "Press Start 2P",monospace}
+#dlg i{position:absolute;right:6px;bottom:2px;font-style:normal;animation:bl .8s steps(2) infinite}@keyframes bl{50%{opacity:0}}
+#skip{position:absolute;top:14px;left:14px;z-index:2;padding:6px 8px;border:2px solid #fff;background:rgba(0,0,0,.55);color:#fff;font:.5rem "Press Start 2P",monospace;cursor:pointer}
+.stg.fn .pad{display:none}
+.stg{position:relative}.stg,.stg *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+@media (hover:none),(max-width:700px){.pad{position:absolute;right:10px;bottom:12px;margin:0;grid-template-columns:repeat(3,35px);gap:4px}.pad button{height:32px;font-size:1.1rem;border-width:1.5px;border-radius:7px;padding:0;background:rgba(20,33,61,.55);color:#fff;border-color:rgba(255,255,255,.5)}}
+.pn{background:var(--pn);border:4px solid var(--ln);border-radius:6px;padding:14px;position:relative;min-height:220px}
+h2{font:.78rem/1.5 "Press Start 2P",monospace;margin:0 28px 10px 0}
+#px{position:absolute;top:8px;right:8px;width:36px;height:36px;border:2px solid var(--ln);border-radius:6px;background:transparent;color:var(--ink);font-size:1.1rem;cursor:pointer}
+#pd{margin:0 0 10px}.qt{font-weight:700;margin:10px 0}
+.op{display:block;width:100%;min-height:46px;margin:0 0 8px;padding:8px 12px;border:2px solid var(--ln);border-radius:8px;background:transparent;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.op:hover:not(:disabled){border-color:var(--acc)}.op.no{opacity:.4}.op.good{border-color:var(--ok)}
+#pf{font-weight:700;margin:8px 0}#pf.ok{color:var(--ok)}#pf.bad{color:var(--bad)}
+#pa{width:100%;min-height:48px;border:0;border-radius:8px;background:var(--acc);color:var(--on);font:.7rem "Press Start 2P",monospace;cursor:pointer}
+button:focus-visible{outline:3px solid var(--pk);outline-offset:2px}.warn{margin:0 0 12px;padding:8px 12px;border:2px solid var(--bad);border-radius:6px;font-weight:700;color:var(--bad)}.qw{color:var(--bad);font-size:.88rem;margin:4px 0 8px}
+
+#intro{position:fixed;inset:0;z-index:50;overflow:auto;display:flex;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));background:#0a1020 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' shape-rendering='crispEdges'%3E%3Cg fill='%231f3a66'%3E%3Crect x='10' y='70' width='6' height='6'/%3E%3Crect x='50' y='30' width='4' height='4'/%3E%3Crect x='76' y='84' width='8' height='8'/%3E%3Crect x='30' y='10' width='4' height='4'/%3E%3C/g%3E%3C/svg%3E");animation:rise 8s steps(32) infinite}
+@keyframes rise{to{background-position:0 -96px}}
+.itc{margin:auto;width:min(620px,100%);text-align:center}
+.logo{font:clamp(1.6rem,7vw,3rem)/1.25 "Press Start 2P",monospace;color:#7dd3fc;margin:0 0 14px;text-shadow:4px 4px 0 #d6338a,8px 8px 0 #14213d}
+#ac{width:128px;aspect-ratio:auto;border:0;border-radius:0;background:none;margin:0 auto;animation:bob 1s steps(2) infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.scroll{position:relative;margin:28px auto 30px;padding:26px 28px;background:#ecd9a2;color:#3b2a14;border-left:4px solid #b88a4a;border-right:4px solid #b88a4a;box-shadow:inset 0 0 0 4px #f4e6bb,6px 6px 0 rgba(0,0,0,.5);text-align:left;transform-origin:top;animation:unroll 1s steps(8) both;cursor:pointer}
+.scroll::before,.scroll::after{content:"";position:absolute;left:-14px;right:-14px;height:18px;background:#c99a56;border:4px solid #3b2a14;box-shadow:inset 0 4px 0 #e2b872}
+.scroll::before{top:-16px}.scroll::after{bottom:-16px}
+@keyframes unroll{from{transform:scaleY(.05);opacity:0}}
+#st{font:1.5rem/1.15 VT323,monospace;margin:0;min-height:13em;white-space:pre-line}
+#go{min-height:48px;padding:0 22px;border:0;border-radius:8px;background:#7dd3fc;color:#06101f;font:.8rem "Press Start 2P",monospace;cursor:pointer;box-shadow:4px 4px 0 #d6338a}
+#si{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;z-index:51;padding:8px 10px;border:2px solid #fff;background:rgba(0,0,0,.55);color:#fff;font:.5rem "Press Start 2P",monospace;cursor:pointer}
+@media (prefers-reduced-motion:reduce){#intro,#ac,.scroll{animation:none}}
+.paper,.wallart{position:relative;margin:14px 4px 14px;padding:10px;border:4px solid #4a3a20;box-shadow:4px 4px 0 rgba(0,0,0,.35);font:1.25rem/1.1 VT323,monospace}
+.paper{background:#f6f0d8;color:#1f1f1f;transform:rotate(-1.2deg)}
+.paper::before{content:"";position:absolute;top:-12px;left:50%;width:52px;height:16px;margin-left:-26px;background:rgba(252,211,77,.9);border:2px solid #b8932a}
+.paper table{width:100%;border-collapse:collapse;margin-top:6px}.paper th,.paper td{border:2px solid #1f1f1f;padding:2px 6px;text-align:center}
+.wallart{background:#59627a repeating-linear-gradient(0deg,transparent 0 15px,rgba(0,0,0,.25) 15px 17px);border-color:#2c3345;color:#f3f1e8;transform:rotate(.8deg)}
+.paper svg,.wallart svg{display:block}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px}.fr i{font-style:normal;padding:0 6px}.fr i:first-child{border-bottom:2px solid currentColor}</style></head><body><div id="intro"><button id="si">SALTAR INTRO ⏭</button><div class="itc"><h1 class="logo">Andy’s<br>Circus</h1><canvas id="ac" width="32" height="20" aria-label="Andy, el ajolote"></canvas><div class="scroll" id="sc"><p id="st" aria-live="polite"></p></div><button id="go" hidden>Comenzar</button></div></div><div class="wrap">
+<header><h1>Andy’s Circus · TCM</h1><div class="hud"><span id="rn"></span><span id="keys"></span><span>⏱ <b id="tm">0:00</b></span><span>Fallos <b id="er">0</b></span></div></header>
+<div class="game"><div><div class="stg" id="stg"><canvas id="cv" width="320" height="200" aria-label="Parque de atracciones isométrico con Andy"></canvas><button id="skip" hidden>SALTAR ⏭</button><div id="dlg" hidden><b id="dn"></b><p id="dt"></p><i>▼</i></div>
+<div class="pad"><span></span><button data-k="ArrowUp" aria-label="Arriba">↑</button><span></span><button data-k="ArrowLeft" aria-label="Izquierda">←</button><button data-k="ArrowDown" aria-label="Abajo">↓</button><button data-k="ArrowRight" aria-label="Derecha">→</button></div></div><p id="msg"></p></div>
+<aside class="pn" aria-live="polite"><button id="px" aria-label="Cerrar panel">×</button><h2 id="pt"></h2><p id="pd"></p><div id="pq"></div><p id="pf"></p><button id="pa" hidden></button></aside></div></div>
+<script>
+const $=id=>document.getElementById(id),c=$('cv').getContext('2d');
+const N=8,TW=32,TH=16,OX=160,OY=60,WH=46,PIECE=[1,3,5,6],rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const P=(x,y,z=0)=>[OX+(x-y)*TW/2,OY+(x+y)*TH/2-z];
+const poly=(p,f)=>{c.beginPath();p.forEach((q,i)=>c[i?'lineTo':'moveTo'](q[0],q[1]));c.closePath();if(f){c.fillStyle=f;c.fill()}};
+const sh=(h,f)=>{const n=parseInt(h.slice(1),16);return 'rgb('+[n>>16,n>>8&255,n&255].map(v=>Math.min(255,v*f|0))+')'};
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const DEC={b:['Puesto de feria','Un puesto con globos de colores y premios. Hoy el feriante no atiende.','#e0457b',14,1],c:['Caseta de juegos','Una caseta de tiro y argollas con globos colgando.','#3aa6c9',34,1],e:['Estantería de peluches','Peluches y globos de premio. Ninguno está en venta hoy.','#b57be0',30,1],g:['Bombona de helio','El helio de los globos. Mejor no tocarla…','#e8b020',24,0]};
+const LAY=[
+[[[4,0,2,1],[0,5,1,2],[6,5,1,1]],[0,1,1,2],[['b',2,3,2,1]],[[1,.2,30],[0,3.2,34]],[3,5.5]],
+[[[0,2,1,2],[3,6,2,1],[6,3,1,1]],[5,0,2,1],[['c',0,5,1,2],['g',7,6,1,1]],[[1,.2,34],[0,5,36]],[3,3.5]],
+[[[2,0,2,1],[6,2,1,2],[3,6,1,1]],[0,5,1,2],[['b',4,3,2,1],['e',5,0,2,1]],[[0,.3,34]],[2,3.5]],
+[[[5,0,2,1],[0,3,1,2],[6,6,1,1]],[1,0,2,1],[['b',3,4,2,1],['g',0,6,1,1]],[[1,3.5,30],[0,.3,34]],[3,2.5]],
+[[[3,0,2,1],[6,3,1,2],[1,6,1,1]],[0,3,1,2],[['c',6,0,2,1],['b',3,3,2,1]],[[1,.2,34],[0,.2,30]],[2,1.5]],
+[[[0,1,1,2],[4,6,2,1],[6,4,1,1]],[6,0,2,1],[['b',2,3,2,1],['c',0,5,1,2],['g',7,7,1,1]],[[1,.2,32],[0,3.5,34]],[4,2.5]],
+[[[3,0,2,1],[0,5,1,2],[5,5,1,1]],[0,2,1,2],[['b',5,2,2,1],['e',6,0,2,1]],[[1,.2,32],[0,5,36]],[3,3.5]],
+[[[0,2,1,2],[0,5,1,2],[6,6,1,1]],[3,0,2,1],[['b',3,3,2,2],['g',7,2,1,1]],[[1,5,32],[0,.3,34]],[5.5,2.5]]];
+const R=[
+{n:'Mesa de trabajo',p:['#7aa5c4','#6b96b5','#44627f'],m:'Andy: ¡Me he quedado encerrado! Examina la mesa y busca la llave.',
+o:[['📓','Cuaderno de Andy','Apuntes sobre la síntesis del amoniaco, N₂ + 3H₂ → 2NH₃, y las velocidades de cada sustancia.','#a0602e',14],['⏳','Reloj de laboratorio','Sirve para medir cómo cambia la velocidad de una reacción mientras pasa el tiempo.','#2e7fa0',24],['📌','Nota pegada','Pista (4.1): la velocidad de reacción se calcula dividiendo la variación de cada sustancia entre su coeficiente, y siempre sale positiva.','#d4b13a',8]],
+q:[]},
+{n:'Armario de reactivos',p:['#8fb59a','#82a88d','#476b55'],m:'Andy: El armario tiene una tabla de experimentos y un candado.',
+o:[['🗄️','Armario de datos','Guarda una tabla de experimentos con las concentraciones iniciales y la velocidad inicial.','#6b4f8a',30],['🔐','Candado de unidades','Se abre con las unidades correctas de la constante cinética k.','#8a6b2e',16],['📌','Cartel del método','Pista (4.1.1): divide dos experimentos en los que solo cambie una concentración y compara con 2 elevado al orden.','#d4b13a',8]],
+q:[]},
+{n:'Pizarra de gráficas',p:['#c9b27a','#bda46c','#7a6a3e'],m:'Andy: Las gráficas se han caído de la pizarra. ¡Hay que identificarlas!',
+o:[['📈','Primera gráfica','Una gráfica de v frente a [A] que se ha caído de la pizarra.','#3e7a5a',12],['📉','Segunda gráfica','Otra gráfica de v frente a [A] que se ha caído de la pizarra.','#7a3e5a',20],['📌','Resumen de órdenes','Pista (4.1.3): orden 0, recta horizontal; orden 1, recta por el origen; orden 2, parábola.','#d4b13a',8]],
+q:[]},
+{n:'Sala de tuberías',p:['#8b8fb8','#7e82ab','#4b4f78'],m:'Andy: El mecanismo está pintado en las tuberías. Una se estrecha…',
+o:[['🔧','Válvula de mecanismos','Mecanismo: (1, lenta) 2 NO₂ → NO₃ + NO; (2, rápida) NO₃ + CO → NO₂ + CO₂.','#6b6b7a',18],['🛢️','Depósito de la etapa lenta','La etapa lenta es el tramo estrecho de la tubería y manda sobre la velocidad.','#7a4a3e',26],['📌','Aviso en la pared','Pista (4.2): el intermedio se forma en una etapa y se gasta en otra; la ecuación de velocidad sale de la etapa lenta.','#d4b13a',8]],
+q:[]},
+{n:'Cámara de choques',p:['#c98a8a','#bc7c7c','#7a4343'],m:'Andy: Aquí las moléculas chocan sin parar. ¡Cuidado con la barrera!',
+o:[['⚡','Acelerador de choques','Lanza moléculas unas contra otras para ver qué choques son eficaces.','#7a6a2e',20],['⛰️','Maqueta de la barrera','Un diagrama entálpico en relieve con las energías de activación directa e inversa.','#5a7a4a',24],['📌','Nota del complejo activado','Pista (4.3): el complejo activado está en el máximo de energía y no se puede aislar; el intermedio sí dura un tiempo.','#d4b13a',8]],
+q:[]},
+{n:'Termostato',p:['#d6a25c','#c9944e','#80552a'],m:'Andy: El termostato manda aquí. Ojo con k y con v.',
+o:[['🌡️','Termostato','Controla la temperatura del laboratorio. Subirla cambia la constante cinética.','#a03e3e',28],['🧯','Cámara de gases','Un recipiente de volumen variable donde reaccionan dos gases.','#3e5aa0',20],['📌','Fórmula de Arrhenius','Pista (4.4): k = A·e^(−Ea/RT). Al subir T aumenta k; si baja Ea, también aumenta k.','#d4b13a',8]],
+q:[]},
+{n:'Catalizadores',p:['#7fbfb8','#72b2ab','#3f7a74'],m:'Andy: Frascos con etiquetas borrosas. ¿Cuál es el catalizador?',
+o:[['🧴','Frasco del catalizador','Una sustancia que ofrece un camino alternativo a la reacción.','#3e8a6b',16],['☠️','Frasco del inhibidor','Una sustancia que frena la reacción.','#6b3e8a',18],['📌','Tabla de qué cambia','Pista (4.4.5): un catalizador baja Ea y sube k y v, pero no cambia ΔH ni la constante de equilibrio.','#d4b13a',8]],
+q:[]},
+{n:'Puerta final',p:['#9a8ab8','#8d7cab','#52416f'],m:'Andy: La cerradura final solo se abre si no caes en las trampas…',
+o:[['📜','Lista de errores','Los errores más frecuentes de cinética química, uno por línea.','#8a6b3e',20],['🔒','Cerradura final','Pide la última prueba antes de salir.','#5a5a6b',26],['📌','Aviso final','Pista (4.5): los órdenes parciales se determinan en el laboratorio y la espontaneidad no dice nada de la rapidez.','#d4b13a',8]],
+q:[]}];
+const S=['qpppccccccccpppq','..pccwkccwkccp..','qppcckkcckkccppq','..pcbccccccbcp..','qppcccmccmcccppq','....cccmmccc....','....ccllllcc....','...cccllllccc...','...cc.llll.cc...','...ddd....ddd...'],PAL={c:'#7dd3fc',d:'#38a8e0',l:'#d4f1ff',p:'#ff5fae',q:'#ffc2e0',k:'#0b1020',w:'#ffffff',b:'#ff9ccc',m:'#5a1236'};
+let cur=0,O=[],ax=3,ay=3.5,fl=0,wk=0,sel=null,hov=null,asked=0,pc=0,er=0,hn=0,won=false,t0=Date.now(),last=0,ex=0,boom=0,fr=[],bm=0,started=0,tr=null,DR=null,ENT=null,aa=1,dis=0,FN=null,fw=0,MOL={x:4,y:.05,pose:0,ph:0,h:[],on:0};
+const open=()=>!O.some(o=>o.q&&!o.s),dist=o=>Math.hypot(Math.max(o.x-ax,0,ax-o.x-o.w),Math.max(o.y-ay,0,ay-o.y-o.h));
+const free=(x,y)=>x>.35&&y>.35&&x<N-.35&&y<N-.35&&O.every(o=>!(x>o.x-.3&&x<o.x+o.w+.3&&y>o.y-.3&&y<o.y+o.h+.3));
+const near=()=>tr?0:O.filter(o=>!o.dec&&(!o.door||o.p>=1&&cur<7)&&dist(o)<1.4).sort((a,b)=>dist(a)-dist(b))[0];
+function hud(){$('rn').textContent='Zona '+(cur+1)+'/8 · '+R[cur].n;$('keys').innerHTML=[0,1,2,3].map(i=>'<span class="'+(i<pc?'on':'')+'">🗝</span>').join('');$('er').textContent=er}
+function load(i){cur=i;const r=R[i];const[lo,ld,lk,lw,ls]=LAY[i];O=r.o.map((d,k)=>({x:lo[k][0],y:lo[k][1],w:lo[k][2],h:lo[k][3],i:d[0],n:d[1],d:d[2],col:d[3],z:d[4],q:r.q[k],s:0,info:k==2}));
+ lk.forEach(k=>{const t=DEC[k[0]];O.push({x:k[1],y:k[2],w:k[3],h:k[4],i:'',n:t[0],d:t[1],col:t[2],z:t[3],f:t[4],dec:1})});{const wl=ld[0]?1:0,u=(wl?ld[0]:ld[1])+.2;O.push({x:wl?u:0,y:wl?0:u,w:wl?1.6:0,h:wl?0:1.6,i:'🚪',n:'Puerta',d:'La salida de esta sala. Aparece en la pared cuando se resuelven todos los enigmas.',z:0,door:1,wl,u,p:0,ao:0});DR=O[O.length-1]}fw=0;if(i==7){MOL={x:4,y:.05,pose:0,ph:0,h:[],on:0};O.push({x:3.2,y:.5,w:.8,h:.8,dec:1,inv:1,z:0,col:'#fff',i:'',n:'',d:''})}fixWall(i);ax=ls[0];ay=ls[1];closeP();$('msg').textContent=r.m;hud()}
+function fixWall(i){const W=[...LAY[i][3].map(s=>({s,wl:s[0],w:3,a:s[2]+11,b:s[2]-2})),...SH[i].map(s=>({s,wl:s[0],w:s[4],a:s[2],b:s[2]-20}))],bx=(t,u)=>{const q=(a,z)=>t.wl?P(a,0,z):P(0,a,z),p=q(u,t.a),r=q(u+t.w,t.b);return[Math.min(p[0],r[0]),Math.min(p[1],r[1]),Math.max(p[0],r[0]),Math.max(p[1],r[1])]},oc=O.filter(o=>!o.door&&!o.inv&&o.z>0).map(o=>[P(o.x,o.y+o.h)[0]-2,P(o.x,o.y,o.z)[1]-8,P(o.x+o.w,o.y)[0]+2,P(o.x+o.w,o.y+o.h)[1]]),ov=(a,b)=>Math.max(0,Math.min(a[2],b[2])-Math.max(a[0],b[0]))*Math.max(0,Math.min(a[3],b[3])-Math.max(a[1],b[1])),pl=[];
+ W.forEach(t=>{let best=null;for(let u=.3;u<=N-t.w-.3+1e-9;u+=.1){const b=bx(t,u);let sc=oc.reduce((n,o)=>n+ov(b,o),0);pl.forEach(p=>{if(p.wl==t.wl&&u<p.u+p.w+.2&&u+t.w>p.u-.2)sc+=1e4});if(DR&&DR.wl==t.wl&&u<DR.u+1.8&&u+t.w>DR.u-.2)sc+=1e4;sc+=Math.abs(u-t.s[1])*.01;if(!best||sc<best[0])best=[sc,u]}t.s[1]=t.u=best[1];pl.push(t)})}
+function closeP(){sel=null;asked=0;$('pt').textContent='Parque del Doctor Mol';$('pd').textContent='Mueve a Andy con las flechas o WASD. Pulsa sobre un objeto para ver de qué se trata y acércate para resolver su reto. Habla con los feriantes (💬): te darán pistas. Espacio actúa sobre el objeto más cercano.';$('pq').innerHTML='';$('pf').textContent='';$('pa').hidden=true}
+const say=(t,ok)=>{$('pf').textContent=t;$('pf').className=ok?'ok':'bad'};
+function ask(o){asked=1;$('pq').innerHTML=(o.q.v||'')+'<p class="qt">'+o.q.t+'</p><p class="qw">⚠ Doctor Mol: '+(o.nf?'¡ÚLTIMA OPORTUNIDAD! Otro fallo y Andy muere.':'dos fallos en este enigma y Andy muere.')+'</p>'+o.q.o.map((t,i)=>[t,i==0]).sort(()=>Math.random()-.5).map(x=>'<button class="op" data-c="'+(+x[1])+'">'+x[0]+'</button>').join('')}
+function openP(o){if(ex>0||boom||tr||FN||!started||me())return;sel=o;asked=0;$('pt').textContent=o.i+' '+o.n;$('pd').textContent=o.d;$('pq').innerHTML='';$('pf').textContent='';$('pa').hidden=true;
+ if(o.info&&!o.seen){o.seen=1;hn++}
+ if(o.q){if(o.s)say('Reto resuelto. '+o.q.e,1);else if(dist(o)<1.4)ask(o);else say('Estás lejos: acércate con las flechas y el reto se abrirá solo.',0)}
+ if(o.door){const n=O.filter(x=>x.q&&!x.s).length;if(n)say('Puerta cerrada: te faltan '+n+' reto'+(n>1?'s':'')+' en esta sala.',0);else if(dist(o)<1.4){asked=1;say('¡La puerta está abierta!',1);$('pa').hidden=false;$('pa').textContent=cur==7?'Entrar en la gran carpa':'Pasar a la siguiente zona'}else say('La puerta está abierta: acércate para cruzarla.',1)}}
+$('pq').onclick=e=>{if(e.target.id==='retry'){boom=0;return load(cur)}if(e.target.id==='again')return reset();if(ex>0||boom)return;const b=e.target.closest('.op');if(!b||b.disabled||!sel||sel.s)return;const o=sel;if(o.q.va){const w=$('pq').querySelector('.wallart');if(w)w.innerHTML=o.q.va(parseFloat(b.textContent.replace(',','.')))}
+ if(b.dataset.c==='1'){o.s=1;b.classList.add('good');$('pq').querySelectorAll('.op').forEach(x=>x.disabled=true);let t='¡Correcto! '+o.q.e;
+  if(open()){if(PIECE.includes(cur)){pc++;t+=' Zona completada: tienes un trozo de llave nuevo. ¡Una puerta empieza a aparecer en la pared!'}else t+=' Zona completada: ¡una puerta empieza a aparecer en la pared!';$('msg').textContent='Andy: ¡Se oye un crujido! Algo aparece en la pared…'}if(cur==7){t=t.replace(/¡[Uu]na puerta empieza a aparecer en la pared!/,'Una puerta empieza a aparecer en la pared…');$('msg').textContent='Andy: ¿Se oye algo al otro lado de la pared…?'}say(t,1);hud()}
+ else{er++;b.disabled=true;b.classList.add('no');o.nf=(o.nf||0)+1;if(o.nf>=2){explode();return}say('Esa no es. ¡Cuidado!: un fallo más en este enigma y Andy morirá (lo diseñó el Doctor Mol).',0);$('msg').textContent='Andy: ¡Glups! Una más y no lo cuento…';hud()}};
+$('pa').onclick=go;$('px').onclick=()=>{if(!boom)closeP()};
+function win(){won=true;sel=null;const st=er<=3&&hn<=3?3:er<=8&&hn<=6?2:1;$('pt').textContent='¡Andy ha escapado!';$('pa').hidden=true;$('pf').textContent='';
+ $('pd').textContent='Has tardado '+fmt(Math.floor((Date.now()-t0)/1000))+', con '+er+' fallos, '+hn+' pistas leídas y '+bm+' muertes. '+'★★★'.slice(0,st)+'☆☆☆'.slice(st);$('pq').innerHTML='<button class="op" id="again">Jugar otra vez</button>';$('msg').textContent='Andy: ¡Misión cumplida! Gracias por ayudarme.'}
+function reset(){FN=null;$('dlg').hidden=$('skip').hidden=true;$('stg').classList.remove('fn');tr=null;ENT=null;pc=0;er=0;hn=0;bm=0;ex=0;boom=0;won=false;t0=Date.now();build();load(0)}
+const D={ArrowUp:[-1,-1],ArrowDown:[1,1],ArrowLeft:[-1,1],ArrowRight:[1,-1],w:[-1,-1],s:[1,1],a:[-1,1],d:[1,-1]},K={},kk=e=>D[e.key]?e.key:e.key.toLowerCase();
+let vs='';
+function goRoom(n){FN=null;$('dlg').hidden=$('skip').hidden=true;$('stg').classList.remove('fn');tr=null;ENT=null;ex=0;boom=0;won=false;aa=1;dis=0;wk=0;for(const k in K)delete K[k];pc=PIECE.filter(q=>q<n).length;load(n)}
+addEventListener('keydown',e=>{
+ if(e.key&&e.key.length==1&&!e.ctrlKey&&!e.metaKey&&!e.altKey){vs=(vs+e.key.toLowerCase()).slice(-10);const m=/voyasala([1-8])$/.exec(vs);if(m){vs='';e.preventDefault();if(!started){started=1;$('intro').hidden=true;t0=Date.now()}goRoom(+m[1]-1);return}}
+ if(!started)return;
+ if(FN){if(e.key===' '||e.key==='Enter'){e.preventDefault();fAdv()}return}const k=kk(e);if(!e.repeat)cz(k);if(D[k]){K[k]=1;e.preventDefault()}else if(e.key===' '||k==='e'){e.preventDefault();const n=near();if(n)openP(n)}else if(e.key==='Escape'&&!boom&&ex<=0)closeP()});
+addEventListener('keyup',e=>{delete K[kk(e)]});
+document.querySelectorAll('.pad button').forEach(b=>{b.onpointerdown=()=>{K[b.dataset.k]=1;cz(b.dataset.k)};['onpointerup','onpointerleave','onpointercancel'].forEach(h=>b[h]=()=>delete K[b.dataset.k])});
+function hit(e){const r=$('cv').getBoundingClientRect(),x=(e.clientX-r.left)*320/r.width,y=(e.clientY-r.top)*200/r.height;let b=null;
+ for(const o of O){if(o.inv)continue;if(o.door){if(o.p<1||tr)continue;const d=dpts(),xs=d.map(p=>p[0]),ys=d.map(p=>p[1]);if(x>=Math.min(...xs)&&x<=Math.max(...xs)&&y>=Math.min(...ys)&&y<=Math.max(...ys))b=o;continue}if(x>=P(o.x,o.y+o.h)[0]&&x<=P(o.x+o.w,o.y)[0]&&y>=P(o.x,o.y,o.z)[1]-6&&y<=P(o.x+o.w,o.y+o.h)[1]&&(!b||o.x+o.y+o.w+o.h>b.x+b.y+b.w+b.h))b=o}return b}
+$('cv').onclick=e=>{if(FN){fAdv();return}const o=hit(e);if(o)openP(o)};$('cv').onpointermove=e=>{hov=hit(e);$('cv').style.cursor=hov?'pointer':'default'};
+function box(o,col){const x=o.x,y=o.y,w=o.w,h=o.h,z=o.z;poly([P(x,y,z),P(x+w,y,z),P(x+w,y+h,z),P(x,y+h,z)],sh(col,1.2));poly([P(x,y+h,z),P(x+w,y+h,z),P(x+w,y+h),P(x,y+h)],sh(col,.85));poly([P(x+w,y,z),P(x+w,y+h,z),P(x+w,y+h),P(x+w,y)],sh(col,.6))}
+function ring(o,s){poly([P(o.x,o.y,o.z),P(o.x+o.w,o.y,o.z),P(o.x+o.w,o.y+o.h,o.z),P(o.x,o.y+o.h,o.z)]);c.strokeStyle=s;c.lineWidth=2;c.stroke()}
+function andy(t){const f=P(ax,ay),b=wk&&!rm?Math.abs(Math.sin(t*10))*2:0,hop=won&&!rm?Math.abs(Math.sin(t*6))*10:0;c.fillStyle='rgba(0,0,0,.3)';c.fillRect(f[0]-12,f[1]-1,24,3);
+ const fy=f[1]-b-hop,rw=wk&&Math.sin(t*10)>0?S.slice(0,9).concat(['....dd....dd....']):S;
+ for(let i=0;i<4;i++){c.fillStyle=i<2?PAL.c:PAL.d;c.fillRect(f[0]+(fl?-1:1)*(13+i*3)-(fl?3:0),fy-6+(rm?0:Math.round(Math.sin(t*8+i)*1.5)),3,i>1?2:3)}
+ rw.forEach((row,r)=>[...row].forEach((ch,i)=>{if(ch!='.'){c.fillStyle=PAL[ch];c.fillRect(f[0]-16+(fl?15-i:i)*2,fy-20+r*2,2,2)}}))}
+const BD=['....hhhh....','...hhhhhh...','..hhhhhhhh..','...ssssss...','...skssks...','...ssnnss...','...ssmmss...','....ssss....','..cccccccc..','.sccccaaccs.','.sccccaaccs.','.sccccaaccs.','..cccccccc..','..pppppppp..','..ppp..ppp..','..kkk..kkk..'],WG=['..hhhhhhhh..','.hhhhhhhhhh.','hhhhhhhhhhhh'],CH=['..hhhhhhhh..','.hhhhhhhhhh.','..hhhhhhhh..'],TQ=['...hhhhhh...','...hhhhhh...','.hhhhhhhhhh.'],
+NS=[[{h:'#ff5fae',s:'#fff0e0',n:'#e11d2e',m:'#e11d2e',c:'#fcd34d',a:'#d6338a',p:'#4ade80'},WG,'🎈'],[{h:'#fff',c:'#fff',a:'#f472b6',p:'#7ad3d0'},CH,'🍦'],[{h:'#c2121f',c:'#d6733a',a:'#fff3b0',p:'#5a3a2a'},0,'🥖'],[{h:'#1d4ed8',c:'#d946ef',a:'#fcd34d',p:'#d946ef'},0,'⭐'],[{h:'#e8564a',c:'#2fa38a',a:'#fff',p:'#334155'},0,'🎈'],[{h:'#fff',c:'#fff',a:'#9ca3af',p:'#334155'},CH,'🍲'],[{h:'#7c3aed',s:'#e0b48a',c:'#6d28d9',a:'#fcd34d',p:'#4c1d95'},0,'🔮'],[{h:'#14213d',c:'#c2121f',a:'#fcd34d',p:'#14213d'},TQ,'🦁']],
+spr=(x,y,q,hat)=>{const T=hat?hat.concat(BD.slice(3)):BD;for(const o of[1,0])T.forEach((row,r)=>{for(let i=0;i<12;i++)if(row[i]!='.'){c.fillStyle=o?'#14213d':q[row[i]];o?c.fillRect(x-13+i*2,y-33+r*2,4,4):c.fillRect(x-12+i*2,y-32+r*2,2,2)}})};
+function npc(o,t){const p=P(o.x+o.w/2,o.y+o.h/2),b=rm?0:Math.sin(t*3+o.x)*1.5;c.fillStyle='rgba(0,0,0,.3)';c.beginPath();c.ellipse(p[0],p[1]+2,10,4,0,0,7);c.fill();const d=NS[cur],pl={k:'#14213d',n:'#d9a37a',m:'#8a3a2a',s:'#f1c9a0',...d[0]};spr(p[0],p[1]+2+b,pl,d[1]);c.textAlign='center';c.font='15px serif';c.fillText(d[2],p[0]+17,p[1]-8+b);if(!o.seen){c.font='13px serif';c.fillText('💬',p[0]+10,p[1]-38+b)}}
+const GL='rgba(215,238,255,.9)',LQ=['#ff5fae','#4ade80','#fcd34d','#7dd3fc'];
+function flask(x,y,k){const q=LQ[k&3];c.fillStyle='#14213d';c.fillRect(x,y-4,1,4);c.fillStyle=q;c.beginPath();c.ellipse(x,y-8,3.5,4.5,0,0,7);c.fill();c.fillStyle='rgba(255,255,255,.7)';c.fillRect(x-2,y-10,1,2)}
+function flasks(o){const n=Math.max(o.w,o.h);for(let i=0;i<n;i++){const p=o.w>=o.h?P(o.x+i+.5,o.y+o.h/2,o.z):P(o.x+o.w/2,o.y+i+.5,o.z);flask(p[0],p[1]+2,i+o.x+o.y)}}
+function shelf(s){const[wl,u,z]=s,q=(a,b,zz)=>wl?P(a,b,zz):P(b,a,zz);poly([q(u,0,z),q(u+3,0,z),q(u+3,.4,z),q(u,.4,z)],'#9a7a52');poly([q(u,.4,z),q(u+3,.4,z),q(u+3,.4,z-2),q(u,.4,z-2)],'#5e4630');for(let i=0;i<3;i++){const p=q(u+.7+i*.8,.2,z);flask(p[0],p[1]+1,(i*3+u)|0)}}
+function explode(){ex=2.4;boom=0;bm++;const a=P(ax,ay,10);fr=Array.from({length:44},()=>({x:a[0],y:a[1],vx:(Math.random()-.5)*260,vy:-Math.random()*160-20,c:['#fcd34d','#ff8a3d','#ef4444','#e5f2ff','#ff5fae'][Math.random()*5|0]}));closeP();$('msg').textContent='Andy: ¡Ay, ay, ay! ¡La atracción ha explotado!'}
+function showBoom(){boom=1;$('pt').textContent='☠ Andy ha muerto';$('pd').textContent='Has fallado dos veces el mismo enigma y la atracción ha explotado: así la diseñó el Doctor Mol. Andy ha muerto… pero se reconstruye la zona para que vuelva a intentarlo.';$('pq').innerHTML='<button class="op" id="retry">Reconstruir la atracción y reintentar</button>'}
+function boomFx(dt){c.setTransform(1,0,0,1,0,0);if(ex>0){const p=1-ex/2.4,a=P(ax,ay,10);c.fillStyle='rgba(255,'+(250-p*150|0)+','+(200-p*180|0)+','+Math.max(0,.95-p*.9)+')';c.beginPath();c.arc(a[0],a[1],p*230,0,7);c.fill();for(const q of fr){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy+=200*dt;c.fillStyle=q.c;c.fillRect(q.x,q.y,3,3)}}else if(boom){c.fillStyle='rgba(10,10,20,.7)';c.fillRect(0,0,320,200);c.fillStyle='#fcd34d';c.font='24px "Press Start 2P"';c.textAlign='center';c.fillText('BOOM',160,105)}}
+function frame(ts){const dt=Math.min(.05,(ts-last)/1000);last=ts;let vx=0,vy=0;for(const k in K){vx+=D[k][0];vy+=D[k][1]}const m=Math.hypot(vx,vy);wk=m&&started&&!tr&&!FN&&!won&&ex<=0&&!boom&&!me();if(ex>0){ex-=dt;if(ex<=0)showBoom()}const sk=ex>0?(Math.random()-.5)*7*ex/2.4:0;c.setTransform(1,0,0,1,sk,sk);
+ trStep(dt);if(me()){fw+=dt;mEnter(rm?fw*4:fw)}if(started&&DR&&cur<7&&DR.p<1&&open()&&!tr&&!boom&&ex<=0){DR.p=rm?1:Math.min(1,DR.p+dt/2.4);if(DR.p>=1)$('msg').textContent='Andy: ¡Una puerta! Acércate para cruzarla.'}
+ if(wk&&!tr){vx/=m;vy/=m;const nx=ax+vx*3*dt,ny=ay+vy*3*dt;if(free(nx,ay))ax=nx;if(free(ax,ny))ay=ny;if(vx-vy)fl=vx-vy<0?1:0}
+ if(sel&&!asked&&dist(sel)<1.4&&(sel.q&&!sel.s||sel.door&&open()))openP(sel);
+ const r=R[cur],[f1,f2,wc]=r.p,nr=near();c.fillStyle='#0b1020';c.fillRect(0,0,320,200);
+ poly([P(0,0,WH),P(0,N,WH),P(0,N),P(0,0)],sh(wc,.8));poly([P(0,0,WH),P(N,0,WH),P(N,0),P(0,0)],sh(wc,1));
+ for(let i=0;i<N;i+=2){poly([P(i,0,WH),P(i+1,0,WH),P(i+1,0),P(i,0)],'rgba(255,255,255,.16)');poly([P(0,i,WH),P(0,i+1,WH),P(0,i+1),P(0,i)],'rgba(255,255,255,.16)')}
+ for(let i=0;i<N;i++){[[P(i+.5,0,WH-1),['#ff5fae','#fcd34d','#7dd3fc','#4ade80'][i&3]],[P(0,i+.5,WH-1),['#fcd34d','#7dd3fc','#4ade80','#ff5fae'][i&3]]].forEach(([p,k])=>{c.fillStyle=k;c.beginPath();c.moveTo(p[0]-4,p[1]);c.lineTo(p[0]+4,p[1]);c.lineTo(p[0],p[1]+7);c.fill()})}
+ c.strokeStyle='rgba(0,0,0,.22)';c.lineWidth=1;for(let z=11;z<WH;z+=11){c.beginPath();c.moveTo(...P(0,N,z));c.lineTo(...P(0,0,z));c.lineTo(...P(N,0,z));c.stroke()}
+ for(let i=0;i<N;i++)for(let j=0;j<N;j++)poly([P(i,j),P(i+1,j),P(i+1,j+1),P(i,j+1)],(i+j)&1?f1:f2);
+ LAY[cur][3].forEach(shelf);SH[cur].forEach(sheet);if(DR&&DR.p>0)door(DR.wl,DR.u,DR.ao,DR.p,(DR===sel||DR===hov||DR===nr)&&DR.p>=1);if(ENT)door(ENT.wl,ENT.u,ENT.ao,1,0,ENT.al);const L2=O.map(o=>({d:o.x+o.y+o.w+o.h-1,o})).concat([{d:ax+ay+.3}],cur==7&&MOL.on?[{d:MOL.x+MOL.y+.3,mol:1}]:[]).sort((a,b)=>a.d-b.d);
+ for(const it of L2){const o=it.o;if(!o){if(it.mol){molS(ts/1000);if(MOL.say){const f=P(MOL.x,MOL.y);bub(f[0],f[1]-52,MOL.say)}}else{c.globalAlpha=aa;andy(ts/1000);c.globalAlpha=1}continue}if(o.door||o.inv)continue;
+  if(o.info)npc(o,ts/1000);else box(o,o.col);if(o.f)flasks(o);const ro=o.info?{...o,z:0}:o;if(o===sel||o===hov)ring(ro,'#fcd34d');else if(o===nr)ring(ro,'#ffffff');
+  if(o.dec||o.info)continue;const tp=o.door?(o.x?P(o.x+o.w/2,o.y+o.h,o.z*.5):P(o.x+o.w,o.y+o.h/2,o.z*.5)):P(o.x+o.w/2,o.y+o.h/2,o.z);c.font='13px serif';c.textAlign='center';c.fillText(o.door&&open()?'🔓':o.s?'✅':o.i,tp[0],tp[1]+4)}
+ if(FN)fDraw(ts/1000,dt);if(dis>0)dissolve(dis);boomFx(dt);requestAnimationFrame(frame)}
+
+const SH=[[],[],[],[],[],[],[],[]];
+const cl=x=>Math.min(1,Math.max(0,x));
+function sheet(s){const[wl,u,t,k,w]=s,h=20,q=(a,z)=>wl?P(u+a*w,0,t-h+z):P(0,u+a*w,t-h+z),ln=(pts,col,lw)=>{c.beginPath();pts.forEach((p,i)=>c[i?'lineTo':'moveTo'](...q(p[0],p[1])));c.strokeStyle=col;c.lineWidth=lw||1.5;c.stroke()};
+ poly([q(0,h),q(1,h),q(1,0),q(0,0)],'#f4eed6');poly([q(.4,h+2),q(.6,h+2),q(.6,h-2),q(.4,h-2)],'rgba(252,211,77,.9)');
+ if(k=='g'){ln([[.12,17],[.12,2],[.9,2]],'#14213d');ln([[.15,9],[.85,9]],'#c2412d',2);ln(Array.from({length:8},(_,i)=>[.15+i*.1,2+14*(i/7)**2]),'#0b78b0')}
+ if(k=='p'){ln([[.05,15],[.4,15],[.45,11],[.6,11],[.65,15],[.95,15]],'#14213d');ln([[.05,5],[.4,5],[.45,9],[.6,9],[.65,5],[.95,5]],'#14213d');ln([[.47,12],[.58,8]],'#c2412d',2);ln([[.47,8],[.58,12]],'#c2412d',2)}
+ if(k=='e'){ln([[.05,6],[.3,6],[.5,16],[.7,3],[.95,3]],'#14213d');ln([[.5,16],[.5,6]],'#c2412d',1)}}
+function door(wl,u,ao,p,hl,al=1){const W=1.6,H=38,a=(p>=1?1:Math.ceil(cl((p-.2)/.8)*5)/5)*al,q=(s,z)=>wl?P(u+s,0,z):P(0,u+s,z),f=(a0,a1,z0,z1,col)=>poly([q(a0,z0),q(a1,z0),q(a1,z1),q(a0,z1)],col);
+ c.save();
+ if(p<1){c.globalAlpha=.35+.35*Math.abs(Math.sin(p*20));poly([q(0,0),q(W,0),q(W,H),q(0,H)]);c.setLineDash([3,3]);c.strokeStyle='#fff3b0';c.lineWidth=2;c.stroke();c.setLineDash([])}
+ c.globalAlpha=a;f(-.12,W+.12,0,H+5,'#2b1a0e');f(0,W,0,H,'#fff3b0');if(ao>0)f(0,W,H*.55,H,'#ffe08a');
+ const lw=W*(1-.88*ao);f(0,lw,0,H,'#8b5a2b');f(lw*.14,lw*.86,4,17,'#6f4520');f(lw*.14,lw*.86,21,H-4,'#6f4520');f(lw*.74,lw*.84,17,20,'#fcd34d');f(0,.06,6,10,'#3a2a1a');f(0,.06,28,32,'#3a2a1a');f(-.2,W+.2,0,2,'#5a5a66');
+ if(hl){poly([q(-.12,0),q(W+.12,0),q(W+.12,H+5),q(-.12,H+5)]);c.strokeStyle='#fcd34d';c.lineWidth=2;c.stroke()}
+ c.restore()}
+const dpts=()=>{const{wl,u}=DR,q=(s,z)=>wl?P(u+s,0,z):P(0,u+s,z);return[q(0,0),q(1.6,0),q(1.6,38),q(0,38)]};
+function dissolve(a){c.fillStyle='#0b1020';for(let i=0;i<40;i++)for(let j=0;j<25;j++)if(((i*73856093^j*19349663)>>>0)%1000/1000<a)c.fillRect(i*8,j*8,8,8)}
+const mv=(x,y)=>{const dx=x-ax,dy=y-ay;if(Math.abs(dx-dy)>1e-4)fl=dx-dy<0?1:0;ax=x;ay=y};
+function pickEntry(){const wl=1-DR.wl;let best=null;for(const u of[.3,1.6,2.9,4.2,5.5,6.2]){const sx=wl?u+.8:.5,sy=wl?.5:u+.8,ex=wl?u+.8:1.6,ey=wl?1.6:u+.8,bad=LAY[cur][3].some(s=>s[0]==wl&&s[1]<u+1.6&&s[1]+3>u)||SH[cur].some(s=>s[0]==wl&&s[1]<u+1.6&&s[1]+s[4]>u),r={wl,u,sx,sy,ex,ey};if(!best)best=r;if(!bad&&free(sx,sy)&&free(ex,ey)&&free((sx+ex)/2,(sy+ey)/2))return r}return best}
+const me=()=>cur==7&&started&&!FN&&!won&&open()&&!boom&&ex<=0;
+function mEnter(T){const E=x=>x*x*(3-2*x);
+ DR.p=rm?1:cl(T/2.4);if(T>=2.4&&!DR.m1){DR.m1=1;$('msg').textContent='Andy: ¡Una puerta! Y se oye una risa al otro lado…'}
+ DR.ao=rm?1:cl((T-2.4)/.5);
+ if(T>=3){if(!MOL.on){MOL.on=1;$('msg').textContent='Andy: ¡Ese hombre de la bata! ¿Qué hace aquí?'}const k=rm?1:E(cl((T-3)/1.4));MOL.x=4+(3.6-4)*k;MOL.y=.05+.85*k}
+ if(T>=4.4&&T<7)MOL.say='¡Hola, holita!';
+ if(T>=7)fStart()}
+function go(){if(tr||!DR||DR.p<1)return;const last=cur==7,u=DR.u+.8,d=last?.95:.15;closeP();$('msg').textContent=last?'Andy: ¡La luz de fuera! ¡Salgo!':'Andy: ¡Adelante! Sin mirar atrás…';tr={t:0,ph:1,last,sx:ax,sy:ay,ex:DR.wl?u:d,ey:DR.wl?d:u}}
+function trStep(dt){aa=1;dis=0;
+ if(ENT){ENT.t+=dt;ENT.ao=ENT.t<1.3?1:Math.max(0,1-(ENT.t-1.3)/.5);ENT.al=1-cl((ENT.t-1.8)/.5);if(ENT.t>2.4)ENT=null}
+ if(!tr)return;tr.t+=dt;const t=tr.t,E=x=>x*x*(3-2*x);
+ if(tr.ph==1){DR.ao=cl(t/.45);const k=E(cl((t-.3)/.9));mv(tr.sx+(tr.ex-tr.sx)*k,tr.sy+(tr.ey-tr.sy)*k);wk=k>0&&k<1;
+  if(!tr.last){aa=1-cl((k-.7)/.3);dis=cl((t-.5)/.95)}
+  if(t>=1.5){if(tr.last){tr=null;wk=0;win();return}load(cur+1);const n=pickEntry();ENT={wl:n.wl,u:n.u,ao:1,al:1,t:0};tr={ph:2,t:0,sx:n.sx,sy:n.sy,ex:n.ex,ey:n.ey};ax=n.sx;ay=n.sy;aa=0;dis=1}}
+ else{const k=E(cl((t-.25)/1.15));mv(tr.sx+(tr.ex-tr.sx)*k,tr.sy+(tr.ey-tr.sy)*k);wk=k>0&&k<1;aa=cl((t-.2)/.3);dis=1-cl(t/1);if(t>=1.5){tr=null;wk=0;aa=1;dis=0}}}
+// enigmas visuales
+const sv=(w,h,b)=>'<svg viewBox="0 0 '+w+' '+h+'" width="100%" shape-rendering="crispEdges" stroke-linecap="square" font-family="VT323,monospace" role="img" aria-label="Dibujo del enigma">'+b+'</svg>';
+const paper=h=>'<div class="paper">'+h+'</div>',wallart=h=>'<div class="wallart">'+h+'</div>',T=(x,y,s,t,f)=>'<text x="'+x+'" y="'+y+'" font-size="'+s+'" fill="'+(f||'#f3f1e8')+'">'+t+'</text>';
+// ===== TCM =====
+const rnd=n=>Math.random()*n|0,rp=a=>a[rnd(a.length)],LP={},dc=(x,d=2)=>x.toFixed(d).replace('.',','),
+pk=(key,n)=>{let i=rnd(n);if(n>1&&i===LP[key])i=(i+1+rnd(n-1))%n;return LP[key]=i},
+SUP={'-':'⁻',0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹'},
+sci=x=>{const[m,e]=x.toExponential(1).split('e');return m.replace('.',',')+'·10'+[...String(+e)].map(ch=>SUP[ch]).join('')},
+mk=(t,o,e,v)=>({t,o,e,v}),
+fromPool=(key,Q)=>{const a=Q[pk(key,Q.length)];return mk(a[0],a[1],a[2])},
+UN=['mol·L⁻¹·s⁻¹','s⁻¹','L·mol⁻¹·s⁻¹','L²·mol⁻²·s⁻¹'],
+rest=(a,i)=>a.filter((_,j)=>j!=i);
+
+// ===== TCM: PREGUNTAS =====
+const NR=[
+['Carrusel de partículas','Andy: ¡Un carrusel que no para! Aquí todo se mueve, igual que las partículas.',[['🎠','Carrusel','Gira sin parar, como las partículas de la materia según la TCM.'],['🎡','Noria en miniatura','Sus cabinas van más deprisa cuanto más calor hay.'],['🤡','Pipo, el payaso','«¡Hola, holita! Psst… Pista: las partículas se mueven siempre; al chocar con las paredes producen presión; a más temperatura en K, más energía cinética.»']],['#8fd18a','#7cc47a','#e85d75']],
+['Pabellón de los helados','Andy: Helado, fuente y globos de helio: ¡sólido, líquido y gas juntos!',[['🔬','Lupa mágica','Muestra cómo se colocan las partículas de una muestra.'],['🧊','Máquina de helados','Un panel con flechas entre sólido, líquido y gas.'],['🍦','Gelato, el heladero','«¡Mi helado se derrite: eso es fusión! Pista: sólido, partículas ordenadas y juntas; líquido, juntas pero desordenadas; gas, muy separadas.»']],['#f7c6dc','#f1b3d0','#7ad3d0']],
+['Puesto de churros','Andy: Una gráfica con mesetas… ¡la temperatura se queda parada!',[['📈','Gráfica del cartel','Temperatura frente al tiempo de una sustancia que se calienta.'],['🔥','Fogón','Aporta calor a la muestra de forma constante.'],['👩‍🍳','Doña Churra','«Mira la meseta, churrito. Pista: en un cambio de estado la temperatura no sube; el calor se usa en separar las partículas.»']],['#f2d492','#e8c680','#d6733a']],
+['Cañón del circo','Andy: Un cañón con émbolo de gas. ¡Calcula la presión antes de disparar!',[['💉','Émbolo del cañón','Un gas encerrado: la presión y el volumen cambian a la vez, a temperatura constante.'],['📏','Regla de conversiones','Convierte unidades eligiendo el factor.'],['🤸','Alba, la acróbata','«¡Salto, salto! Pista (Boyle): a temperatura constante, P₁·V₁ = P₂·V₂. Si el volumen se reduce a la mitad, la presión se duplica.»']],['#9db7e8','#8aa8dd','#f2c230']],
+['Globos aerostáticos','Andy: Un globo sobre un quemador. ¡Cuidado: temperatura siempre en K!',[['🎈','Globo aerostático','Se hincha al calentarlo; la presión es constante.'],['🔧','Regla de conversiones','Pasar de °C a K se hace sumando 273.'],['🧔','Vendedor de globos','«¡Globos, globos! Pista (Charles): a presión constante, V₁/T₁ = V₂/T₂, con T en K. Y no sueltes el hilo.»']],['#a8e0f0','#96d4e8','#e8564a']],
+['Puesto de potajes','Andy: ¡Una olla exprés! Hay un potaje que hacer bien.',[['🍲','Olla exprés','Volumen constante, con manómetro. El potaje necesita una presión concreta.'],['⏱️','Reloj de cocina','Convierte unidades de tiempo eligiendo el factor.'],['👨‍🍳','Chef Potaje','«Cuidado con la válvula. Pista (Gay-Lussac): a volumen constante, P₁/T₁ = P₂/T₂, con T en K.»']],['#d9b48a','#cca678','#6b9e5a']],
+['Adivina el peso','Andy: Masa, volumen y densidad. ¡Todo bien medido!',[['⚖️','Balanza','Mide la masa de una muestra en g.'],['🧪','Probeta','Mide el volumen de una muestra en mL.'],['🧙','Madame Densidad','«Veo… una fórmula. Pista: densidad = masa / volumen. Con la masa en g y el volumen en mL, sale en g/mL.»']],['#c7a6e8','#b996dd','#2fa38a']],
+['La gran carpa','Andy: ¡La gran carpa! Conversiones encadenadas y, al fondo, mi número sublime.',[['📜','Lista de factores','Factores de conversión de una o dos fracciones.'],['🔒','Cerradura de la jaula','Pide la última prueba antes de entrar en la pista.'],['🎩','Domador de leones','«Pista: elige el factor con la unidad que quieres arriba y la que tienes abajo, para que se simplifique. Y no mires al león a los ojos.»']],['#e9d59a','#ddc886','#9a2f4a']]];
+NR.forEach((r,i)=>{R[i].n=r[0];R[i].m=r[1];R[i].p=r[3];R[i].o[2][3]='#fff';R[i].o[2][4]=22;r[2].forEach((o,k)=>{R[i].o[k][0]=o[0];R[i].o[k][1]=o[1];R[i].o[k][2]=o[2]})});
+const fm=x=>String(+x.toFixed(2)).replace('.',','),opts=(c,d)=>{const a=[c];d.forEach(x=>{if(!a.includes(x))a.push(x)});const m=/^(-?[\d,]+) (.+)$/.exec(c);if(m){const v=parseFloat(m[1].replace(',','.'));for(const k of[2,.5,10,.1,3,1.5]){if(a.length>=4)break;const x=fm(v*k)+' '+m[2];if(!a.includes(x))a.push(x)}}return a.slice(0,4)},
+fc=(a,b)=>'<span class="fr"><i>'+a+'</i><i>'+b+'</i></span>',svx=b=>wallart('<svg viewBox="0 0 260 110" width="100%" style="max-width:260px" font-family="sans-serif" font-size="12">'+b+'</svg>');
+const P0a=[['Según la TCM, ¿cómo están las partículas de un gas?',['En continuo movimiento, muy separadas','Quietas y juntas','Quietas y muy separadas','Solo se mueven si hay calor'],'Las partículas siempre se mueven; en un gas están muy separadas.'],['Según la TCM, ¿qué son las partículas de la materia?',['Cuerpos muy pequeños que siempre se mueven','Cuerpos continuos sin huecos','Burbujas de aire','Cuerpos que solo se mueven en un gas'],'La materia está formada por partículas con huecos entre ellas y en movimiento.'],['¿Qué hay entre las partículas de un gas, según la TCM?',['Vacío','Aire','Más partículas más pequeñas','Un líquido'],'Entre las partículas no hay nada: hay vacío.']],
+P0b=[['¿Cómo explica la TCM la presión de un gas en un recipiente?',['Por los choques de las partículas con las paredes','Porque las partículas pesan','Porque las partículas se paran','Porque el gas se enfría'],'Cada choque empuja la pared; muchos choques forman la presión.'],['Si sube la temperatura en K de un gas, ¿qué ocurre con sus partículas?',['Se mueven más deprisa: más energía cinética','Se mueven más despacio','Se hacen más grandes','Se paran'],'La temperatura mide la energía cinética media de las partículas.'],['¿Por qué un gas calentado en un recipiente cerrado aumenta su presión?',['Las partículas chocan más y con más fuerza','Las partículas se juntan','Hay menos partículas','Las partículas se enfrían'],'Más energía cinética supone más choques y más fuertes contra las paredes.']],
+P1b=[['¿Cómo se llama el paso de sólido a líquido?',['Fusión','Solidificación','Vaporización','Sublimación'],'Fusión: sólido a líquido.'],['¿Cómo se llama el paso de gas a líquido?',['Condensación','Fusión','Vaporización','Solidificación'],'Condensación: gas a líquido.'],['¿Cómo se llama el paso de sólido a gas, sin pasar por líquido?',['Sublimación','Fusión','Condensación','Vaporización'],'Sublimación: sólido a gas directamente.']],
+P2a=[['En una meseta de la gráfica, ¿qué ocurre?',['Hay un cambio de estado y la temperatura no sube','La sustancia está quieta','Se ha apagado el mechero','Las partículas dejan de moverse'],'El calor se usa en separar las partículas, no en subir la temperatura.'],['¿Por qué no sube la temperatura en una meseta?',['El calor se emplea en el cambio de estado','No llega calor','Las partículas se paran','Se enfría la muestra'],'Durante el cambio de estado, el calor rompe uniones entre partículas.'],['La temperatura de una meseta, ¿qué indica?',['La temperatura del cambio de estado','El tiempo del experimento','La densidad','La masa de la muestra'],'Cada meseta marca una temperatura de cambio de estado.']],
+P7c=[['Para convertir unidades, ¿qué fracción eliges?',['La que deja arriba la unidad que quieres y abajo la que tienes','La que deja arriba la que tienes','Cualquiera, da igual','La que tiene el número más grande'],'La unidad que quieres obtener va arriba y la que tienes, abajo, para que se simplifique.'],['Al multiplicar por un factor de conversión, ¿cambia la cantidad real?',['No: solo cambia la unidad en la que se expresa','Sí, se duplica','Sí, se divide entre 10','Depende del color'],'1000 mL y 1 L son la misma cantidad: el factor vale 1.'],['¿Por qué se simplifican las unidades al usar el factor correcto?',['Porque la unidad de arriba coincide con la de abajo','Porque son iguales las cifras','Por casualidad','Porque se suman'],'Una unidad en el numerador y la misma en el denominador se cancelan.']];
+const fromP=(k,Q)=>fromPool(k,Q);
+function gStates(){const s=pk('st',3),N=['un sólido','un líquido','un gas'];let b='';if(s==1)b+='<rect x="41" y="10" width="182" height="70" fill="rgba(125,211,252,.35)"/><path d="M41 10H223" stroke="#a5e4ff" stroke-width="2"/><path d="M40 6V80H224V6M35 6H40M224 6H229" fill="none" stroke="#d7eeff" stroke-width="3"/><path d="M41 30h8M41 50h8M215 30h8M215 50h8" stroke="#d7eeff" stroke-width="2"/>';const g=(x,y)=>{const a=[1,3,14][s],d=[.3,.8,1][s]+(x%7)*.05;b+='<circle cx="'+x+'" cy="'+y+'" r="5" fill="#0b78b0">'+wob('cx',x+';'+(x+a)+';'+x,d)+wob('cy',y+';'+(y-a)+';'+y,d*1.3)+'</circle>'};
+if(s==0)for(let i=0;i<8;i++)for(let j=0;j<4;j++)g(60+i*18,22+j*18);else if(s==1)for(let i=0;i<12;i++)for(let j=0;j<4;j++)g(50+i*14+((i*7+j*5)%5),22+j*14+((i*3+j)%4));else for(let i=0;i<9;i++)g(30+((i*53)%190),14+((i*37)%80));
+return mk('¿Qué estado de la materia representa este dibujo de partículas?',opts(N[s],N.filter((_,i)=>i!=s).concat('un plasma')),'Sólido: ordenadas y juntas; líquido: juntas y desordenadas; gas: muy separadas.',svx(b))}
+function gCurve(){const T=[[0,100],[-20,0],[10,60]][pk('cv',3)],[a,b]=[[0,100],[10,80],[-20,60]][pk('cv2',3)];const tf=a,te=b;let d='M20 95L50 70L50 70L90 70L120 40L170 40L200 15',q;
+const b2='<path d="M20 100V8M20 100H245" stroke="#14213d" fill="none"/><path d="M20 95L50 70H90L120 40H170L200 15" stroke="#c2412d" stroke-width="3" fill="none"/><circle r="4" fill="#fcd34d" stroke="#14213d" stroke-width="2"><animateMotion dur="5s" repeatCount="'+LOOP+'" path="M20 95L50 70H90L120 40H170L200 15"/></circle>'+T0('T (°C)',2,12)+T0('t (min)',205,108)+T0(tf+' °C',54,64)+T0(te+' °C',124,34);
+return mk('Según la gráfica, ¿a qué temperatura hierve la sustancia?',opts(te+' °C',[tf+' °C',fm((te+tf)/2)+' °C',(te+20)+' °C']),'La segunda meseta es la ebullición: '+te+' °C.',svx(b2))}
+const T0=(t,x,y)=>'<text x="'+x+'" y="'+y+'" fill="#14213d">'+t+'</text>';
+const DUR=rm?'.01s':'1.3s',LOOP=rm?'1':'indefinite',an=(a,f,t)=>'<animate attributeName="'+a+'" from="'+f+'" to="'+t+'" dur="'+DUR+'" fill="freeze"/>',wob=(a,v,d)=>'<animate attributeName="'+a+'" values="'+v+'" dur="'+d+'s" repeatCount="'+LOOP+'"/>',
+rsv=b=>'<svg viewBox="0 0 260 110" width="100%" style="max-width:260px" font-family="sans-serif" font-size="12">'+b+'</svg>';
+const bst=(x,y,r)=>{let p='';for(let i=0;i<16;i++){const a=i*Math.PI/8,d=i%2?r*.55:r;p+=(x+Math.cos(a)*d).toFixed(0)+','+(y+Math.sin(a)*d).toFixed(0)+' '}return '<polygon points="'+p+'" fill="#fcd34d" stroke="#c2412d" stroke-width="2">'+wob('opacity','1;.4;1',.25)+'</polygon>'+T0('¡PUM!',x-15,y+4)},
+dots=(x0,x1,y0,y1,n)=>{let b='';for(let i=0;i<n;i++){const x=x0+((i*37)%100)/100*(x1-x0),y=y0+((i*53)%100)/100*(y1-y0);b+='<circle cx="'+x.toFixed(0)+'" cy="'+y.toFixed(0)+'" r="3" fill="#0b78b0">'+wob('cy',y.toFixed(0)+';'+(y+(i%2?6:-6)).toFixed(0)+';'+y.toFixed(0),.5+i*.07)+'</circle>'}return b};
+function pist(V1,Vf,vm,lab,burst){const w=x=>20+x/vm*150,a=w(V1),b=w(Vf),mv=Vf!=V1&&!burst;
+return '<rect x="20" y="36" width="170" height="38" fill="none" stroke="#14213d" stroke-width="3"/><rect x="190" y="50" width="12" height="10" fill="#14213d"/><rect x="20" y="38" width="'+(burst?168:a-20)+'" height="34" fill="#d4f1ff">'+(mv?an('width',a-20,b-20):'')+'</rect>'+(burst?bst(105,55,30):dots(24,b-8,42,66,6))+(mv||burst?'':'<polygon points="'+(a+64)+',55 '+(a+52)+',46 '+(a+52)+',64" fill="#c2412d">'+wob('opacity','1;.25;1',.8)+'</polygon>')+'<g><rect x="'+a+'" y="32" width="6" height="46" fill="#14213d"/><rect x="'+(a+6)+'" y="52" width="40" height="6" fill="#14213d"/>'+(mv?'<animateTransform attributeName="transform" type="translate" from="0 0" to="'+(b-a)+' 0" dur="'+DUR+'" fill="freeze"/>':'')+'</g>'+T0(lab,20,100)}
+function ball(V1,Vf,lab,burst){const rx=V=>6+Math.max(V,.3)*2.2,ry=V=>rx(V)*1.25,y=V=>60-ry(V),hot=Vf!=V1||burst,L=burst?58:Math.min(58,6+Math.max(0,Vf/V1-1)*50),therm='<rect x="30" y="22" width="8" height="66" rx="4" fill="none" stroke="#14213d" stroke-width="2"/><circle cx="34" cy="92" r="7" fill="#c2412d"/><rect x="32" y="'+(88-L)+'" width="4" height="'+L+'" fill="#c2412d">'+(hot?an('y',82,88-L)+an('height',6,L):'')+'</rect>'+(hot?[0,1,2].map(i=>'<circle cx="'+(90+i*10)+'" cy="86" r="2" fill="#ff8a3d">'+wob('cy','86;68',.6+i*.2)+wob('opacity','.9;0',.6+i*.2)+'</circle>').join(''):'');
+return '<path d="M70 88l10-14h40l10 14z" fill="#8a93a0"/><rect x="95" y="60" width="10" height="16" fill="#14213d"/><path d="M90 108q10-18 20 0z" fill="#ff8a3d">'+wob('d','M90 108q10-18 20 0z;M92 108q8-26 16 0z;M90 108q10-18 20 0z',.35)+'</path>'+(burst?bst(100,32,28):'<ellipse cx="100" cy="'+y(V1)+'" rx="'+rx(V1)+'" ry="'+ry(V1)+'" fill="#ff5fae">'+(Vf!=V1?an('rx',rx(V1),rx(Vf))+an('ry',ry(V1),ry(Vf))+an('cy',y(V1),y(Vf)):wob('cy',y(V1)+';'+(y(V1)-3)+';'+y(V1),1.4))+'</ellipse>')+therm+T0(lab,150,40)}
+function pot(P1,Pf,st,lab){const g=P=>-70+P*35,sm=[0,1,2].map(i=>'<circle cx="'+(108+i*12)+'" cy="30" r="4" fill="#bbb">'+wob('cy','30;12;0',1+i*.3)+wob('opacity','.8;.3;0',1+i*.3)+'</circle>').join(''),jet=st==3?[0,1,2,3,4].map(i=>'<circle cx="'+(152+i*5)+'" cy="36" r="5" fill="#fff">'+wob('cy','36;10',.4+i*.05)+'</circle>').join(''):'',fl=[0,1,2].map(i=>'<path d="M'+(88+i*28)+' 108q8-18 16 0z" fill="#ff8a3d">'+wob('d','M'+(88+i*28)+' 108q8-18 16 0z;M'+(90+i*28)+' 108q6-26 12 0z;M'+(88+i*28)+' 108q8-18 16 0z',.3+i*.05)+'</path>').join('');
+return '<rect x="60" y="50" width="120" height="36" rx="6" fill="#8a93a0"/><rect x="54" y="44" width="132" height="8" fill="#14213d"/><circle cx="120" cy="34" r="11" fill="#fff" stroke="#14213d" stroke-width="2"/><line x1="120" y1="34" x2="120" y2="25" stroke="#c2412d" stroke-width="2" '+(st?'>'+'<animateTransform attributeName="transform" type="rotate" from="'+g(P1)+' 120 34" to="'+g(Pf)+' 120 34" dur="'+DUR+'" fill="freeze"/></line>':'transform="rotate('+g(P1)+' 120 34)"/>')+'<rect x="150" y="38" width="8" height="6" fill="#c2412d">'+(st>1?'<animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur=".2s" repeatCount="indefinite"/>':'')+'</rect>'+(st==1?'':sm)+jet+fl+T0(lab,190,60)}
+function gBoyle(){const k=rp([2,4]),V1=rp([4,6,8,12]),P1=rp([1,2]),V2=V1/k,P2=P1*k,vm=V1*2;
+const q=mk('Un gas encerrado ocupa '+V1+' L a '+P1+' atm. Quieres reducir su volumen a '+fm(V2)+' L a temperatura constante. ¿Qué presión debes aplicar?',opts(P2+' atm',[fm(P1/k)+' atm',(P2+P1)+' atm',(P2*2)+' atm']),'Boyle: P₁·V₁ = P₂·V₂, luego P₂ = '+P1+' atm · '+V1+' L / '+fm(V2)+' L = '+P2+' atm.',wallart(rsv(pist(V1,V1,vm,V1+' L, '+P1+' atm. Objetivo: '+fm(V2)+' L'))));
+q.va=P=>{const bu=P>=P2*2,Vf=Math.min(vm,P1*V1/P);return rsv(pist(V1,Vf,vm,bu?'¡El recipiente revienta!':'Con '+fm(P)+' atm queda en '+fm(Vf)+' L',bu))};return q}
+function gCharles(){const c=pk('ch',2),k=rp([2,1.5]),V1=rp([2,4]),T1=rp([300,350]),T1c=T1-273,T2=T1*k,V2=V1*k;
+const t=c?'Calientas un globo que ocupa '+V1+' L a '+T1c+' °C (presión constante). ¿A qué temperatura, en K, debes calentarlo para que ocupe '+fm(V2)+' L?':'Un globo ocupa '+V1+' L a '+T1+' K (presión constante). ¿A qué temperatura, en K, debes calentarlo para que ocupe '+fm(V2)+' L?';
+const q=mk(t,opts(fm(T2)+' K',[fm(T1/k)+' K',fm(T2-273)+' K',fm(c?T1c*k+T1:T1*k+273)+' K']),'Charles: V₁/T₁ = V₂/T₂ con T en K: T₂ = '+T1+' K · '+fm(V2)+' L / '+V1+' L = '+fm(T2)+' K.',wallart(rsv(ball(V1,V1,V1+' L (máx. '+fm(V2*1.3)+' L)'))));
+q.va=T=>{const Vf=V1*T/T1,bu=Vf>V2*1.3;return rsv(ball(V1,Vf,bu?'¡El globo revienta!':'A '+fm(T)+' K ocupa '+fm(Vf)+' L',bu))};return q}
+function gGay(){const k=rp([1.5,2]),P1=rp([1,2]),T1=rp([300,200]),P2=P1*k,T2=T1*k;
+const q=mk('Una olla exprés de volumen constante contiene un gas a '+P1+' atm y '+T1+' K. El potaje se hace bien a '+fm(P2)+' atm. ¿A qué temperatura, en K, debes calentarla?',opts(fm(T2)+' K',[fm(T1/k)+' K',fm(T2-273)+' K',fm(T2+T1)+' K']),'Gay-Lussac: P₁/T₁ = P₂/T₂: T₂ = '+T1+' K · '+fm(P2)+' atm / '+P1+' atm = '+fm(T2)+' K. Modelo simplificado: gas encerrado a volumen constante.',wallart(rsv(pot(P1,P1,0,P1+' atm. Objetivo: '+fm(P2)+' atm'))));
+q.va=T=>{const Pf=P1*T/T1,s=Pf<P2*.95?1:Pf>P2*1.05?3:2;return rsv(pot(P1,Math.min(Pf,4),s,['','Potaje duro: faltó presión','¡Potaje perfecto! 🍲','¡Salta la válvula!'][s]))};return q}
+const CV=[['L','mL',1000],['kg','g',1000],['m','cm',100],['min','s',60],['km','m',1000],['h','min',60]];
+function gConv(){const[a,b,f]=rp(CV),x=rp([2,3,5,'2,5']);const n=f>=1000?'1000':String(f);return mk('Para pasar '+x+' '+a+' a '+b+', ¿qué factor de conversión necesitas?',[fc(f+' '+b,'1 '+a),fc('1 '+a,f+' '+b),fc((f*10)+' '+b,'1 '+a),fc(f+' '+a,'1 '+b)],'Quieres '+b+' arriba y '+a+' abajo: '+f+' '+b+' / 1 '+a+'.')}
+function gTemp(){const c=rp([27,77,-23]);return mk('Para pasar '+c+' °C a K, ¿qué operación haces?',['Sumar 273','Restar 273','Multiplicar por 273','Dividir entre 273'],c+' °C + 273 = '+(c+273)+' K.')}
+function gComp(){const q=pk('cp',2);return q?mk('Para pasar g/mL a kg/L, ¿qué factor completo necesitas?',[fc('1 kg · 1000 mL','1000 g · 1 L'),fc('1000 g · 1 L','1 kg · 1000 mL'),fc('1 kg · 1 L','1000 g · 1000 mL'),fc('1000 kg · 1000 mL','1 g · 1 L')],'Se pasa de g a kg (1 kg/1000 g) y de mL a L (1000 mL/1 L).'):mk('Para pasar km/h a m/s, ¿qué factor completo necesitas?',[fc('1000 m · 1 h','1 km · 3600 s'),fc('1 km · 3600 s','1000 m · 1 h'),fc('1000 m · 3600 s','1 km · 1 h'),fc('1 km · 1 h','1000 m · 3600 s')],'Arriba m y h, abajo km y s: 1000 m/1 km · 1 h/3600 s.')}
+function gDens(){const V=rp([20,25,40,50]),r=rp([0.8,1.2,2.5,4]),m=r*V;return mk('Una muestra tiene una masa de '+fm(m)+' g y ocupa '+V+' mL. ¿Cuál es su densidad?',opts(fm(r)+' g/mL',[fm(V/m)+' g/mL',fm(m*V)+' g/mL',fm(m+V)+' g/mL']),'d = m/V = '+fm(m)+' g / '+V+' mL = '+fm(r)+' g/mL.')}
+function gMass(){const V=rp([10,20,50]),r=rp([0.8,1.2,2.5]),m=r*V;return mk('Una sustancia tiene una densidad de '+fm(r)+' g/mL. ¿Qué masa tienen '+V+' mL?',opts(fm(m)+' g',[fm(V/r)+' g',fm(r+V)+' g',fm(m*10)+' g']),'m = d·V = '+fm(r)+' g/mL · '+V+' mL = '+fm(m)+' g.')}
+function gDKL(){const r=rp([0.8,1.2,2.5]);return mk('Una densidad de '+fm(r)+' g/mL, ¿a cuántos kg/L equivale?',opts(fm(r)+' kg/L',[fm(r*1000)+' kg/L',fm(r/1000)+' kg/L',fm(r*10)+' kg/L']),'1 g/mL = 1 kg/L (×1 kg/1000 g · 1000 mL/1 L), así que no cambia el número.')}
+function build(){R[0].q=[fromP('a',P0a),fromP('b',P0b)];R[1].q=[gStates(),fromP('c',P1b)];R[2].q=[gCurve(),fromP('d',P2a)];R[3].q=[gBoyle(),gConv()];R[4].q=[gCharles(),gTemp()];R[5].q=[gGay(),gConv()];R[6].q=[gDens(),gMass()];R[7].q=[gComp(),Math.random()<.5?gDKL():fromP('e',P7c)]}
+build();
+
+
+// intro
+const IT='Andy, el ajolote, tiene un sueño: llevar alegría y diversión a tutiplén a todo el mundo con el número de circo más sublime jamás visto. Para conseguirlo, ha preparado una pócima muy especial sublimando cuatro ingredientes sorprendentes: hielo seco, yodo, alcanfor y una pizca de mentol. ¡Su secreto para llenar la pista de nubes misteriosas, efectos espectaculares y transformaciones asombrosas!\n\nPara estrenarlo necesita la gran carpa del Parque del Doctor Mol, el parque de atracciones más bonito de la comarca. Mala idea: el Doctor Mol tiene otros planes y ha convertido cada atracción en una trampa. Cada zona está cerrada y solo aparece una puerta cuando se resuelven todos sus retos sobre la materia, los gases y las unidades.\n\nHabla con los feriantes (💬): el payaso, el heladero, la acróbata… te darán pistas si te acercas.\n\nCUIDADO: dos fallos en el mismo enigma y la atracción explota con Andy dentro.\n\n¿Le ayudarás a llegar a la gran carpa?';
+(()=>{const a=$('ac').getContext('2d');S.forEach((row,r)=>[...row].forEach((ch,i)=>{if(ch!='.'){a.fillStyle=PAL[ch];a.fillRect(i*2,r*2,2,2)}}));
+ const st=$('st'),b=$('go');let i=0,tm;const fin=()=>{clearInterval(tm);i=IT.length;st.textContent=IT;b.hidden=false;b.focus({preventScroll:true})};
+ if(rm)fin();else setTimeout(()=>{tm=setInterval(()=>{st.textContent=IT.slice(0,++i);if(i>=IT.length)fin()},28)},900);
+ $('sc').onclick=()=>{if(i<IT.length)fin()};
+ b.onclick=()=>{started=1;$('intro').hidden=true;reset()};$('si').onclick=()=>b.click()})();
+let cs='';const CM={ArrowUp:'U',w:'U',ArrowDown:'D',s:'D',ArrowLeft:'L',a:'L',ArrowRight:'R',d:'R'};
+function cz(k){const m=CM[k];if(!m)return;cs=(cs+m).slice(-12);if(cs=='UUUDDDLLLRRR'&&started&&!FN&&!tr&&!won&&ex<=0&&!boom){cs='';load(7);fStart()}}
+// ===== FINAL =====
+const FS=[{k:'cu',w:'mol',L:['¡Hola Andy! Has superado todas las trampas de mi parque. ¡Enhorabuena!','Pero ahora me toca preguntar a mí: ¿qué llevas en esa botella burbujeante?','Cuidado, que aquí dentro todo lo que ves es mío. ¡Jajaja!','Anda, cuéntame qué pretendes, ajolote.']},{k:'cu',w:'andy',L:['Es mi brebaje sublimante: hielo seco, yodo, alcanfor y una pizca de mentol,','que deja un aliento fresco por la mañana.','¡Con él haré el número de circo más sublime de la historia y llevaré alegría y diversión a tutiplén a todo el mundo mundial!','Para el truco necesito un voluntario del público. ¿Te animas, doctor?']},{k:'sc'},{k:'cu',w:'andy',L:['¡Ups! Vaya... parece que sublimar es pasar de sólido a gas, no hacer que algo sea sublime.','Sin voluntario no hay función de circo... bueno, ya otro día lo intentamos de nuevo.','Doctor Mol, ya que te vas volando y te esfumas me llevo tu coche. Y el león, que se ha colado en el asiento de atrás. ¡Nos vamos!']},{k:'fe'}];
+function fStart(){MOL.say='';if(!MOL.on){MOL.on=1;MOL.x=3.6;MOL.y=.9;MOL.pose=0;if(DR){DR.p=1;DR.ao=1}}FN={i:-1,t:0,n:0,j:0};closeP();$('skip').hidden=false;$('stg').classList.add('fn');$('msg').textContent='';fNext()}
+function fNext(){const F=FN;F.i++;F.j=0;F.t=0;F.n=0;const s=FS[F.i];if(!s){fEnd();return}$('dlg').hidden=s.k!='cu';if(s.k=='cu')$('dn').textContent=s.w=='mol'?'Doctor Mol':'Andy';if(s.k=='sc'){MOL.pose=1;MOL.ph=0;MOL.h=[]}}
+function fAdv(){const F=FN;if(!F||F.end)return;const s=FS[F.i];if(!s||s.k!='cu')return;const L=s.L[F.j];if(F.n<L.length){F.n=L.length;return}if(F.j<s.L.length-1){F.j++;F.n=0}else fNext()}
+function fEnd(){FN.end=1;$('dlg').hidden=true;$('skip').hidden=true;$('stg').classList.remove('fn');win()}
+$('skip').onclick=e=>{e.stopPropagation();if(FN&&!FN.end)fEnd()};$('dlg').onclick=fAdv;
+const rc=(ox,oy,u)=>(x,y,w,h,k)=>{c.fillStyle=k;c.fillRect(ox+x*u,oy+y*u,w*u,h*u)};
+const pz=(ox,oy,u)=>({g:(x,y,w,h,k)=>{c.fillStyle=k;c.fillRect(ox+x*u,oy+y*u,w*u,h*u)},el:(cx,cy,rx,ry,k)=>{c.fillStyle=k;for(let y=-ry;y<ry;y++){const w=Math.round(rx*Math.sqrt(1-((y+.5)/ry)**2));c.fillRect(ox+(cx-w)*u,oy+(cy+y)*u,w*2*u,u)}}});
+function molP(t,lau,talk){const ox=80,oy=4+(lau?Math.round(Math.sin(t*14)*3):0),u=4,{g,el}=pz(ox,oy,u),sk='#f4c7a0',sd='#dba97f',hr='#6b4226',hd='#2c1a0d',mu='#3a2412',d='#1b1b1b',tn='#f6a93b',ol='#2a1a12',ln='#c8946e';
+ const hw=y=>y<=13?14*Math.sqrt(Math.max(0,1-((y-13)/13)**2)):14-Math.pow((y-13)/16,1.6)*6,
+ hf=(k,e,dx)=>{c.fillStyle=k;for(let y=1-e;y<=29+e;y++){const w=Math.round(hw(Math.min(29,Math.max(1,y)))+e);c.fillRect(ox+(20+dx-w)*u,oy+y*u,w*2*u,u)}};
+ g(16,27,8,4,sd);g(16,27,8,1,'#b98558');
+ for(let r=0;r<6;r++){g(10-r*2,30+r,20+r*4,1,'#f5f7fa');g(24+r*2,30+r,6,1,'#c9d1dc')}
+ g(16,30,8,6,'#e8edf5');g(13,30,3,6,'#c9d1dc');g(24,30,3,6,'#c9d1dc');g(19,31,2,5,'#c2412d');g(19,30,2,1,'#e5523f');g(20,32,1,4,'#9a2f22');
+ g(4,33,5,3,'#dfe5ee');g(5,31,1,3,'#3b82f6');g(7,32,1,2,'#ef4444');g(29,33,5,3,'#fff');g(29,33,5,1,'#3b82f6');g(30,35,3,1,'#9aa6b8');g(28,30,1,3,'#3b82f6');
+ el(5,16,3,4,ol);el(5,16,2,3,sd);g(4,15,1,2,'#b98558');el(35,16,3,4,ol);el(35,16,2,3,sd);g(35,15,1,2,'#b98558');
+ hf(ol,1,0);hf(sd,0,0);hf(sk,-1,-1);
+ el(11,20,2,2,'#ee9b86');el(29,20,2,2,'#ee9b86');g(9,22,4,1,ln);g(27,22,4,1,ln);g(11,23,1,3,ln);g(28,23,1,3,ln);g(6,13,1,2,ln);g(33,13,1,2,ln);g(18,28,4,1,'#fbd9b8');
+ el(20,4,15,6,ol);el(20,4,14,5,hr);g(6,7,2,6,hr);g(32,7,2,6,hr);g(5,9,1,3,'#563319');g(34,9,1,3,'#563319');
+ for(let i=0;i<9;i++)g(9+i*3,1+(i&1),1,4,'#563319');g(11,1,5,1,'#9a6a40');g(25,1,5,1,'#9a6a40');g(9,2,2,1,'#9a6a40');g(29,2,2,1,'#9a6a40');g(20,0,1,9,hd);
+ g(12,7,3,2,hr);g(15,7,2,2,hr);g(23,7,2,2,hr);g(25,7,3,2,hr);g(12,8,1,1,'#563319');g(27,8,1,1,'#563319');
+ el(13,15,6,6,d);el(13,15,5,5,tn);g(10,14,6,3,'#ffe9b8');g(13,14,2,3,d);g(13,14,1,1,'#fff');g(9,12,2,1,'#fff7d6');g(9,13,1,1,'#fff7d6');g(15,11,1,3,'#ffd27a');
+ el(27,15,6,6,d);el(27,15,5,5,tn);g(24,14,6,3,'#ffe9b8');g(27,14,2,3,d);g(27,14,1,1,'#fff');g(23,12,2,1,'#fff7d6');g(23,13,1,1,'#fff7d6');g(30,11,1,3,'#ffd27a');
+ g(19,14,2,2,d);g(6,15,2,1,d);g(32,15,2,1,d);
+ g(8,8,3,2,mu);g(11,9,3,2,mu);g(14,10,4,1,mu);g(29,8,3,2,mu);g(26,9,3,2,mu);g(22,10,4,1,mu);g(9,8,1,1,'#241407');g(30,8,1,1,'#241407');
+ el(20,20,3,3,'#f2909e');g(19,18,1,1,'#ffe3ea');g(21,21,1,2,'#d4687c');g(18,22,1,1,'#a84a5c');g(22,22,1,1,'#a84a5c');g(17,19,1,3,'#eeb0a8');
+ g(12,22,16,3,mu);g(7,23,6,2,mu);g(4,22,4,2,mu);g(2,19,3,4,mu);g(3,17,2,2,mu);g(27,23,6,2,mu);g(32,22,4,2,mu);g(35,19,3,4,mu);g(35,17,2,2,mu);
+ g(14,22,4,1,'#6b4a2e');g(22,22,4,1,'#6b4a2e');g(5,23,2,1,'#6b4a2e');g(33,23,2,1,'#6b4a2e');g(16,24,8,1,'#241407');g(9,24,3,1,'#241407');g(28,24,3,1,'#241407');g(2,20,1,2,'#6b4a2e');g(37,20,1,2,'#6b4a2e');
+ if((lau||talk)&&Math.sin(t*16)>0){g(14,25,12,4,'#4a1010');g(15,25,10,1,'#fff');g(15,28,10,1,'#fff');g(17,27,6,1,'#e0707a')}else{g(15,26,10,1,'#9a4a40');g(14,25,1,1,'#9a4a40');g(25,25,1,1,'#9a4a40');g(16,27,8,1,sd)}
+ g(13,29,14,1,sd)}
+function andyP(t){const ox=80,oy=4,u=4,{g,el}=pz(ox,oy,u),ol='#0e3a5a',sk='#7dd3fc',sd='#38a8e0',lt='#d4f1ff',pk='#ff9ccc',dk='#0b1020',K=.175,
+ /* proporciones tomadas del Andy de Enlaces: cúpula de radio 80 y base redondeada, sobre 160 de ancho */
+ H=andyP.H||(andyP.H=(()=>{const P=[];for(let i=0;i<=40;i++){const s=i/40,m=1-s,X=m**3*230+3*m*m*s*230+3*m*s*s*200+s**3*150,Y=m**3*168+3*m*m*s*196+3*m*s*s*210+s**3*210;P.push([6+(Y-88)*K,(X-150)*K])}return P})()),
+ hw=y=>{if(y<6)return 0;if(y<20)return Math.sqrt(Math.max(0,196-(y-20)**2));for(let i=0;i<40;i++){const a=H[i],b=H[i+1];if(y>=a[0]&&y<=b[0])return a[1]+(b[1]-a[1])*(y-a[0])/(b[0]-a[0]||1)}return 0},
+ HM=[];for(let r=0;r<34;r++){HM[r]=[];const w=hw(r+.5);for(let c=0;c<40;c++)HM[r][c]=Math.abs(c+.5-20)<=w}
+ const hm=(r,c)=>!!(HM[r]&&HM[r][c]),
+ /* branquias: tres hojas por lado, con la misma posición, ángulo y tamaño que en Enlaces; de celeste a rosa */
+ LV=[[10.9,9.3,-135.7,.96],[8.1,12.1,-166,.85],[7.05,14,160.7,.73]],TT=[0,5,12,19,30,42,50,54,58],WW=[0,5,7.5,9.75,11.5,12,10.5,9,3.5],
+ lw=a=>{for(let i=0;i<8;i++)if(a>=TT[i]&&a<=TT[i+1])return WW[i]+(WW[i+1]-WW[i])*(a-TT[i])/(TT[i+1]-TT[i]);return -1},
+ mix=(p,l)=>{p=Math.min(1,Math.max(0,(p-.25)/.75));return'rgb('+[[125,255],[211,77],[252,184]].map(v=>{let x=v[0]+(v[1]-v[0])*p;return Math.round(x+(255-x)*l)})+')'},
+ both=(r,c,k)=>{g(c,r,1,1,k);g(39-c,r,1,1,k)};
+ LV.forEach(([ax,ay,an,s])=>{const co=Math.cos(an*Math.PI/180),si=Math.sin(an*Math.PI/180),I={},cl=[];
+  for(let r=0;r<32;r++)for(let c=-4;c<21;c++){const dx=c+.5-ax,dy=r+.5-ay,a=(dx*co+dy*si)/(K*s),b=(-dx*si+dy*co)/(K*s),w=a>=0&&a<=58?lw(a):-1;if(w>0&&Math.abs(b)<=w){I[r+','+c]=1;cl.push([r,c,a,b])}}
+  cl.forEach(([r,c])=>[[1,0],[-1,0],[0,1],[0,-1]].forEach(([y,x])=>{if(!I[(r+y)+','+(c+x)])both(r+y,c+x,ol)}));
+  cl.forEach(([r,c,a,b])=>both(r,c,mix(a/58,Math.abs(b)<=3.4&&a>5&&a<48?.45:0)))});
+ /* torso y hombros */
+ for(let r=0;r<7;r++){const x0=Math.max(3,12-r*2),w=40-x0*2;g(x0-1,30+r,w+2,1,ol);g(x0,30+r,w,1,sk);g(x0,30+r,2,1,sd);g(x0+w-2,30+r,2,1,sd)}
+ g(15,31,10,6,lt);g(15,31,1,6,'#a5e4ff');g(24,31,1,6,'#a5e4ff');g(19,33,2,1,pk);
+ /* cuello */
+ g(14,25,12,6,ol);g(15,25,10,6,sk);g(15,25,2,6,sd);g(23,25,2,6,sd);g(15,28,10,1,sd);
+ /* cabeza */
+ for(let r=0;r<34;r++)for(let c=0;c<40;c++)if(!hm(r,c)&&(hm(r+1,c)||hm(r-1,c)||hm(r,c+1)||hm(r,c-1)))g(c,r,1,1,ol);
+ for(let r=0;r<34;r++)for(let c=0;c<40;c++)if(hm(r,c))g(c,r,1,1,hm(r+1,c)?sk:sd);
+ g(15,7,5,1,lt);g(13,8,2,1,lt);g(21,7,2,1,lt);
+ /* mejillas, ojos negros y sonrisa (como en Enlaces) */
+ el(11,19,2,1,pk);el(29,19,2,1,pk);
+ el(14,17,2,2,dk);g(13,16,1,1,'#fff');
+ const wk=(t%9)>4.7&&(t%9)<5.4;
+ if(wk){g(24,17,1,1,dk);g(25,16,2,1,dk);g(27,17,1,1,dk)}else{el(26,17,2,2,dk);g(25,16,1,1,'#fff')}
+ [[11,20],[12,21],[13,22],[14,22],[15,22],[16,22],[17,21],[18,21],[19,21]].forEach(([c,r])=>both(r,c,dk))}
+function molAt(x,y,pose,t,al){const f=P(x,y);c.save();c.globalAlpha=al;const bob=pose==0?Math.abs(Math.sin(t*9))*3:pose==2?Math.abs(Math.sin(t*40))*3:0,ox=Math.round(f[0]-12),oy=Math.round(f[1]-40-bob),g=(a,b,w,h,k)=>{c.fillStyle=k;c.fillRect(ox+a*2,oy+b*2,w*2,h*2)},sk='#f1c39b',cw='#f5f7fa',sp=pose==2&&Math.sin(t*40)>0;
+ c.fillStyle='rgba(0,0,0,.3)';c.fillRect(f[0]-12,f[1]-1,24,3);g(sp?2:3,15,2,4,'#2b2f45');g(sp?8:7,15,2,4,'#2b2f45');g(sp?1:2,19,3,1,'#111');g(sp?8:7,19,3,1,'#111');
+ g(2,8,8,8,cw);g(2,8,1,8,'#c9d1dc');g(5,8,2,6,'#e0e6ee');if(pose!=1){g(0,8,2,7,cw);g(10,8,2,7,cw);g(0,15,2,1,sk);g(10,15,2,1,sk)}else{g(0,8,2,7,cw);g(9,4,3,5,cw);g(9,3,2,1,sk)}g(5,7,2,1,'#d9a577');
+ g(2,2,8,5,sk);g(3,1,6,2,sk);g(3,0,6,2,'#6b4226');g(2,1,1,2,'#6b4226');g(9,1,1,2,'#6b4226');g(6,0,1,2,'#2c1a0d');g(3,2,2,1,'#6b4226');g(7,2,2,1,'#6b4226');g(3,3,3,2,'#1b1b1b');g(6,3,3,2,'#1b1b1b');g(4,3,1,2,'#f6a93b');g(7,3,1,2,'#f6a93b');g(3,5,6,1,'#3a2412');g(2,4,1,2,'#3a2412');g(9,4,1,2,'#3a2412');
+ if(pose==0){g(10,13,2,3,'#ff5fae');g(10+(Math.sin(t*5)>0?0:1),10,1,2,'rgba(255,255,255,.7)')}
+ if(pose==1&&FN&&FN.t<1.25){g(8,FN.t<.7?1:0,3,4,'#ff5fae');g(8+((t*8|0)%3),-3,1,2,'rgba(255,255,255,.8)')}
+ if(pose==3)g(10,1,1,2,'#7dd3fc');c.restore()}
+function molS(t){if(MOL.pose==2)MOL.h.forEach((p,k)=>molAt(p[0],p[1],2,t,.1+k*.04));molAt(MOL.x,MOL.y,MOL.pose,t,1)}
+function bub(x,y,txt){c.save();c.font='9px "Press Start 2P"';c.lineJoin='round';c.textAlign='center';const w=c.measureText(txt).width,bx=Math.max(w/2+6,Math.min(314-w/2,x));c.lineWidth=4;c.strokeStyle='#14213d';c.strokeText(txt,bx,y+10);c.fillStyle='#fcd34d';c.fillText(txt,bx,y+10);c.restore()}
+function ferr(t){['#2b1b4d','#5a2a6b','#9a3a7a','#d9506a','#f08a4b','#fcd34d'].forEach((k,i)=>{c.fillStyle=k;c.fillRect(0,i*19,320,20)});
+ c.fillStyle='#ffe9a0';for(let d=-22;d<0;d++){const w=Math.round(Math.sqrt(484-d*d));c.fillRect(160-w,112+d,w*2,1)}
+ c.fillStyle='#1a1030';c.fillRect(0,102,320,10);[[10,92,40,10],[60,96,50,6],[210,88,60,14],[270,96,40,6]].forEach(r=>c.fillRect(...r));
+ c.fillStyle='#1d2b3a';c.fillRect(0,112,320,88);poly([[154,112],[166,112],[300,200],[20,200]],'#2a2a3a');
+ c.fillStyle='#fcd34d';for(let k=0;k<6;k++){const z=((k+t*1.5)%6)/6,w=1+z*5;c.fillRect(160-w/2,112+z*z*88,w,2+z*10)}
+ const s=Math.pow(cl((t-2.6)/3.4),1.6),sc=2.2-2.02*s,r=(x,y,w,h,k)=>{c.fillStyle=k;c.fillRect(x,y,w,h)};c.save();c.translate(160,186-72*s);c.scale(sc,sc);
+ r(-45,-14,90,14,'#d1262b');r(-30,-27,60,13,'#a81d22');r(-24,-25,48,9,'#101830');r(-17,-24,18,8,'#7dd3fc');r(-23,-23,5,6,'#ff5fae');r(2,-23,5,6,'#ff5fae');r(10,-25,9,9,'#e8f6ff');r(10,-25,9,2,'#7dd3fc');r(12,-21,5,2,'#7dd3fc');
+ r(-44,-17,88,3,'#8f171b');r(-42,-12,14,5,'#ff3b3b');r(28,-12,14,5,'#ff3b3b');r(-16,-11,32,10,'#f5f5f5');r(-47,-4,16,7,'#111');r(31,-4,16,7,'#111');r(-22,0,6,3,'#777');r(16,0,6,3,'#777');
+ c.fillStyle='#111';c.font='bold 9px monospace';c.textAlign='center';c.fillText('DcMOL',0,-3);const lx=14,ly=-16,wk=t>1.5&&t<2.3;r(lx-10,ly-11,20,13,'#8f4f10');r(lx-8,ly-13,16,14,'#c2701a');r(lx-8,ly-15,3,3,'#c2701a');r(lx+5,ly-15,3,3,'#c2701a');r(lx-5,ly-9,10,9,'#f6c453');r(lx-3,ly-4,6,4,'#fff3d0');r(lx-1,ly-5,3,2,'#d9506a');r(lx-1,ly-2,1,1,'#7a2a2a');r(lx+1,ly-2,1,1,'#7a2a2a');r(lx-4,ly-8,2,2,'#1a1030');wk?r(lx+2,ly-7,3,1,'#1a1030'):r(lx+2,ly-8,2,2,'#1a1030');c.restore();c.fillStyle='rgba(0,0,0,'+cl((t-5.7)/1.3)+')';c.fillRect(0,0,320,200)}
+function fDraw(T,dt){const F=FN,s=FS[F.i];
+ if(F.end){c.fillStyle='#000';c.fillRect(0,0,320,200);c.save();c.fillStyle='#7dd3fc';c.font='16px "Press Start 2P"';c.textAlign='center';c.fillText('FIN',160,104);c.restore();return}
+ F.t+=dt;
+ if(s.k=='cu'){const L=s.L[F.j];F.n=Math.min(L.length,F.n+(rm?999:dt*42));$('dt').textContent=L.slice(0,F.n|0);const ty=F.n<L.length,m=s.w=='mol',a=m?['#2a1b3d','#34224d']:['#0f3b4a','#124a5c'];
+  for(let y=0;y<200;y+=20){c.fillStyle=a[(y/20)&1];c.fillRect(0,y,320,20)}
+  if(m)molP(T,F.j==2,ty);else andyP(T,ty);c.fillStyle='#000';c.fillRect(0,0,320,10);c.fillRect(0,190,320,10)}
+ else if(s.k=='sc'){const t=F.t,f=P(MOL.x,MOL.y),b2=(x,y,A,B)=>{bub(x,y-12,A);bub(x,y,B)};MOL.pose=t<1.4?1:0;
+  if(t>1.4&&t<7.4&&!rm)MOL.x=3.6+Math.sin(t*45)*.05*(t-1.4);if(t>.2&&t<1.4)bub(f[0],f[1]-66,'¡Glu, glu, glu!');if(t>=1.6&&t<3.4)b2(f[0],f[1]-60,'¡Ya siento algo','burbujeando dentro de mí!');if(t>=3.4&&t<4.6)bub(f[0],f[1]-66,'¡Qué cosquillitas!');if(t>=4.6&&t<5.8)bub(f[0],f[1]-66,'¡Oh! ¡Oh!');if(t>=5.8&&t<7.4)bub(f[0],f[1]-66,'¡Socorrooooo!');
+  if(t>=7.4){MOL.on=0;const g=P(3.6,.9,22),k=cl((t-7.4)/1.2);c.save();for(let i=0;i<9;i++){const a=i*2.4+t*(rm?0:1.5);c.fillStyle='rgba(255,95,174,'+(.5-i*.02)+')';c.beginPath();c.arc(g[0]+Math.cos(a)*(8+i*2)*k,g[1]+Math.sin(a*1.3)*(5+i)*k-(rm?0:Math.sin(t*2)*3),(6+i*1.5)*k,0,7);c.fill()}c.restore()}
+  if(t>10.2)fNext()}
+ else if(s.k=='fe'){ferr(F.t);c.fillStyle='#000';c.fillRect(0,0,320,10);c.fillRect(0,190,320,10);if(F.t>7.2)fEnd()}}
+setInterval(()=>{if(!won)$('tm').textContent=fmt(Math.floor((Date.now()-t0)/1000))},1000);
+load(0);requestAnimationFrame(frame);
+</script></body></html>
