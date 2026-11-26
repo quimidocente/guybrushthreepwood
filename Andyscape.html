@@ -82,36 +82,28 @@ const LAY=[
 const R=[
 {n:'Mesa de trabajo',p:['#7aa5c4','#6b96b5','#44627f'],m:'Andy: ¡Me he quedado encerrado! Examina la mesa y busca la llave.',
 o:[['📓','Cuaderno de Andy','Apuntes sobre la síntesis del amoniaco, N₂ + 3H₂ → 2NH₃, y las velocidades de cada sustancia.','#a0602e',14],['⏳','Reloj de laboratorio','Sirve para medir cómo cambia la velocidad de una reacción mientras pasa el tiempo.','#2e7fa0',24],['📌','Nota pegada','Pista (4.1): la velocidad de reacción se calcula dividiendo la variación de cada sustancia entre su coeficiente, y siempre sale positiva.','#d4b13a',8]],
-q:[{t:'En N₂ + 3H₂ → 2NH₃, el N₂ desaparece a 4,0·10⁻³ mol·L⁻¹·s⁻¹. ¿A qué velocidad desaparece el H₂?',o:['1,2·10⁻² mol·L⁻¹·s⁻¹','4,0·10⁻³ mol·L⁻¹·s⁻¹','8,0·10⁻³ mol·L⁻¹·s⁻¹','1,3·10⁻³ mol·L⁻¹·s⁻¹'],e:'Por cada mol de N₂ desaparecen 3 mol de H₂: 3 · 4,0·10⁻³ = 1,2·10⁻².'},
-{t:'¿Cómo suele cambiar la velocidad de una reacción a lo largo del tiempo?',o:['Disminuye, porque los reactivos se gastan','Se mantiene constante','Aumenta, porque se acumulan productos','Solo cambia si cambia k'],e:'Al gastarse los reactivos bajan sus concentraciones y la velocidad suele disminuir.'}]},
+q:[]},
 {n:'Armario de reactivos',p:['#8fb59a','#82a88d','#476b55'],m:'Andy: El armario tiene una tabla de experimentos y un candado.',
 o:[['🗄️','Armario de datos','Guarda una tabla de experimentos con las concentraciones iniciales y la velocidad inicial.','#6b4f8a',30],['🔐','Candado de unidades','Se abre con las unidades correctas de la constante cinética k.','#8a6b2e',16],['📌','Cartel del método','Pista (4.1.1): divide dos experimentos en los que solo cambie una concentración y compara con 2 elevado al orden.','#d4b13a',8]],
-q:[{t:'Exp. 1: [A]=0,10 y [B]=0,10 mol/L, v=3,0·10⁻³. Exp. 2: [A]=0,20 y [B]=0,10, v=1,2·10⁻². ¿Qué orden tiene respecto a A?',o:['2','0','1','3'],e:'Al duplicar [A], v se multiplica por 4 = 2², así que el orden es 2.'},
-{t:'Para v = k·[A]²·[B], ¿qué unidades tiene k?',o:['L²·mol⁻²·s⁻¹','L·mol⁻¹·s⁻¹','s⁻¹','mol·L⁻¹·s⁻¹'],e:'El orden total es 3 y k = v/([A]²·[B]) se mide en L²·mol⁻²·s⁻¹.'}]},
+q:[]},
 {n:'Pizarra de gráficas',p:['#c9b27a','#bda46c','#7a6a3e'],m:'Andy: Las gráficas se han caído de la pizarra. ¡Hay que identificarlas!',
-o:[['📈','Gráfica horizontal','Una gráfica de v frente a [A] que es una recta horizontal.','#3e7a5a',12],['📉','Gráfica curva','Una gráfica de v frente a [A] con forma de parábola.','#7a3e5a',20],['📌','Resumen de órdenes','Pista (4.1.3): orden 0, recta horizontal; orden 1, recta por el origen; orden 2, parábola.','#d4b13a',8]],
-q:[{t:'La gráfica v frente a [A] es una recta horizontal. ¿Qué orden tiene y qué unidades tiene k?',o:['Orden 0; mol·L⁻¹·s⁻¹','Orden 1; s⁻¹','Orden 2; L·mol⁻¹·s⁻¹','Orden 0; s⁻¹'],e:'Si v no depende de [A], el orden es 0 y k tiene las unidades de v.'},
-{t:'La gráfica es una parábola. Si triplicas [A], ¿qué le pasa a v?',o:['Se multiplica por 9 (orden 2)','Se multiplica por 3 (orden 1)','Se multiplica por 6','No cambia (orden 0)'],e:'Es orden 2: v = k·[A]², así que v se multiplica por 3² = 9.'}]},
+o:[['📈','Primera gráfica','Una gráfica de v frente a [A] que se ha caído de la pizarra.','#3e7a5a',12],['📉','Segunda gráfica','Otra gráfica de v frente a [A] que se ha caído de la pizarra.','#7a3e5a',20],['📌','Resumen de órdenes','Pista (4.1.3): orden 0, recta horizontal; orden 1, recta por el origen; orden 2, parábola.','#d4b13a',8]],
+q:[]},
 {n:'Sala de tuberías',p:['#8b8fb8','#7e82ab','#4b4f78'],m:'Andy: El mecanismo está pintado en las tuberías. Una se estrecha…',
 o:[['🔧','Válvula de mecanismos','Mecanismo: (1, lenta) 2 NO₂ → NO₃ + NO; (2, rápida) NO₃ + CO → NO₂ + CO₂.','#6b6b7a',18],['🛢️','Depósito de la etapa lenta','La etapa lenta es el tramo estrecho de la tubería y manda sobre la velocidad.','#7a4a3e',26],['📌','Aviso en la pared','Pista (4.2): el intermedio se forma en una etapa y se gasta en otra; la ecuación de velocidad sale de la etapa lenta.','#d4b13a',8]],
-q:[{t:'Mecanismo: (1, lenta) 2 NO₂ → NO₃ + NO; (2, rápida) NO₃ + CO → NO₂ + CO₂. ¿Cuál es el intermedio?',o:['NO₃','NO₂','CO₂','NO'],e:'El NO₃ se forma en la etapa 1, se gasta en la 2 y no aparece en la global.'},
-{t:'Con ese mecanismo, ¿cuál es la ecuación de velocidad?',o:['v = k·[NO₂]²','v = k·[NO₂]·[CO]','v = k·[NO₃]·[CO]','v = k·[CO]'],e:'La etapa lenta es elemental: 2 NO₂ da v = k·[NO₂]². El CO tiene orden 0.'}]},
+q:[]},
 {n:'Cámara de choques',p:['#c98a8a','#bc7c7c','#7a4343'],m:'Andy: Aquí las moléculas chocan sin parar. ¡Cuidado con la barrera!',
 o:[['⚡','Acelerador de choques','Lanza moléculas unas contra otras para ver qué choques son eficaces.','#7a6a2e',20],['⛰️','Maqueta de la barrera','Un diagrama entálpico en relieve con las energías de activación directa e inversa.','#5a7a4a',24],['📌','Nota del complejo activado','Pista (4.3): el complejo activado está en el máximo de energía y no se puede aislar; el intermedio sí dura un tiempo.','#d4b13a',8]],
-q:[{t:'¿Qué dos condiciones debe cumplir un choque eficaz?',o:['Energía suficiente (al menos Ea) y orientación adecuada','Mucha concentración y poca temperatura','Que haya catalizador y que sea exotérmica','Energía suficiente y que ΔH sea negativo'],e:'Hace falta la energía de activación y que las moléculas choquen bien orientadas.'},
-{t:'Si Ea directa = 80 kJ·mol⁻¹ y Ea inversa = 120 kJ·mol⁻¹, ¿cuánto vale ΔH?',o:['−40 kJ·mol⁻¹ (exotérmica)','+40 kJ·mol⁻¹ (endotérmica)','+200 kJ·mol⁻¹','−200 kJ·mol⁻¹'],e:'ΔH = Ea,directa − Ea,inversa = 80 − 120 = −40 kJ·mol⁻¹.'}]},
+q:[]},
 {n:'Termostato',p:['#d6a25c','#c9944e','#80552a'],m:'Andy: El termostato manda aquí. Ojo con k y con v.',
 o:[['🌡️','Termostato','Controla la temperatura del laboratorio. Subirla cambia la constante cinética.','#a03e3e',28],['🧯','Cámara de gases','Un recipiente de volumen variable donde reaccionan dos gases.','#3e5aa0',20],['📌','Fórmula de Arrhenius','Pista (4.4): k = A·e^(−Ea/RT). Al subir T aumenta k; si baja Ea, también aumenta k.','#d4b13a',8]],
-q:[{t:'Subes la temperatura en una reacción exotérmica. ¿Qué pasa con k y con v?',o:['Ambas aumentan (también en las endotérmicas)','Ambas disminuyen','k no cambia y v aumenta','k aumenta y v no cambia'],e:'Al subir T aumentan k y v en exotérmicas y endotérmicas.'},
-{t:'Un gas reacciona con v = k·[A]·[B]. A T constante reduces el volumen a la mitad. ¿Qué pasa con v y k?',o:['v se multiplica por 4 y k no cambia','v se multiplica por 2 y k no cambia','v se multiplica por 4 y k también','v no cambia y k se duplica'],e:'Las dos concentraciones se duplican: v × 2·2 = 4. La constante k no cambia.'}]},
+q:[]},
 {n:'Catalizadores',p:['#7fbfb8','#72b2ab','#3f7a74'],m:'Andy: Frascos con etiquetas borrosas. ¿Cuál es el catalizador?',
 o:[['🧴','Frasco del catalizador','Una sustancia que ofrece un camino alternativo a la reacción.','#3e8a6b',16],['☠️','Frasco del inhibidor','Una sustancia que frena la reacción.','#6b3e8a',18],['📌','Tabla de qué cambia','Pista (4.4.5): un catalizador baja Ea y sube k y v, pero no cambia ΔH ni la constante de equilibrio.','#d4b13a',8]],
-q:[{t:'Añades un catalizador. ¿Qué afirmación es correcta?',o:['Baja Ea y sube k; ΔH y K no cambian','Baja Ea y cambia ΔH','Sube Ea y baja k','No cambia Ea pero sube k'],e:'Solo cambia lo deprisa que ocurre: reactivos y productos se quedan donde estaban.'},
-{t:'En el modelo del curso, ¿cómo actúa un inhibidor?',o:['Sube Ea y disminuye k','Baja Ea y aumenta k','Cambia ΔH para frenar','No cambia Ea'],e:'Es lo contrario de un catalizador: sube Ea y k disminuye.'}]},
+q:[]},
 {n:'Puerta final',p:['#9a8ab8','#8d7cab','#52416f'],m:'Andy: La cerradura final solo se abre si no caes en las trampas…',
 o:[['📜','Lista de errores','Los errores más frecuentes de cinética química, uno por línea.','#8a6b3e',20],['🔒','Cerradura final','Pide la última prueba antes de salir.','#5a5a6b',26],['📌','Aviso final','Pista (4.5): los órdenes parciales se determinan en el laboratorio y la espontaneidad no dice nada de la rapidez.','#d4b13a',8]],
-q:[{t:'¿Cuál es correcta sobre los órdenes de reacción?',o:['Se determinan experimentalmente y solo coinciden con los coeficientes en reacciones elementales','Son siempre los coeficientes de la ecuación ajustada','El orden total es la suma de coeficientes de los productos','Un reactivo nunca puede tener orden cero'],e:'Solo en una reacción elemental coinciden con los coeficientes.'},
-{t:'¿Cuál es correcta sobre velocidad y espontaneidad?',o:['Una reacción espontánea puede ser muy lenta, como el diamante que pasa a grafito','Si es espontánea, es rápida','Un catalizador hace espontánea una reacción que no lo es','Una reacción lenta nunca es espontánea'],e:'La espontaneidad no dice nada sobre la rapidez; el catalizador solo cambia la velocidad.'}]}];
+q:[]}];
 const S=['qpppccccccccpppq','..pccwkccwkccp..','qppcckkcckkccppq','..pcbccccccbcp..','qppcccmccmcccppq','....cccmmccc....','....ccllllcc....','...cccllllccc...','...cc.llll.cc...','...ddd....ddd...'],PAL={c:'#7dd3fc',d:'#38a8e0',l:'#d4f1ff',p:'#ff5fae',q:'#ffc2e0',k:'#0b1020',w:'#ffffff',b:'#ff9ccc',m:'#5a1236'};
 let cur=0,O=[],ax=3,ay=3.5,fl=0,wk=0,sel=null,hov=null,asked=0,pc=0,er=0,hn=0,won=false,t0=Date.now(),last=0,ex=0,boom=0,fr=[],bm=0,started=0,tr=null,DR=null,ENT=null,aa=1,dis=0,FN=null,fw=0,MOL={x:4,y:.05,pose:0,ph:0,h:[],on:0};
 const open=()=>!O.some(o=>o.q&&!o.s),dist=o=>Math.hypot(Math.max(o.x-ax,0,ax-o.x-o.w),Math.max(o.y-ay,0,ay-o.y-o.h));
@@ -134,7 +126,7 @@ $('pq').onclick=e=>{if(e.target.id==='retry'){boom=0;return load(cur)}if(e.targe
 $('pa').onclick=go;$('px').onclick=()=>{if(!boom)closeP()};
 function win(){won=true;sel=null;const st=er<=3&&hn<=3?3:er<=8&&hn<=6?2:1;$('pt').textContent='¡Andy ha escapado!';$('pa').hidden=true;$('pf').textContent='';
  $('pd').textContent='Has tardado '+fmt(Math.floor((Date.now()-t0)/1000))+', con '+er+' fallos, '+hn+' pistas leídas y '+bm+' muertes. '+'★★★'.slice(0,st)+'☆☆☆'.slice(st);$('pq').innerHTML='<button class="op" id="again">Jugar otra vez</button>';$('msg').textContent='Andy: ¡Libre! Gracias por ayudarme a salir.'}
-function reset(){FN=null;$('dlg').hidden=$('skip').hidden=true;$('stg').classList.remove('fn');tr=null;ENT=null;pc=0;er=0;hn=0;bm=0;ex=0;boom=0;won=false;t0=Date.now();load(0)}
+function reset(){FN=null;$('dlg').hidden=$('skip').hidden=true;$('stg').classList.remove('fn');tr=null;ENT=null;pc=0;er=0;hn=0;bm=0;ex=0;boom=0;won=false;t0=Date.now();build();load(0)}
 const D={ArrowUp:[-1,-1],ArrowDown:[1,1],ArrowLeft:[-1,1],ArrowRight:[1,-1],w:[-1,-1],s:[1,1],a:[-1,1],d:[1,-1]},K={},kk=e=>D[e.key]?e.key:e.key.toLowerCase();
 let vs='';
 function goRoom(n){FN=null;$('dlg').hidden=$('skip').hidden=true;$('stg').classList.remove('fn');tr=null;ENT=null;ex=0;boom=0;won=false;aa=1;dis=0;wk=0;for(const k in K)delete K[k];pc=PIECE.filter(q=>q<n).length;load(n)}
@@ -210,16 +202,126 @@ function trStep(dt){aa=1;dis=0;
 // enigmas visuales
 const sv=(w,h,b)=>'<svg viewBox="0 0 '+w+' '+h+'" width="100%" shape-rendering="crispEdges" stroke-linecap="square" font-family="VT323,monospace" role="img" aria-label="Dibujo del enigma">'+b+'</svg>';
 const paper=h=>'<div class="paper">'+h+'</div>',wallart=h=>'<div class="wallart">'+h+'</div>',T=(x,y,s,t,f)=>'<text x="'+x+'" y="'+y+'" font-size="'+s+'" fill="'+(f||'#f3f1e8')+'">'+t+'</text>';
-function graph(k){let b='<path d="M30 8V105H215" fill="none" stroke="#14213d" stroke-width="3"/><text x="8" y="62" font-size="20" fill="#14213d">v</text>';
- if(!k)b+='<path d="M30 50H205" stroke="#c2412d" stroke-width="4" fill="none"/><text x="190" y="124" font-size="20" fill="#14213d">[A]</text>';
- else{let d='';for(let i=0;i<=17;i++)d+=(i?'L':'M')+(30+i*10)+' '+(105-90*(i/17)**2);
-  b+='<path d="'+d+'" stroke="#0b78b0" stroke-width="4" fill="none"/><path d="M87 105V95H30M200 105V15H30" stroke="#6b6b7a" stroke-width="2" stroke-dasharray="4 4" fill="none"/><g font-size="17" fill="#14213d"><text x="62" y="122">[A]₀</text><text x="172" y="122">3[A]₀</text><text x="2" y="99">v₀</text><text x="8" y="19">?</text></g>'}
+// ===== PREGUNTAS QUE CAMBIAN EN CADA PARTIDA =====
+// Problemas: se generan con datos distintos. Conceptuales: se elige una versión del mismo tipo y nivel.
+const rnd=n=>Math.random()*n|0,rp=a=>a[rnd(a.length)],LP={},dc=(x,d=2)=>x.toFixed(d).replace('.',','),
+pk=(key,n)=>{let i=rnd(n);if(n>1&&i===LP[key])i=(i+1+rnd(n-1))%n;return LP[key]=i},
+SUP={'-':'⁻',0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹'},
+sci=x=>{const[m,e]=x.toExponential(1).split('e');return m.replace('.',',')+'·10'+[...String(+e)].map(ch=>SUP[ch]).join('')},
+mk=(t,o,e,v)=>({t,o,e,v}),
+fromPool=(key,Q)=>{const a=Q[pk(key,Q.length)];return mk(a[0],a[1],a[2])},
+UN=['mol·L⁻¹·s⁻¹','s⁻¹','L·mol⁻¹·s⁻¹','L²·mol⁻²·s⁻¹'],
+rest=(a,i)=>a.filter((_,j)=>j!=i);
+
+// --- Sala 1 · P1: velocidades de aparición y desaparición (problema) ---
+const RX=[
+{eq:'N₂ + 3H₂ → 2NH₃',s:[['N₂',1,0],['H₂',3,0],['NH₃',2,1]]},
+{eq:'2SO₂ + O₂ → 2SO₃',s:[['SO₂',2,0],['O₂',1,0],['SO₃',2,1]]},
+{eq:'2NO + O₂ → 2NO₂',s:[['NO',2,0],['O₂',1,0],['NO₂',2,1]]},
+{eq:'2H₂ + O₂ → 2H₂O',s:[['H₂',2,0],['O₂',1,0],['H₂O',2,1]]},
+{eq:'4NH₃ + 5O₂ → 4NO + 6H₂O',s:[['NH₃',4,0],['O₂',5,0],['NO',4,1],['H₂O',6,1]]},
+{eq:'2N₂O₅ → 4NO₂ + O₂',s:[['N₂O₅',2,0],['NO₂',4,1],['O₂',1,1]]}];
+function gRate(){const r=rp(RX),g=rp(r.s.filter(x=>!x[2])),q=rp(r.s.filter(x=>x!==g)),a=g[1],b=q[1],
+ m=rp([1.5,2,2.4,3,3.6,4,4.5,4.8,5,6,8,9].filter(k=>{const y=k*b/a*10;return Math.abs(y-Math.round(y))<1e-9})),
+ v=m*10**rp([-4,-3,-3,-2]),ans=v*b/a,sa=sci(ans),
+ d=[v*a/b,v,v*b,v/b,v*a,v/a,ans*2,ans/2].map(sci).filter((x,i,ar)=>x!=sa&&ar.indexOf(x)==i).sort(()=>Math.random()-.5).slice(0,3);
+ while(d.length<3)d.push(sci(ans*(2.5+d.length)));
+ return{eq:r.eq,q:mk('En '+r.eq+', el '+g[0]+' desaparece a '+sci(v)+' mol·L⁻¹·s⁻¹. ¿A qué velocidad '+(q[2]?'se forma':'desaparece')+' el '+q[0]+'?',
+  [sa].concat(d).map(x=>x+' mol·L⁻¹·s⁻¹'),
+  'Se divide cada variación entre su coeficiente: Δ['+g[0]+']/'+a+' = Δ['+q[0]+']/'+b+'. Por tanto, '+q[0]+' = ('+b+'/'+a+') · '+sci(v)+' = '+sa+' mol·L⁻¹·s⁻¹.')}}
+const P0=[
+['¿Cómo suele cambiar la velocidad de una reacción a lo largo del tiempo?',['Disminuye, porque los reactivos se gastan','Se mantiene constante','Aumenta, porque se acumulan productos','Solo cambia si cambia k'],'Al gastarse los reactivos bajan sus concentraciones y la velocidad suele disminuir.'],
+['A temperatura constante, ¿por qué disminuye la velocidad de una reacción al avanzar?',['Porque la concentración de los reactivos disminuye','Porque la constante k va disminuyendo','Porque la energía de activación va aumentando','Porque se enfría el recipiente'],'Al gastarse los reactivos baja su concentración, hay menos choques y v disminuye. La constante k solo depende de la temperatura (y de Ea).'],
+['Representas la concentración de un reactivo frente al tiempo. ¿Cómo es la pendiente de la curva a medida que avanza la reacción?',['Cada vez menos pronunciada: la velocidad disminuye','Constante: la velocidad no cambia','Cada vez más pronunciada: la velocidad aumenta','Nula desde el principio'],'La curva se va aplanando: la velocidad (valor absoluto de la pendiente) disminuye al gastarse el reactivo.'],
+['¿Cuándo suele ser máxima la velocidad de una reacción en la que al principio solo hay reactivos?',['Al empezar, cuando las concentraciones de los reactivos son máximas','A la mitad de la reacción','Al final, cuando se acumulan los productos','Es igual durante toda la reacción'],'La velocidad suele ser máxima al principio, que es cuando hay más reactivo; después va disminuyendo.']];
+
+// --- Sala 2 · tabla de experimentos (problema) y unidades de k (problema) ---
+function gOrd(){const s=rp(['A','B']),n=rp([0,1,2,2]),f=rp([2,3]),c1=rp([.1,.2,.3,.15,.25]),c2=rp([.1,.2,.3,.4]),v1=rp([2,3,4,5,6])*10**rp([-4,-3,-3,-2]),v2=v1*f**n,
+ row=(i,x,v)=>'<tr><td>'+i+'</td><td>'+dc(s=='A'?x:c2)+'</td><td>'+dc(s=='A'?c2:x)+'</td><td>'+sci(v)+'</td></tr>';
+ return mk('Mira la tabla del folio. ¿Qué orden tiene la reacción respecto a '+s+'?',[String(n)].concat(rest(['0','1','2','3'],n)),
+  'Al '+(f==2?'duplicar':'triplicar')+' ['+s+'], v '+(n?'se multiplica por '+f**n+' = '+f+SUP[n]:'no cambia ('+f+'⁰ = 1)')+', así que el orden es '+n+'.',
+  paper('<b>Cuaderno de experimentos</b><table><tr><th>Exp.</th><th>[A]</th><th>[B]</th><th>v inicial</th></tr>'+row(1,c1,v1)+row(2,c1*f,v2)+'</table>'))}
+const LW=[['[A]²·[B]',3],['[A]·[B]²',3],['[A]·[B]·[C]',3],['[B]²·[C]',3],['[A]²',2],['[A]·[B]',2],['[B]²',2],['[A]',1]];
+function gUni(){const[x,n]=LW[pk('uni',LW.length)];return mk('Para v = k·'+x+', ¿qué unidades tiene k?',[UN[n]].concat(rest(UN,n)),'El orden total es '+n+' y k = v/'+(x.includes('·')?'('+x+')':x)+' se mide en '+UN[n]+'.')}
+
+// --- Sala 3 · gráficas (dos problemas con dibujo) ---
+const SHP=['una recta horizontal','una recta que pasa por el origen','una parábola'],GC=['#c2412d','#14803c','#0b78b0'];
+function graph(n,f){let b='<path d="M30 8V105H215" fill="none" stroke="#14213d" stroke-width="3"/><text x="8" y="'+(f?44:62)+'" font-size="20" fill="#14213d">v</text>'+(f?'':'<text x="190" y="124" font-size="20" fill="#14213d">[A]</text>');
+ if(!n)b+='<path d="M30 50H205" stroke="'+GC[0]+'" stroke-width="4" fill="none"/>';
+ else{let d='';for(let i=0;i<=17;i++)d+=(i?'L':'M')+(30+i*10)+' '+(105-90*(i/17)**n).toFixed(1);b+='<path d="'+d+'" stroke="'+GC[n]+'" stroke-width="4" fill="none"/>'}
+ if(f){const x0=30+170/f,y0=105-90/f**n;b+='<path d="M'+x0.toFixed(1)+' 105V'+y0.toFixed(1)+'H30M200 105V15H30" stroke="#6b6b7a" stroke-width="2" stroke-dasharray="4 4" fill="none"/><g font-size="17" fill="#14213d"><text x="'+(x0-25).toFixed(1)+'" y="122">[A]₀</text><text x="172" y="122">'+f+'[A]₀</text><text x="2" y="'+(y0+4).toFixed(1)+'">v₀</text><text x="8" y="19">?</text></g>'}
  return paper(sv(230,130,b))}
-const pipes=()=>wallart(sv(300,140,'<g fill="#8b8fa3" stroke="#f3f1e8" stroke-width="3"><path d="M8 62H140V80H8Z"/><path d="M140 62L160 44V98L140 80Z"/><path d="M160 44H292V98H160Z"/></g><g fill="#7dd3fc"><rect x="30" y="68" width="5" height="5"/><rect x="80" y="68" width="5" height="5"/><rect x="180" y="52" width="6" height="6"/><rect x="215" y="70" width="6" height="6"/><rect x="250" y="56" width="6" height="6"/><rect x="262" y="84" width="6" height="6"/></g>'+T(8,50,16,'ETAPA 1 · lenta','#ff9ccc')+T(8,100,16,'2 NO₂ → NO₃ + NO')+T(162,36,16,'ETAPA 2 · rápida','#ff9ccc')+T(150,120,16,'NO₃ + CO → NO₂ + CO₂')));
-const energy=()=>wallart(sv(300,140,'<path d="M12 70H80L130 22L190 94H290" fill="none" stroke="#f3f1e8" stroke-width="4"/><path d="M12 70H290M80 22H226" stroke="#aab4c8" stroke-width="2" stroke-dasharray="4 4" fill="none"/><path d="M62 70V22M226 94V22M278 70V94" stroke="#ff9ccc" stroke-width="3" fill="none"/>'+T(14,40,16,'Ea dir')+T(14,54,16,'= 80')+T(234,44,16,'Ea inv')+T(234,58,16,'= 120')+T(232,87,15,'ΔH = ?','#fcd34d')+T(14,88,15,'reactivos')+T(110,114,15,'productos')+T(70,14,14,'complejo activado')));
-R[1].q[0].t='Mira la tabla del folio. ¿Qué orden tiene la reacción respecto a A?';
-R[1].q[0].v=paper('<b>Cuaderno de experimentos</b><table><tr><th>Exp.</th><th>[A]</th><th>[B]</th><th>v inicial</th></tr><tr><td>1</td><td>0,10</td><td>0,10</td><td>3,0·10⁻³</td></tr><tr><td>2</td><td>0,20</td><td>0,10</td><td>1,2·10⁻²</td></tr></table>');
-R[2].q[0].v=graph(0);R[2].q[1].v=graph(1);R[3].q[0].v=R[3].q[1].v=pipes();R[4].q[1].v=energy();
+function bGraph(){const t0=rnd(3),t1=t0==1?2:t0==2?1:rp([1,2]),f=rp([2,3,4]),tp=[1,0,1],OD=k=>'Orden '+k+'; '+UN[k],OP=k=>k?'Se multiplica por '+f**k+' (orden '+k+')':'No cambia (orden 0)',
+ ex=['Si v no depende de [A], el orden es 0 y k tiene las unidades de v.','Si v es proporcional a [A], el orden es 1: k = v/[A] se mide en s⁻¹.','Si v crece como [A]², el orden es 2: k = v/[A]² se mide en L·mol⁻¹·s⁻¹.'];
+ return[mk('La gráfica v frente a [A] es '+SHP[t0]+'. ¿Qué orden tiene y qué unidades tiene k?',[OD(t0)].concat(rest([0,1,2],t0).map(OD),['Orden '+t0+'; '+UN[tp[t0]]]),ex[t0],graph(t0)),
+  mk('La gráfica es '+SHP[t1]+'. Si '+['','','duplicas','triplicas','cuadruplicas'][f]+' [A], ¿qué le pasa a v?',[OP(t1)].concat(rest([0,1,2,3],t1).map(OP)),
+   'Es orden '+t1+': v = k·[A]'+(t1>1?'²':'')+', así que v se multiplica por '+f+(t1>1?'² = '+f*f:'')+'.',graph(t1,f))]}
+
+// --- Sala 4 · mecanismos (dos preguntas sobre el mismo mecanismo) ---
+const pipes=(s1,s2)=>wallart(sv(300,140,'<g fill="#8b8fa3" stroke="#f3f1e8" stroke-width="3"><path d="M8 62H140V80H8Z"/><path d="M140 62L160 44V98L140 80Z"/><path d="M160 44H292V98H160Z"/></g><g fill="#7dd3fc"><rect x="30" y="68" width="5" height="5"/><rect x="80" y="68" width="5" height="5"/><rect x="180" y="52" width="6" height="6"/><rect x="215" y="70" width="6" height="6"/><rect x="250" y="56" width="6" height="6"/><rect x="262" y="84" width="6" height="6"/></g>'+T(8,50,16,'ETAPA 1 · lenta','#ff9ccc')+T(8,100,16,s1)+T(162,36,16,'ETAPA 2 · rápida','#ff9ccc')+T(Math.min(150,292-s2.length*7),120,16,s2)));
+const MC=[
+{a:'2 NO₂ → NO₃ + NO',b:'NO₃ + CO → NO₂ + CO₂',i:'NO₃',id:['NO₂','CO₂','NO'],ei:'El NO₃ se forma en la etapa 1, se gasta en la 2 y no aparece en la global.',r:'v = k·[NO₂]²',rd:['v = k·[NO₂]·[CO]','v = k·[NO₃]·[CO]','v = k·[CO]'],er:'La etapa lenta es elemental: 2 NO₂ da v = k·[NO₂]². El CO tiene orden 0.'},
+{a:'NO₂ + F₂ → NO₂F + F',b:'F + NO₂ → NO₂F',i:'F',id:['NO₂F','F₂','NO₂'],ei:'El F se forma en la etapa 1, se gasta en la 2 y no aparece en la global.',r:'v = k·[NO₂]·[F₂]',rd:['v = k·[NO₂]²·[F₂]','v = k·[F]·[NO₂]','v = k·[NO₂F]'],er:'La etapa lenta es elemental: NO₂ + F₂ da v = k·[NO₂]·[F₂]. El F es un intermedio y no puede aparecer.'},
+{a:'NO₂Cl → NO₂ + Cl',b:'NO₂Cl + Cl → NO₂ + Cl₂',i:'Cl',id:['NO₂','Cl₂','NO₂Cl'],ei:'El Cl se forma en la etapa 1, se gasta en la 2 y no aparece en la global.',r:'v = k·[NO₂Cl]',rd:['v = k·[NO₂Cl]²','v = k·[NO₂Cl]·[Cl]','v = k·[NO₂]·[Cl]'],er:'La etapa lenta es elemental y de una sola molécula: NO₂Cl da v = k·[NO₂Cl] (orden 1).'},
+{a:'H₂ + ICl → HI + HCl',b:'HI + ICl → I₂ + HCl',i:'HI',id:['HCl','I₂','ICl'],ei:'El HI se forma en la etapa 1, se gasta en la 2 y no aparece en la global.',r:'v = k·[H₂]·[ICl]',rd:['v = k·[H₂]·[ICl]²','v = k·[HI]·[ICl]','v = k·[H₂]'],er:'La etapa lenta es elemental: H₂ + ICl da v = k·[H₂]·[ICl]. El HI es un intermedio y no puede aparecer.'}];
+function bMech(){const m=MC[pk('mec',MC.length)],pv=pipes(m.a,m.b),mt='Mecanismo: (1, lenta) '+m.a+'; (2, rápida) '+m.b+'.';
+ return{d:mt,q:[mk(mt+' ¿Cuál es el intermedio?',[m.i].concat(m.id),m.ei,pv),mk('Con ese mecanismo, ¿cuál es la ecuación de velocidad?',[m.r].concat(m.rd),m.er,pv)]}}
+
+// --- Sala 5 · choques (conceptual) y energías de activación (problema con dibujo) ---
+const P4=[
+['¿Qué dos condiciones debe cumplir un choque eficaz?',['Energía suficiente (al menos Ea) y orientación adecuada','Mucha concentración y poca temperatura','Que haya catalizador y que sea exotérmica','Energía suficiente y que ΔH sea negativo'],'Hace falta la energía de activación y que las moléculas choquen bien orientadas.'],
+['¿Qué es la energía de activación?',['La energía mínima que deben tener las moléculas al chocar para que el choque sea eficaz','La energía total que se desprende en la reacción','La diferencia de energía entre productos y reactivos','La energía que tienen los productos al formarse'],'Es la energía mínima necesaria para alcanzar el complejo activado. La diferencia entre productos y reactivos es ΔH.'],
+['Dos moléculas chocan con energía mayor que Ea, pero mal orientadas. ¿Qué ocurre?',['El choque no es eficaz: no se forman productos','Se forman productos, porque basta con tener energía suficiente','Se forman los productos, pero más despacio','La energía de activación disminuye'],'Para que el choque sea eficaz hacen falta las dos condiciones: energía suficiente y orientación adecuada.'],
+['¿Por qué solo una pequeña parte de los choques entre moléculas produce reacción?',['Porque pocos choques tienen a la vez energía suficiente y orientación adecuada','Porque las moléculas casi nunca chocan entre sí','Porque todos los choques son eficaces, pero muy lentos','Porque solo chocan las moléculas de los productos'],'Hay muchísimos choques, pero solo son eficaces los que superan Ea y tienen buena orientación.']];
+const energy=(en,Ed,Ei)=>{const yR=en?94:70,yP=en?70:94;return wallart(sv(300,140,'<path d="M12 '+yR+'H80L130 22L190 '+yP+'H290" fill="none" stroke="#f3f1e8" stroke-width="4"/><path d="M12 '+yR+'H290M80 22H226" stroke="#aab4c8" stroke-width="2" stroke-dasharray="4 4" fill="none"/><path d="M62 '+yR+'V22M226 '+yP+'V22M278 '+yR+'V'+yP+'" stroke="#ff9ccc" stroke-width="3" fill="none"/>'
+ +T(14,en?52:40,16,'Ea dir')+T(14,en?66:54,16,'= '+Ed)+T(234,en?40:44,16,'Ea inv')+T(234,en?54:58,16,'= '+Ei)+T(232,87,15,'ΔH = ?','#fcd34d')+T(14,en?112:88,15,'reactivos')+T(en?118:110,en?84:114,15,'productos')+T(70,14,14,'complejo activado')))};
+function gEa(){let d,i;do{d=40+10*rnd(14);i=40+10*rnd(14)}while(d==i||Math.abs(d-i)<20||Math.min(d,i)/Math.max(d,i)<.45);
+ const h=d-i,S2=x=>(x>0?'+':'−')+Math.abs(x)+' kJ·mol⁻¹',L=x=>x<0?' (exotérmica)':' (endotérmica)';
+ return mk('Si Ea directa = '+d+' kJ·mol⁻¹ y Ea inversa = '+i+' kJ·mol⁻¹, ¿cuánto vale ΔH?',[S2(h)+L(h),S2(-h)+L(-h),S2(d+i),S2(-d-i)],'ΔH = Ea,directa − Ea,inversa = '+d+' − '+i+' = '+S2(h)+'.',energy(h>0,d,i))}
+
+// --- Sala 6 · temperatura (conceptual) y volumen (problema) ---
+const P5=[
+['Subes la temperatura en una reacción exotérmica. ¿Qué pasa con k y con v?',['Ambas aumentan (también en las endotérmicas)','Ambas disminuyen','k no cambia y v aumenta','k aumenta y v no cambia'],'Al subir T aumentan k y v en exotérmicas y endotérmicas.'],
+['Subes la temperatura en una reacción endotérmica. ¿Qué pasa con k y con v?',['Ambas aumentan (también en las exotérmicas)','Ambas disminuyen','k no cambia y v aumenta','k aumenta y v no cambia'],'Al subir T aumentan k y v en endotérmicas y exotérmicas.'],
+['Bajas la temperatura de una reacción. ¿Qué pasa con k y con v?',['Ambas disminuyen (sea exotérmica o endotérmica)','Ambas aumentan','k no cambia y v disminuye','k disminuye y v no cambia'],'Al bajar T disminuyen k y v, tanto en exotérmicas como en endotérmicas.'],
+['Dos reacciones tienen la misma A y la misma T, pero distinta Ea. ¿Cuál tiene mayor k?',['La de menor Ea','La de mayor Ea','Las dos igual, porque A y T son iguales','La más exotérmica'],'En k = A·e^(−Ea/RT), una Ea menor da un exponente menos negativo y, por tanto, una k mayor.']];
+const VL=[['[A]·[B]',2],['[A]²',2],['[A]²·[B]',3],['[A]·[B]²',3],['[A]',1]],
+VC=[['reduces el volumen a la mitad',2,'se duplica'],['reduces el volumen a la tercera parte',3,'se triplica'],['duplicas el volumen',.5,'se reduce a la mitad'],['triplicas el volumen',1/3,'se reduce a la tercera parte']];
+function gVol(){const[x,n]=rp(VL),[vt,cf,kv]=rp(VC),F=cf>1?cf:Math.round(1/cf),X=F**n,Xm=F**(n>1?n-1:n+1),inc=cf>1,V=(y,k)=>'v se '+(inc?'multiplica por ':'divide entre ')+y+' y k '+k;
+ return mk('Un gas reacciona con v = k·'+x+'. A T constante '+vt+'. ¿Qué pasa con v y k?',[V(X,'no cambia'),V(Xm,'no cambia'),V(X,'también'),'v no cambia y k '+kv],
+  (inc?'Al reducir el volumen, cada concentración se multiplica por '+F+': v × ':'Al aumentar el volumen, cada concentración se divide entre '+F+': v se divide entre ')+Array(n).fill(F).join('·')+' = '+X+'. La constante k solo depende de T, que no cambia.')}
+
+// --- Sala 7 · catalizadores e inhibidores (conceptual) ---
+const P6a=[
+['Añades un catalizador. ¿Qué afirmación es correcta?',['Baja Ea y sube k; ΔH y K no cambian','Baja Ea y cambia ΔH','Sube Ea y baja k','No cambia Ea pero sube k'],'Solo cambia lo deprisa que ocurre: reactivos y productos se quedan donde estaban.'],
+['Un catalizador acelera una reacción. ¿Qué magnitud NO modifica?',['La entalpía de reacción, ΔH','La energía de activación','La constante cinética k','La velocidad de reacción'],'Un catalizador cambia el camino (baja Ea, sube k y v), pero reactivos y productos quedan donde estaban: ΔH y K no cambian.'],
+['En el diagrama entálpico, ¿qué cambia al añadir un catalizador?',['Baja la barrera de energía; reactivos y productos quedan a la misma altura','Baja el nivel de los productos y ΔH es más negativa','Sube la barrera de energía','Sube el nivel de los reactivos'],'El catalizador ofrece otro camino con menor Ea; los niveles de reactivos y productos (y, por tanto, ΔH) no cambian.'],
+['Un catalizador baja la Ea de la reacción directa. ¿Qué le pasa a la Ea de la inversa?',['También baja, en la misma cantidad','Sube en la misma cantidad','No cambia','Baja el doble'],'El catalizador baja la barrera en los dos sentidos, en la misma cantidad; por eso ΔH = Ea,directa − Ea,inversa no cambia.']],
+P6b=[
+['En el modelo del curso, ¿cómo actúa un inhibidor?',['Sube Ea y disminuye k','Baja Ea y aumenta k','Cambia ΔH para frenar','No cambia Ea'],'Es lo contrario de un catalizador: sube Ea y k disminuye.'],
+['Añades un inhibidor a una reacción. ¿Qué pasa con v y con ΔH?',['v disminuye y ΔH no cambia','v disminuye y ΔH aumenta','v aumenta y ΔH no cambia','v no cambia y ΔH disminuye'],'El inhibidor frena la reacción (sube Ea y baja k), pero no modifica ΔH.'],
+['¿En qué se diferencian un inhibidor y un catalizador?',['El inhibidor sube Ea y el catalizador la baja','El inhibidor baja Ea y el catalizador la sube','El inhibidor cambia ΔH y el catalizador no','Los dos bajan Ea, pero el inhibidor menos'],'Actúan en sentidos opuestos sobre la barrera: el catalizador baja Ea y sube k; el inhibidor sube Ea y baja k. Ninguno de los dos cambia ΔH.'],
+['Se añade un inhibidor y la reacción se frena. ¿Qué se observa en su diagrama entálpico?',['La barrera de energía es más alta; reactivos y productos quedan igual','La barrera de energía es más baja; reactivos y productos quedan igual','Los productos quedan a otra altura','Desaparece el complejo activado'],'El inhibidor sube la barrera (Ea mayor) sin mover los niveles de reactivos y productos.']];
+
+// --- Sala 8 · trampas finales (conceptual) ---
+const P7a=[
+['¿Cuál es correcta sobre los órdenes de reacción?',['Se determinan experimentalmente y solo coinciden con los coeficientes en reacciones elementales','Son siempre los coeficientes de la ecuación ajustada','El orden total es la suma de coeficientes de los productos','Un reactivo nunca puede tener orden cero'],'Solo en una reacción elemental coinciden con los coeficientes.'],
+['Para 2A + B → productos se propone v = k·[A]²·[B]. ¿Qué se puede afirmar?',['Solo es seguro si la reacción es elemental; en general hay que medirlo en el laboratorio','Es siempre cierto, porque los exponentes son los coeficientes','Es imposible, porque el orden total nunca puede ser 3','Es cierto porque el orden total depende de los productos'],'Los órdenes parciales se determinan experimentalmente; solo coinciden con los coeficientes si la reacción es elemental.'],
+['¿Cuál es correcta sobre el orden total de una reacción?',['Es la suma de los órdenes parciales de la ecuación de velocidad','Es la suma de los coeficientes de los productos','Es siempre 1 o 2','Es siempre igual al número de reactivos'],'El orden total se obtiene sumando los exponentes de las concentraciones en la ecuación de velocidad; no tiene por qué ser 1 o 2.'],
+['¿Cuál es correcta sobre un reactivo con orden cero?',['Su concentración no influye en la velocidad','No participa en la reacción','La velocidad de reacción es nula','Su concentración se mantiene siempre constante'],'Con orden 0 la velocidad no depende de su concentración, aunque el reactivo se vaya consumiendo.']],
+P7b=[
+['¿Cuál es correcta sobre velocidad y espontaneidad?',['Una reacción espontánea puede ser muy lenta, como el diamante que pasa a grafito','Si es espontánea, es rápida','Un catalizador hace espontánea una reacción que no lo es','Una reacción lenta nunca es espontánea'],'La espontaneidad no dice nada sobre la rapidez; el catalizador solo cambia la velocidad.'],
+['El H₂ y el O₂ mezclados a temperatura ambiente no reaccionan de forma apreciable, aunque formar agua es espontáneo. ¿Por qué?',['Porque la reacción es muy lenta: su Ea es muy alta','Porque la reacción no es espontánea','Porque la reacción es endotérmica','Porque el orden de reacción es cero'],'Espontánea no significa rápida: con una Ea muy alta la reacción es extremadamente lenta hasta que se aporta energía (una chispa) o un catalizador.'],
+['¿Qué se puede concluir de una reacción que es muy lenta a temperatura ambiente?',['Que su k es pequeña (Ea alta); no se puede deducir si es espontánea o no','Que no es espontánea','Que es endotérmica','Que su orden de reacción es cero'],'La rapidez depende de k y de Ea; la espontaneidad es otra cuestión, y una reacción lenta puede ser perfectamente espontánea.'],
+['Una reacción no es espontánea y le añades un catalizador. ¿Qué ocurre?',['Sigue sin ser espontánea: el catalizador solo cambia la velocidad','Pasa a ser espontánea','Pasa a ser exotérmica','Aumenta su constante de equilibrio'],'El catalizador no cambia ΔH ni la constante de equilibrio, así que no puede convertir una reacción no espontánea en espontánea; solo la acelera.']];
+
+// --- Monta las preguntas de una partida nueva ---
+function build(){const a=gRate(),[g0,g1]=bGraph(),mc=bMech();
+ R[0].q=[a.q,fromPool('p0',P0)];R[0].o[0][2]='Apuntes de Andy sobre la reacción '+a.eq+' y las velocidades de cada sustancia.';
+ R[1].q=[gOrd(),gUni()];R[2].q=[g0,g1];R[3].q=mc.q;R[3].o[0][2]=mc.d;
+ R[4].q=[fromPool('p4',P4),gEa()];R[5].q=[fromPool('p5',P5),gVol()];
+ R[6].q=[fromPool('p6a',P6a),fromPool('p6b',P6b)];R[7].q=[fromPool('p7a',P7a),fromPool('p7b',P7b)]}
+build();
 // intro
 const IT='Andy es un ajolote curioso que se ha colado en el laboratorio del Doctor Mol.\n\nPero el Doctor Mol ha convertido su laboratorio en una trampa mortal para ajolotes: cada sala está cerrada y solo aparece una puerta cuando se resuelven todos sus acertijos de cinética química.\n\nCUIDADO: dos fallos en el mismo enigma y Andy morirá.\n\n¿Le ayudarás a escapar?';
 (()=>{const a=$('ac').getContext('2d');S.forEach((row,r)=>[...row].forEach((ch,i)=>{if(ch!='.'){a.fillStyle=PAL[ch];a.fillRect(i*2,r*2,2,2)}}));
